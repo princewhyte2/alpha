@@ -16,9 +16,7 @@ const Verification = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
+        py: 4,
       }}
     >
       <Paper
@@ -28,6 +26,7 @@ const Verification = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: `${matches ? "center" : "start"}`,
           py: 2,
           px: {
             xs: 3,

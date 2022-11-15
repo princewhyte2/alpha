@@ -24,8 +24,6 @@ const ResetPassword = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        height: "100vh",
-        width: "100vw",
         py: 4,
       }}
     >

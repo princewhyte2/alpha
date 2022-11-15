@@ -29,10 +29,7 @@ const ForgotPassword = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
         py: 4,
-        height: "100vh",
-        width: "100vw",
       }}
     >
       <Paper
