@@ -52,8 +52,7 @@ const SignUp = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
-        p: 4,
+        py: 4,
       }}
     >
       <Paper
@@ -63,7 +62,7 @@ const SignUp = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          height: "auto",
+          justifyContent: `${matches ? "center" : "start"}`,
           py: 2,
           px: {
             xs: 3,
