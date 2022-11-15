@@ -1,9 +1,8 @@
 import Box from "@mui/material/Box"
-import { styled } from "@mui/material/styles"
+import { styled, useTheme } from "@mui/material/styles"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
-import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import GoogleIcon from "../../components/icons/Google"
 import FacebookIcon from "../../components/icons/Facebook"
@@ -72,9 +71,11 @@ const Login = () => {
         elevation={matches ? 2 : 0}
         variant={matches ? "outlined" : undefined}
       >
-        <Box sx={{ height: { sm: "4rem", xs: "2.6rem" }, width: { sm: "4rem", xs: "2.6rem" } }}>
-          <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
-        </Box>
+        <Link href="/auth/login" underline="none">
+          <Box sx={{ height: { sm: "4rem", xs: "2.6rem" }, width: "4rem" }}>
+            <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
+          </Box>
+        </Link>
         <Typography sx={{ mt: { sm: 4, xs: 2 }, color: "primary.dark" }} variant="h5" component="h5">
           Welcome Back
         </Typography>

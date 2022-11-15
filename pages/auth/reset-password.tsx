@@ -10,6 +10,7 @@ import InputLabel from "@mui/material/InputLabel"
 import IconButton from "@mui/material/IconButton"
 import FormControl from "@mui/material/FormControl"
 import OutlinedInput from "@mui/material/OutlinedInput"
+import Link from "@mui/material/Link"
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import React, { useState } from "react"
@@ -46,9 +47,11 @@ const ResetPassword = () => {
         elevation={matches ? 2 : 0}
         variant={matches ? "outlined" : undefined}
       >
-        <Box sx={{ height: { sm: "4rem", xs: "2.6rem" }, width: { sm: "4rem", xs: "2.6rem" } }}>
-          <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
-        </Box>
+        <Link href="/auth/login" underline="none">
+          <Box sx={{ height: { sm: "4rem", xs: "2.6rem" }, width: "4rem" }}>
+            <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
+          </Box>
+        </Link>
         <Typography sx={{ m: { sm: 4, xs: 2 }, color: "primary.dark" }} variant="h4" component="h4">
           Reset Password
         </Typography>
