@@ -29,7 +29,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         />
         <meta name="description" content="Description" />
         <meta name="keywords" content="Keywords" />
-        <title>Next.js PWA Example</title>
+        <title>Work fynder</title>
         <link href="https://fonts.cdnfonts.com/css/circular-std" rel="stylesheet"></link>
         <link rel="manifest" href="/manifest.json" />
         <link href="/icons/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" />

@@ -16,7 +16,7 @@ import EmailIcon from "@mui/icons-material/Email"
 const ForgotPassword = () => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
-  const [showOtp, setShowOtp] = useState(false)
+  const [showOtp] = useState(false)
   const [tabValue, setTabValue] = useState(0)
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
