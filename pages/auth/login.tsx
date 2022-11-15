@@ -147,7 +147,7 @@ const Login = () => {
               label={<Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>Remember me</Typography>}
             />
             <Link href="/auth/forgot-password" underline="none">
-              <Typography sx={{ color: "#1B1B1B", fontSize: { xs: "0.815rem" } }}>Forget Password?</Typography>
+              <Typography sx={{ color: "#1B1B1B", fontSize: { xs: "0.815rem" } }}>Forgot Password?</Typography>
             </Link>
           </Box>
           <Button sx={{ maxWidth: "25rem", m: 1, width: "100%" }} variant="contained">

@@ -30,6 +30,7 @@ const ForgotPassword = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        py: 4,
         height: "100vh",
         width: "100vw",
       }}
@@ -41,6 +42,7 @@ const ForgotPassword = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: `${matches ? "center" : "start"}`,
           py: 2,
           px: {
             xs: 3,
