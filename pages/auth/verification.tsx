@@ -39,7 +39,7 @@ const Verification = () => {
         variant={matches ? "outlined" : undefined}
       >
         <Link href="/auth/login" underline="none">
-          <Box sx={{ height: { sm: "4rem", xs: "2.6rem" }, width: "4rem" }}>
+          <Box sx={{ height: "4rem", width: "4rem" }}>
             <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
           </Box>
         </Link>
