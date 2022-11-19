@@ -1,8 +1,8 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
+
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
-import Button from "@mui/material/Button"
 import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import Tabs from "@mui/material/Tabs"
@@ -13,15 +13,73 @@ import PhoneIcon from "@mui/icons-material/Phone"
 import TextField from "@mui/material/TextField"
 import IconButton from "@mui/material/IconButton"
 import EmailIcon from "@mui/icons-material/Email"
+import LoadingButton from "@mui/lab/LoadingButton"
+import authService from "../../services/authentication"
+import { useRouter } from "next/router"
+import { ErrorComponent } from "../../components/alert"
 
 const ForgotPassword = () => {
+  const router = useRouter()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
-  const [showOtp] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showOtp, setShowOtp] = useState(false)
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
   const [tabValue, setTabValue] = useState(0)
+  const [receipient, setReceipient] = useState("")
+  const emailRef = useRef<HTMLInputElement>()
+  const phoneNumRef = useRef<HTMLInputElement>()
+  const emailOtpRef = useRef<HTMLInputElement>()
+  const phoneNumOtpRef = useRef<HTMLInputElement>()
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue)
+  }
+
+  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
+    try {
+      if (tabValue === 0) {
+        //check if we are handling otp verification
+        if (!showOtp) {
+          if (!emailRef.current) return
+          setIsLoading(true)
+          await authService.forgotPasswordEmail(emailRef.current.value)
+          setReceipient(emailRef.current.value)
+          emailRef.current.value = ""
+          setShowOtp(true)
+        } else {
+          if (!emailOtpRef.current) return
+          //handle the otp here
+          router.push(`/auth/reset-password?token=${emailOtpRef.current.value}&receipient=${receipient}`)
+        }
+      } else if (tabValue) {
+        if (!showOtp) {
+          if (!phoneNumRef.current) return
+          setIsLoading(true)
+          await authService.forgotPasswordPhone(phoneNumRef.current.value)
+          setReceipient(phoneNumRef.current.value)
+          phoneNumRef.current.value = ""
+          setShowOtp(true)
+        } else {
+          if (!phoneNumOtpRef.current) return
+          router.push(`/auth/reset-password?token=${phoneNumOtpRef.current.value}&receipient=${receipient}`)
+          //handle the otp here
+        }
+      }
+    } catch (error: any) {
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -45,9 +103,8 @@ const ForgotPassword = () => {
             xs: 3,
             sm: "5.25rem",
           },
-          boxShadow: { md: 1 },
+          boxShadow: { md: 2 },
         }}
-        elevation={matches ? 2 : 0}
         variant={matches ? "outlined" : undefined}
       >
         <Link href="/auth/login" underline="none">
@@ -77,6 +134,7 @@ const ForgotPassword = () => {
         {tabValue === 0 && (
           <Box
             component="form"
+            onSubmit={handleForgotPassword}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -95,6 +153,7 @@ const ForgotPassword = () => {
                 sx={{ m: 2, width: "100%" }}
                 id="email-password"
                 label="Email address"
+                inputRef={emailRef}
                 variant="outlined"
                 InputProps={{
                   endAdornment: (
@@ -107,12 +166,23 @@ const ForgotPassword = () => {
                 }}
               />
             ) : (
-              <TextField sx={{ m: 2, width: "100%" }} id="otp-email" label="OTP Code" variant="outlined" />
+              <TextField
+                inputRef={emailOtpRef}
+                sx={{ m: 2, width: "100%" }}
+                id="otp-email"
+                label="OTP Code"
+                variant="outlined"
+              />
             )}
 
-            <Button sx={{ maxWidth: "25rem", m: 3, width: "100%" }} variant="contained">
+            <LoadingButton
+              type="submit"
+              loading={isLoading}
+              sx={{ maxWidth: "25rem", m: 3, width: "100%" }}
+              variant="contained"
+            >
               Continue
-            </Button>
+            </LoadingButton>
           </Box>
         )}
         {tabValue === 1 && (
@@ -125,6 +195,7 @@ const ForgotPassword = () => {
               maxWidth: "29.68rem",
               width: "100%",
             }}
+            onSubmit={handleForgotPassword}
           >
             <Typography
               textAlign="center"
@@ -141,6 +212,7 @@ const ForgotPassword = () => {
                 id="phone-password"
                 label="Phone Number"
                 variant="outlined"
+                inputRef={phoneNumRef}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -152,15 +224,27 @@ const ForgotPassword = () => {
                 }}
               />
             ) : (
-              <TextField sx={{ m: 2, width: "100%" }} id="otp-phone" label="OTP Code" variant="outlined" />
+              <TextField
+                inputRef={phoneNumOtpRef}
+                sx={{ m: 2, width: "100%" }}
+                id="otp-phone"
+                label="OTP Code"
+                variant="outlined"
+              />
             )}
 
-            <Button sx={{ maxWidth: "25rem", m: 3, width: "100%" }} variant="contained">
+            <LoadingButton
+              type="submit"
+              loading={isLoading}
+              sx={{ maxWidth: "25rem", m: 3, width: "100%" }}
+              variant="contained"
+            >
               Continue
-            </Button>
+            </LoadingButton>
           </Box>
         )}
       </Paper>
+      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

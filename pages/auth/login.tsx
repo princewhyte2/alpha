@@ -3,6 +3,7 @@ import { styled, useTheme } from "@mui/material/styles"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
+import LoadingButton from "@mui/lab/LoadingButton"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import GoogleIcon from "../../components/icons/Google"
 import FacebookIcon from "../../components/icons/Facebook"
@@ -19,7 +20,9 @@ import FormControl from "@mui/material/FormControl"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
+import authService from "../../services/authentication"
+import { ErrorComponent } from "../../components/alert"
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -44,14 +47,37 @@ const Login = () => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const emailPhoneRef = useRef<HTMLInputElement>()
+  const passwordRef = useRef<HTMLInputElement>()
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
+    if (!emailPhoneRef.current || !passwordRef.current) return
+    setIsLoading(true)
+    try {
+      const res: any = await authService.emailLogin(emailPhoneRef.current.value, passwordRef.current.value)
+      localStorage.setItem("access_token", res.result.token)
+    } catch (error: any) {
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }
   return (
     <Box
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
+        py: 4,
       }}
     >
       <Paper
@@ -61,6 +87,7 @@ const Login = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: `${matches ? "center" : "start"}`,
           py: 2,
           px: {
             xs: 3,
@@ -68,11 +95,10 @@ const Login = () => {
           },
           boxShadow: { md: 1 },
         }}
-        elevation={matches ? 2 : 0}
         variant={matches ? "outlined" : undefined}
       >
         <Link href="/auth/login" underline="none">
-          <Box sx={{ height: "4rem", width: "4rem" }}>
+          <Box>
             <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
           </Box>
         </Link>
@@ -101,10 +127,12 @@ const Login = () => {
             maxWidth: "29.68rem",
             width: "100%",
           }}
+          onSubmit={handleLogin}
         >
           <TextField
             sx={{ m: 1, width: "100%" }}
             id="email-or-phone"
+            inputRef={emailPhoneRef}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -122,6 +150,7 @@ const Login = () => {
             <OutlinedInput
               id="outlined-adornment-password"
               type={showPassword ? "text" : "password"}
+              inputRef={passwordRef}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -150,9 +179,14 @@ const Login = () => {
               <Typography sx={{ color: "#1B1B1B", fontSize: { xs: "0.815rem" } }}>Forgot Password?</Typography>
             </Link>
           </Box>
-          <Button sx={{ maxWidth: "25rem", m: 1, width: "100%" }} variant="contained">
+          <LoadingButton
+            loading={isLoading}
+            type="submit"
+            sx={{ maxWidth: "25rem", m: 1, width: "100%" }}
+            variant="contained"
+          >
             Login
-          </Button>
+          </LoadingButton>
         </Box>
 
         <Typography sx={{ color: "primary.dark", m: 1, fontSize: { xs: "0.875rem" } }}>
@@ -162,6 +196,7 @@ const Login = () => {
           </Link>
         </Typography>
       </Paper>
+      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

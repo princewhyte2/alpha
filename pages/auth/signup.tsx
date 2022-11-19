@@ -1,9 +1,8 @@
 import Box from "@mui/material/Box"
-import { styled } from "@mui/material/styles"
+import { styled, useTheme } from "@mui/material/styles"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
-import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import Grid from "@mui/material/Grid"
 import GoogleIcon from "../../components/icons/Google"
@@ -22,7 +21,11 @@ import OutlinedInput from "@mui/material/OutlinedInput"
 import Visibility from "@mui/icons-material/Visibility"
 import PhoneIcon from "@mui/icons-material/Phone"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
+import LoadingButton from "@mui/lab/LoadingButton"
+import authService from "../../services/authentication"
+import { useRouter } from "next/router"
+import { ErrorComponent } from "../../components/alert"
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -45,8 +48,53 @@ const Root = styled("div")(({ theme }) => ({
 
 const SignUp = () => {
   const theme = useTheme()
+  const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const emailRef = useRef<HTMLInputElement>()
+  const firstNameRef = useRef<HTMLInputElement>()
+  const lastNameRef = useRef<HTMLInputElement>()
+  const phoneNumberRef = useRef<HTMLInputElement>()
+  const passwordRef = useRef<HTMLInputElement>()
+  const confirmPasswordRef = useRef<HTMLInputElement>()
+
+  const handleRegisteration = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault()
+    if (
+      !firstNameRef.current ||
+      !lastNameRef.current ||
+      !emailRef.current ||
+      !phoneNumberRef.current ||
+      !passwordRef.current
+    )
+      return
+    setIsLoading(true)
+    try {
+      const res: any = await authService.userRegistration({
+        first_name: firstNameRef.current.value,
+        last_name: lastNameRef.current.value,
+        email: emailRef.current.value,
+        phone_number: phoneNumberRef.current.value,
+        password: passwordRef.current.value,
+      })
+      localStorage.setItem("access_token", res.result.token)
+      router.push("/auth/verification")
+    } catch (error: any) {
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }
   return (
     <Box
       sx={{
@@ -70,7 +118,6 @@ const SignUp = () => {
           },
           boxShadow: { md: 1 },
         }}
-        elevation={matches ? 2 : 0}
         variant={matches ? "outlined" : undefined}
       >
         <Link href="/auth/login" underline="none">
@@ -96,6 +143,7 @@ const SignUp = () => {
         </Root>
         <Box
           component="form"
+          onSubmit={handleRegisteration}
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -106,16 +154,29 @@ const SignUp = () => {
         >
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <TextField sx={{ width: "100%", my: { md: 1 } }} id="firstName" label="First Name" variant="outlined" />
+              <TextField
+                inputRef={firstNameRef}
+                sx={{ width: "100%", my: { md: 1 } }}
+                id="firstName"
+                label="First Name"
+                variant="outlined"
+              />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField sx={{ width: "100%", my: { md: 1 } }} id="lastName" label="Last Name" variant="outlined" />
+              <TextField
+                inputRef={lastNameRef}
+                sx={{ width: "100%", my: { md: 1 } }}
+                id="lastName"
+                label="Last Name"
+                variant="outlined"
+              />
             </Grid>
           </Grid>
           <TextField
             id="email"
             margin="dense"
             fullWidth
+            inputRef={emailRef}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -132,6 +193,7 @@ const SignUp = () => {
             margin="dense"
             fullWidth
             id="phone"
+            inputRef={phoneNumberRef}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -149,6 +211,7 @@ const SignUp = () => {
             <OutlinedInput
               id="signup-password"
               type={showPassword ? "text" : "password"}
+              inputRef={passwordRef}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -171,6 +234,8 @@ const SignUp = () => {
           <TextField
             margin="dense"
             fullWidth
+            type={showPassword ? "text" : "password"}
+            inputRef={confirmPasswordRef}
             id="confirm-password-signup"
             InputProps={{
               endAdornment: (
@@ -214,9 +279,14 @@ const SignUp = () => {
             }
           />
 
-          <Button sx={{ maxWidth: "25rem", m: 1, width: "100%" }} variant="contained">
+          <LoadingButton
+            loading={isLoading}
+            type="submit"
+            sx={{ maxWidth: "25rem", m: 1, width: "100%" }}
+            variant="contained"
+          >
             Create Account
-          </Button>
+          </LoadingButton>
         </Box>
 
         <Typography sx={{ color: "primary.dark", m: 1, fontSize: { xs: "0.875rem" } }}>
@@ -226,6 +296,7 @@ const SignUp = () => {
           </Link>
         </Typography>
       </Paper>
+      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }
