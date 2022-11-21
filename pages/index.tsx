@@ -1,12 +1,28 @@
-import Link from "@mui/material/Link"
+import { Button } from "@mui/material"
 import Typography from "@mui/material/Typography"
+import { useAuth } from "../store"
 
 export default function Home() {
+  const removeUser = useAuth((state: any) => state.removeUser)
+  const user = useAuth((state: any) => state.user)
   return (
-    <div>
-      <Link href="/auth/login" underline="none">
-        <Typography sx={{ color: "#1B1B1B", fontSize: { xs: "0.815rem" } }}>Login</Typography>
-      </Link>
+    <div style={{ padding: "4rem" }}>
+      <Typography>{user.email}</Typography>
+      <Typography>
+        {user.first_name} {user.last_name}
+      </Typography>
+      <Typography>{user.phone_number}</Typography>
+      <Button
+        onClick={() => {
+          localStorage.clear()
+          removeUser()
+        }}
+        variant="contained"
+      >
+        Log out
+      </Button>
     </div>
   )
 }
+
+Home.requireAuth = true

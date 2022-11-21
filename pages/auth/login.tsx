@@ -23,6 +23,9 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import React, { useState, useRef } from "react"
 import authService from "../../services/authentication"
 import { ErrorComponent } from "../../components/alert"
+import { validateEmail } from "../../utils"
+import { useAuth } from "../../store"
+import { useRouter } from "next/router"
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -46,6 +49,8 @@ const Root = styled("div")(({ theme }) => ({
 const Login = () => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const setUser = useAuth((state: any) => state.setUser)
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("An error occured")
@@ -57,8 +62,16 @@ const Login = () => {
     if (!emailPhoneRef.current || !passwordRef.current) return
     setIsLoading(true)
     try {
-      const res: any = await authService.emailLogin(emailPhoneRef.current.value, passwordRef.current.value)
+      let res: any
+      if (validateEmail(emailPhoneRef.current.value)) {
+        res = await authService.emailLogin(emailPhoneRef.current.value, passwordRef.current.value)
+      } else {
+        res = await authService.phoneLogin(emailPhoneRef.current.value, passwordRef.current.value)
+      }
+      setUser(res.result.user)
       localStorage.setItem("access_token", res.result.token)
+      const { redirect = "/" } = router.query
+      router.push(redirect as string)
     } catch (error: any) {
       if (error.response) {
         setMessage(error.response.data.message)
@@ -93,9 +106,9 @@ const Login = () => {
             xs: 3,
             sm: "5.25rem",
           },
-          boxShadow: { md: 1 },
+          boxShadow: { md: 3 },
         }}
-        variant={matches ? "outlined" : undefined}
+        elevation={matches ? 2 : 0}
       >
         <Link href="/auth/login" underline="none">
           <Box>

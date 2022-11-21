@@ -75,9 +75,9 @@ const ResetPassword = () => {
             xs: 3,
             sm: "5.25rem",
           },
-          boxShadow: { md: 1 },
+          boxShadow: { md: 3 },
         }}
-        variant={matches ? "outlined" : undefined}
+        elevation={matches ? 2 : 0}
       >
         <Link href="/auth/login" underline="none">
           <Box sx={{ height: "4rem", width: "4rem" }}>

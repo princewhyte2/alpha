@@ -7,7 +7,7 @@ const emailLogin = async (email:string, password:string):Promise<any> => {
 }
 
 const phoneLogin = async (phone_number: string, password: string):Promise<any> => {
-     const data = {phone_number,password,login_mode:'phone_number'}
+     const data = {phone_number,password,login_mode:'phone'}
     const response = await axiosInstance.post('/auth/login', data)
     return response.data
 }
@@ -19,7 +19,7 @@ const forgotPasswordEmail = async (email:string):Promise<any> => {
 }
 
 const forgotPasswordPhone = async (phone_number:string):Promise<any> => {
-     const data = {phone_number,forgot_mode:'phone_number'}
+     const data = {phone_number,forgot_mode:'phone'}
     const response = await axiosInstance.post('/auth/forgot-password', data)
     return response.data
 }

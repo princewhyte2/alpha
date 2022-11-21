@@ -26,6 +26,7 @@ import LoadingButton from "@mui/lab/LoadingButton"
 import authService from "../../services/authentication"
 import { useRouter } from "next/router"
 import { ErrorComponent } from "../../components/alert"
+import { useAuth } from "../../store"
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -50,6 +51,7 @@ const SignUp = () => {
   const theme = useTheme()
   const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const setUser = useAuth((state: any) => state.setuser)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("An error occured")
@@ -80,6 +82,7 @@ const SignUp = () => {
         phone_number: phoneNumberRef.current.value,
         password: passwordRef.current.value,
       })
+      setUser(res.result.user)
       localStorage.setItem("access_token", res.result.token)
       router.push("/auth/verification")
     } catch (error: any) {
@@ -116,9 +119,9 @@ const SignUp = () => {
             xs: 3,
             sm: "5.25rem",
           },
-          boxShadow: { md: 1 },
+          boxShadow: { md: 3 },
         }}
-        variant={matches ? "outlined" : undefined}
+        elevation={matches ? 2 : 0}
       >
         <Link href="/auth/login" underline="none">
           <Box sx={{ height: "4rem", width: "4rem" }}>
