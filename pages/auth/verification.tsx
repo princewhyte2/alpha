@@ -9,8 +9,8 @@ import Link from "@mui/material/Link"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import TextField from "@mui/material/TextField"
 import authService from "../../services/authentication"
-import { setToken } from "../../services/instance"
 import { ErrorComponent } from "../../components/alert"
+import { useRouter } from "next/router"
 
 const Verification = () => {
   const theme = useTheme()
@@ -18,6 +18,7 @@ const Verification = () => {
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
   const tokenRef = useRef<HTMLInputElement>()
 
   const handleEmailVerification = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -27,6 +28,7 @@ const Verification = () => {
     setIsLoading(true)
     try {
       await authService.verifyEmail(token)
+      router.push("/")
     } catch (error: any) {
       if (error.response) {
         setMessage(error.response.data.message)
@@ -43,13 +45,15 @@ const Verification = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token")
-    if (token) setToken(token)
+    if (token) authService.setToken(token)
   }, [])
   return (
     <Box
       sx={{
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
         py: 4,
       }}
     >
@@ -120,7 +124,10 @@ const Verification = () => {
           sx={{ width: "100%", color: "primary.dark", m: 2, fontSize: { xs: "0.875rem" } }}
         >
           Didn’t receive an email or SMS?
-          <Button onClick={(): Promise<any> => authService.resendEmailToken()} variant="text">
+          <Button
+            onClick={(): Promise<any> => authService.resendEmailToken().catch((err: any) => console.log(err))}
+            variant="text"
+          >
             Retry
           </Button>
         </Typography>

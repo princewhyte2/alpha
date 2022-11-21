@@ -17,6 +17,7 @@ import React, { useRef, useState } from "react"
 import authService from "../../services/authentication"
 import { useRouter } from "next/router"
 import { ErrorComponent } from "../../components/alert"
+import { useReset } from "../../store"
 
 const ResetPassword = () => {
   const router = useRouter()
@@ -28,6 +29,7 @@ const ResetPassword = () => {
   const [isError, setIsError] = useState(false)
   const resetPasswordRef = useRef<HTMLInputElement>()
   const confirmPasswordRef = useRef<HTMLInputElement>()
+  const reset = useReset((state: any) => state.reset)
 
   const handleResetpassword = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
@@ -36,11 +38,11 @@ const ResetPassword = () => {
     if (!password || !confirmPassword) return
     setIsLoading(true)
     try {
-      const token = router.query.token as string
-      const email_or_phone_number = router.query.receipient as string
+      const token = reset.token
+      const email_or_phone_number = reset.email
       if (!token || !email_or_phone_number) return
-      const res = await authService.resetPassword({ token, password, email_or_phone_number })
-      console.log(res)
+      await authService.resetPassword({ token, password, email_or_phone_number })
+      router.push("/auth/login")
     } catch (error: any) {
       if (error.response) {
         setMessage(error.response.data.message)
@@ -59,6 +61,8 @@ const ResetPassword = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
         py: 4,
       }}
     >

@@ -51,7 +51,7 @@ const SignUp = () => {
   const theme = useTheme()
   const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
-  const setUser = useAuth((state: any) => state.setuser)
+  const setUser = useAuth((state: any) => state.setUser)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("An error occured")
@@ -62,6 +62,8 @@ const SignUp = () => {
   const phoneNumberRef = useRef<HTMLInputElement>()
   const passwordRef = useRef<HTMLInputElement>()
   const confirmPasswordRef = useRef<HTMLInputElement>()
+  const termsRef = useRef<HTMLInputElement>()
+  const policyRef = useRef<HTMLInputElement>()
 
   const handleRegisteration = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
@@ -70,7 +72,9 @@ const SignUp = () => {
       !lastNameRef.current ||
       !emailRef.current ||
       !phoneNumberRef.current ||
-      !passwordRef.current
+      !passwordRef.current ||
+      !termsRef.current?.checked ||
+      !policyRef.current?.checked
     )
       return
     setIsLoading(true)
@@ -103,6 +107,8 @@ const SignUp = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
         py: 4,
       }}
     >
@@ -264,7 +270,8 @@ const SignUp = () => {
 
           <FormControlLabel
             sx={{ my: 1, width: "100%" }}
-            control={<Checkbox defaultChecked />}
+            inputRef={termsRef}
+            control={<Checkbox />}
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
                 I agree to Workfinder <Link href="#">Terms & Conditions</Link>
@@ -273,7 +280,8 @@ const SignUp = () => {
           />
           <FormControlLabel
             sx={{ my: 1, width: "100%" }}
-            control={<Checkbox defaultChecked />}
+            inputRef={policyRef}
+            control={<Checkbox />}
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
                 I understand that Workfinder will process my information in accordance with their{" "}

@@ -17,6 +17,7 @@ import LoadingButton from "@mui/lab/LoadingButton"
 import authService from "../../services/authentication"
 import { useRouter } from "next/router"
 import { ErrorComponent } from "../../components/alert"
+import { useReset } from '../../store'
 
 const ForgotPassword = () => {
   const router = useRouter()
@@ -32,6 +33,7 @@ const ForgotPassword = () => {
   const phoneNumRef = useRef<HTMLInputElement>()
   const emailOtpRef = useRef<HTMLInputElement>()
   const phoneNumOtpRef = useRef<HTMLInputElement>()
+  const setReset = useReset((state:any) => state.setReset)
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue)
@@ -52,7 +54,8 @@ const ForgotPassword = () => {
         } else {
           if (!emailOtpRef.current) return
           //handle the otp here
-          router.push(`/auth/reset-password?token=${emailOtpRef.current.value}&receipient=${receipient}`)
+          setReset({ token: emailOtpRef.current.value, email: receipient })
+          router.push(`/auth/reset-password`)
         }
       } else if (tabValue) {
         if (!showOtp) {
@@ -64,7 +67,8 @@ const ForgotPassword = () => {
           setShowOtp(true)
         } else {
           if (!phoneNumOtpRef.current) return
-          router.push(`/auth/reset-password?token=${phoneNumOtpRef.current.value}&receipient=${receipient}`)
+          setReset({ token: phoneNumOtpRef.current.value, email: receipient })
+          router.push(`/auth/reset-password`)
           //handle the otp here
         }
       }
@@ -87,6 +91,8 @@ const ForgotPassword = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
         py: 4,
       }}
     >

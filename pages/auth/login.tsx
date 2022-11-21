@@ -90,6 +90,8 @@ const Login = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
         py: 4,
       }}
     >
@@ -185,7 +187,7 @@ const Login = () => {
           </FormControl>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", m: 1, width: "100%" }}>
             <FormControlLabel
-              control={<Checkbox defaultChecked />}
+              control={<Checkbox />}
               label={<Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>Remember me</Typography>}
             />
             <Link href="/auth/forgot-password" underline="none">

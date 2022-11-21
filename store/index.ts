@@ -7,3 +7,13 @@ export const useAuth = create((set) => ({
     removeUser: () => set((state: any) => ({ ...state, user: null })),
     setInitializing: (bool:boolean) => set((state:any) => ({...state,initializing:bool}))
 }))
+
+export const useReset = create((set) => ({
+    reset: {
+        email: null,
+        token: null,
+    },
+    setReset: (obj: {email:string,token:string}) => set((state: any) => ({
+        ...state, reset:obj
+    }))
+}))
