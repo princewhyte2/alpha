@@ -26,6 +26,7 @@ import { ErrorComponent } from "../../components/alert"
 import { validateEmail } from "../../utils"
 import { useAuth } from "../../store"
 import { useRouter } from "next/router"
+import { AlertColor } from "@mui/material"
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -55,6 +56,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
   const emailPhoneRef = useRef<HTMLInputElement>()
   const passwordRef = useRef<HTMLInputElement>()
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -70,9 +72,13 @@ const Login = () => {
       }
       setUser(res.result.user)
       localStorage.setItem("access_token", res.result.token)
+      setMessage("login successful")
+      setType("success")
+      setIsError(true)
       const { redirect = "/" } = router.query
       router.push(redirect as string)
     } catch (error: any) {
+      setType("error")
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
@@ -90,7 +96,7 @@ const Login = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: `${matches ? "center" : "start"}`,
         minHeight: "100vh",
         py: 4,
       }}
@@ -148,6 +154,7 @@ const Login = () => {
             sx={{ m: 1, width: "100%" }}
             id="email-or-phone"
             inputRef={emailPhoneRef}
+            required
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -160,7 +167,7 @@ const Login = () => {
             label="Email address, phone number"
             variant="outlined"
           />
-          <FormControl sx={{ m: 1, width: "100%" }} variant="outlined">
+          <FormControl required sx={{ m: 1, width: "100%" }} variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
             <OutlinedInput
               id="outlined-adornment-password"
@@ -211,7 +218,7 @@ const Login = () => {
           </Link>
         </Typography>
       </Paper>
-      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField"
 import authService from "../../services/authentication"
 import { ErrorComponent } from "../../components/alert"
 import { useRouter } from "next/router"
+import { AlertColor } from "@mui/lab/Alert"
 
 const Verification = () => {
   const theme = useTheme()
@@ -18,6 +19,7 @@ const Verification = () => {
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isLoading, setIsLoading] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
   const router = useRouter()
   const tokenRef = useRef<HTMLInputElement>()
 
@@ -28,6 +30,9 @@ const Verification = () => {
     setIsLoading(true)
     try {
       await authService.verifyEmail(token)
+      setMessage("Verification successfull")
+      setType("success")
+      setIsError(true)
       router.push("/")
     } catch (error: any) {
       if (error.response) {
@@ -37,6 +42,7 @@ const Verification = () => {
       } else {
         console.log("Error", error.message)
       }
+      setType("error")
       setIsError(true)
     } finally {
       setIsLoading(false)
@@ -52,7 +58,7 @@ const Verification = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: `${matches ? "center" : "start"}`,
         minHeight: "100vh",
         py: 4,
       }}
@@ -132,7 +138,7 @@ const Verification = () => {
           </Button>
         </Typography>
       </Paper>
-      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

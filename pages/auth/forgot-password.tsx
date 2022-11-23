@@ -17,7 +17,8 @@ import LoadingButton from "@mui/lab/LoadingButton"
 import authService from "../../services/authentication"
 import { useRouter } from "next/router"
 import { ErrorComponent } from "../../components/alert"
-import { useReset } from '../../store'
+import { useReset } from "../../store"
+import { AlertColor } from "@mui/material"
 
 const ForgotPassword = () => {
   const router = useRouter()
@@ -27,13 +28,14 @@ const ForgotPassword = () => {
   const [showOtp, setShowOtp] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
   const [tabValue, setTabValue] = useState(0)
   const [receipient, setReceipient] = useState("")
   const emailRef = useRef<HTMLInputElement>()
   const phoneNumRef = useRef<HTMLInputElement>()
   const emailOtpRef = useRef<HTMLInputElement>()
   const phoneNumOtpRef = useRef<HTMLInputElement>()
-  const setReset = useReset((state:any) => state.setReset)
+  const setReset = useReset((state: any) => state.setReset)
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue)
@@ -48,6 +50,9 @@ const ForgotPassword = () => {
           if (!emailRef.current) return
           setIsLoading(true)
           await authService.forgotPasswordEmail(emailRef.current.value)
+          setMessage("OTP successfully sent")
+          setType("success")
+          setIsError(true)
           setReceipient(emailRef.current.value)
           emailRef.current.value = ""
           setShowOtp(true)
@@ -62,6 +67,9 @@ const ForgotPassword = () => {
           if (!phoneNumRef.current) return
           setIsLoading(true)
           await authService.forgotPasswordPhone(phoneNumRef.current.value)
+          setMessage("OTP successfully sent")
+          setType("success")
+          setIsError(true)
           setReceipient(phoneNumRef.current.value)
           phoneNumRef.current.value = ""
           setShowOtp(true)
@@ -73,6 +81,7 @@ const ForgotPassword = () => {
         }
       }
     } catch (error: any) {
+      setType("error")
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
@@ -91,7 +100,7 @@ const ForgotPassword = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: `${matches ? "center" : "start"}`,
         minHeight: "100vh",
         py: 4,
       }}
@@ -160,6 +169,7 @@ const ForgotPassword = () => {
                 id="email-password"
                 label="Email address"
                 inputRef={emailRef}
+                required
                 variant="outlined"
                 InputProps={{
                   endAdornment: (
@@ -175,6 +185,7 @@ const ForgotPassword = () => {
               <TextField
                 inputRef={emailOtpRef}
                 sx={{ m: 2, width: "100%" }}
+                required
                 id="otp-email"
                 label="OTP Code"
                 variant="outlined"
@@ -218,6 +229,7 @@ const ForgotPassword = () => {
                 id="phone-password"
                 label="Phone Number"
                 variant="outlined"
+                required
                 inputRef={phoneNumRef}
                 InputProps={{
                   endAdornment: (
@@ -235,6 +247,7 @@ const ForgotPassword = () => {
                 sx={{ m: 2, width: "100%" }}
                 id="otp-phone"
                 label="OTP Code"
+                required
                 variant="outlined"
               />
             )}
@@ -250,7 +263,7 @@ const ForgotPassword = () => {
           </Box>
         )}
       </Paper>
-      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

@@ -27,6 +27,7 @@ import authService from "../../services/authentication"
 import { useRouter } from "next/router"
 import { ErrorComponent } from "../../components/alert"
 import { useAuth } from "../../store"
+import { AlertColor } from "@mui/material"
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -53,6 +54,7 @@ const SignUp = () => {
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const setUser = useAuth((state: any) => state.setUser)
   const [showPassword, setShowPassword] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
@@ -67,6 +69,7 @@ const SignUp = () => {
 
   const handleRegisteration = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
+
     if (
       !firstNameRef.current ||
       !lastNameRef.current ||
@@ -74,9 +77,16 @@ const SignUp = () => {
       !phoneNumberRef.current ||
       !passwordRef.current ||
       !termsRef.current?.checked ||
-      !policyRef.current?.checked
+      !policyRef.current?.checked ||
+      !confirmPasswordRef.current
     )
       return
+    if (passwordRef.current.value !== confirmPasswordRef.current.value) {
+      setMessage("passwords don't match")
+      setIsError(true)
+      return
+    }
+
     setIsLoading(true)
     try {
       const res: any = await authService.userRegistration({
@@ -87,9 +97,13 @@ const SignUp = () => {
         password: passwordRef.current.value,
       })
       setUser(res.result.user)
+      setMessage("registration successful")
+      setType("success")
+      setIsError(true)
       localStorage.setItem("access_token", res.result.token)
       router.push("/auth/verification")
     } catch (error: any) {
+      setType("error")
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
@@ -107,7 +121,7 @@ const SignUp = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: `${matches ? "center" : "start"}`,
         minHeight: "100vh",
         py: 4,
       }}
@@ -164,6 +178,7 @@ const SignUp = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <TextField
+                required
                 inputRef={firstNameRef}
                 sx={{ width: "100%", my: { md: 1 } }}
                 id="firstName"
@@ -173,6 +188,7 @@ const SignUp = () => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
+                required
                 inputRef={lastNameRef}
                 sx={{ width: "100%", my: { md: 1 } }}
                 id="lastName"
@@ -185,6 +201,7 @@ const SignUp = () => {
             id="email"
             margin="dense"
             fullWidth
+            required
             inputRef={emailRef}
             InputProps={{
               endAdornment: (
@@ -201,6 +218,7 @@ const SignUp = () => {
           <TextField
             margin="dense"
             fullWidth
+            required
             id="phone"
             inputRef={phoneNumberRef}
             InputProps={{
@@ -215,7 +233,7 @@ const SignUp = () => {
             label="Phone Number"
             variant="outlined"
           />
-          <FormControl sx={{ m: 1, width: "100%" }} variant="outlined">
+          <FormControl required sx={{ m: 1, width: "100%" }} variant="outlined">
             <InputLabel htmlFor="signup-password">Password</InputLabel>
             <OutlinedInput
               id="signup-password"
@@ -243,6 +261,7 @@ const SignUp = () => {
           <TextField
             margin="dense"
             fullWidth
+            required
             type={showPassword ? "text" : "password"}
             inputRef={confirmPasswordRef}
             id="confirm-password-signup"
@@ -271,7 +290,7 @@ const SignUp = () => {
           <FormControlLabel
             sx={{ my: 1, width: "100%" }}
             inputRef={termsRef}
-            control={<Checkbox />}
+            control={<Checkbox required />}
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
                 I agree to Workfinder <Link href="#">Terms & Conditions</Link>
@@ -281,7 +300,7 @@ const SignUp = () => {
           <FormControlLabel
             sx={{ my: 1, width: "100%" }}
             inputRef={policyRef}
-            control={<Checkbox />}
+            control={<Checkbox required />}
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
                 I understand that Workfinder will process my information in accordance with their{" "}
@@ -307,7 +326,7 @@ const SignUp = () => {
           </Link>
         </Typography>
       </Paper>
-      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

@@ -18,6 +18,7 @@ import authService from "../../services/authentication"
 import { useRouter } from "next/router"
 import { ErrorComponent } from "../../components/alert"
 import { useReset } from "../../store"
+import { AlertColor } from "@mui/lab"
 
 const ResetPassword = () => {
   const router = useRouter()
@@ -27,6 +28,7 @@ const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
   const resetPasswordRef = useRef<HTMLInputElement>()
   const confirmPasswordRef = useRef<HTMLInputElement>()
   const reset = useReset((state: any) => state.reset)
@@ -34,14 +36,22 @@ const ResetPassword = () => {
   const handleResetpassword = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     const password = resetPasswordRef.current?.value
-    const confirmPassword = confirmPasswordRef.current
+    const confirmPassword = confirmPasswordRef.current?.value
     if (!password || !confirmPassword) return
+    if (password !== confirmPassword) {
+      setMessage("Password don't match")
+      setIsError(true)
+      return
+    }
     setIsLoading(true)
     try {
       const token = reset.token
       const email_or_phone_number = reset.email
       if (!token || !email_or_phone_number) return
       await authService.resetPassword({ token, password, email_or_phone_number })
+      setMessage("reset password successfull")
+      setType("success")
+      setIsError(true)
       router.push("/auth/login")
     } catch (error: any) {
       if (error.response) {
@@ -51,6 +61,7 @@ const ResetPassword = () => {
       } else {
         console.log("Error", error.message)
       }
+      setType("error")
       setIsError(true)
     } finally {
       setIsLoading(false)
@@ -61,7 +72,7 @@ const ResetPassword = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: `${matches ? "center" : "start"}`,
         minHeight: "100vh",
         py: 4,
       }}
@@ -103,7 +114,7 @@ const ResetPassword = () => {
           }}
           onSubmit={handleResetpassword}
         >
-          <FormControl sx={{ m: 1, width: "100%" }} variant="outlined">
+          <FormControl required sx={{ m: 1, width: "100%" }} variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
             <OutlinedInput
               id="outlined-adornment-password"
@@ -130,6 +141,7 @@ const ResetPassword = () => {
           </FormControl>
           <TextField
             margin="dense"
+            required
             fullWidth
             type={showPassword ? "text" : "password"}
             inputRef={confirmPasswordRef}
@@ -166,7 +178,7 @@ const ResetPassword = () => {
           </LoadingButton>
         </Box>
       </Paper>
-      <ErrorComponent open={isError} message={message} handleClose={() => setIsError(false)} />
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }
