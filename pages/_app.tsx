@@ -8,6 +8,7 @@ import Head from "next/head"
 
 export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
   requireAuth?: boolean
+  getLayout?: any
 }
 
 export default function MyApp({ Component, pageProps }: { Component: NextApplicationPage; pageProps: any }) {
@@ -31,6 +32,8 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
     setInitializing(false)
   }, [])
 
+  const getLayout = Component.getLayout ?? ((page: any) => page)
+
   return (
     <>
       <Head>
@@ -51,14 +54,16 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
       </Head>
 
       <ThemeProvider theme={theme}>
-        {Component.requireAuth ? (
-          <AuthGuard>
-            <Component {...pageProps} />
-          </AuthGuard>
-        ) : (
-          // public page
-          <Component {...pageProps} />
-        )}
+        {Component.requireAuth
+          ? getLayout(
+              <AuthGuard>
+                <Component {...pageProps} />
+              </AuthGuard>,
+            )
+          : getLayout(
+              // public page
+              <Component {...pageProps} />,
+            )}
       </ThemeProvider>
     </>
   )
