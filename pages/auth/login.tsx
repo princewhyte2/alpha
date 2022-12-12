@@ -75,7 +75,7 @@ const Login = () => {
       setMessage("login successful")
       setType("success")
       setIsError(true)
-      const { redirect = "/" } = router.query
+      const { redirect = "/profile/information" } = router.query
       router.push(redirect as string)
     } catch (error: any) {
       setType("error")

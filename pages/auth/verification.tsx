@@ -33,7 +33,7 @@ const Verification = () => {
       setMessage("Verification successfull")
       setType("success")
       setIsError(true)
-      router.push("/")
+      router.push("/profile/information")
     } catch (error: any) {
       if (error.response) {
         setMessage(error.response.data.message)

@@ -17,6 +17,7 @@ import Container from "@mui/material/Container"
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import Avatar from "@mui/material/Avatar"
 import MenuLine from "../icons/MenuLine"
+import { useRouter } from "next/router"
 
 interface Props {
   /**
@@ -28,11 +29,29 @@ interface Props {
 }
 
 const drawerWidth = 240
-const navItems = ["Profile Information", "My Work", "Password & Security", "Referral"]
+const navItems = [
+  {
+    name: "Profile Information",
+    route: "/profile/information",
+  },
+  {
+    name: "My Work",
+    route: "/profile/mywork",
+  },
+  {
+    name: "Password & Security",
+    route: "/profile/security",
+  },
+  {
+    name: "Referral",
+    route: "/profile/referral",
+  },
+]
 
 export default function ProfileLayout(props: Props) {
   const { window, children } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
+  const router = useRouter()
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -46,9 +65,12 @@ export default function ProfileLayout(props: Props) {
       <Divider />
       <List>
         {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: "left", color: "primary.dark" }}>
-              <ListItemText primary={item} />
+          <ListItem key={item.name} disablePadding>
+            <ListItemButton onClick={() => router.push(item.route)} sx={{ textAlign: "left", color: "primary.dark" }}>
+              <ListItemText
+                sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
+                primary={item.name}
+              />
             </ListItemButton>
           </ListItem>
         ))}
@@ -129,15 +151,16 @@ export default function ProfileLayout(props: Props) {
               </Typography>
               <List>
                 {navItems.map((item) => (
-                  <ListItem key={item} disablePadding>
+                  <ListItem key={item.name} disablePadding>
                     <ListItemButton
                       sx={{
                         textAlign: "left",
                         color: "primary.dark",
-                        borderLeft: item !== "Profile Information" ? "none" : "4px solid #3E4095",
+                        borderLeft: router.pathname !== item.route ? "none" : "4px solid #3E4095",
                       }}
+                      onClick={() => router.push(item.route)}
                     >
-                      <ListItemText primary={item} />
+                      <ListItemText primary={item.name} />
                     </ListItemButton>
                   </ListItem>
                 ))}
