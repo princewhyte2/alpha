@@ -111,10 +111,10 @@ export default function ProfileLayout(props: Props) {
         </Box>
       </AppBar>
 
-      <Box component="main" sx={{ p: 3, width: "100%" }}>
+      <Box component="main" sx={{ p: { xs: 0, md: 3 }, width: "100%" }}>
         <Toolbar />
         <Grid container spacing={2}>
-          <Grid sx={{ display: { xs: "none", sm: "grid" } }} item sm={2}>
+          <Grid sx={{ display: { xs: "none", md: "grid" } }} item sm={2}>
             <Box
               sx={{
                 width: "100%",
@@ -144,8 +144,8 @@ export default function ProfileLayout(props: Props) {
               </List>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={10}>
-            <Container>{children}</Container>
+          <Grid item xs={12} md={10}>
+            {children}
           </Grid>
         </Grid>
       </Box>
