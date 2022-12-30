@@ -70,6 +70,7 @@ const Login = () => {
       } else {
         res = await authService.phoneLogin(emailPhoneRef.current.value, passwordRef.current.value)
       }
+
       setUser(res.result.user)
       localStorage.setItem("access_token", res.result.token)
       setMessage("login successful")

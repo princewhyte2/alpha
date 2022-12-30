@@ -13,11 +13,13 @@ import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 import Grid from "@mui/material/Grid"
 import Container from "@mui/material/Container"
+import useSWR from "swr"
 // import Badge from "@mui/material/Badge"
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import Avatar from "@mui/material/Avatar"
 import MenuLine from "../icons/MenuLine"
 import { useRouter } from "next/router"
+import profileServices from "../../services/profile"
 
 interface Props {
   /**
@@ -49,6 +51,7 @@ const navItems = [
 ]
 
 export default function ProfileLayout(props: Props) {
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const { window, children } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const router = useRouter()
@@ -110,7 +113,11 @@ export default function ProfileLayout(props: Props) {
               </Badge> */}
             </IconButton>
             <IconButton>
-              <Avatar sx={{ bgcolor: "primary.main" }} alt="Remy Sharp" src="/broken-image.jpg" />
+              <Avatar
+                sx={{ bgcolor: "primary.main" }}
+                alt={`${user?.first_name} ${user?.last_name}`}
+                src={user?.relationships.profile_image?.url}
+              />
             </IconButton>
           </Box>
         </Toolbar>

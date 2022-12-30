@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { useLayoutEffect } from "react"
 import { useAuth } from "../store"
 
 export function AuthGuard({ children }: { children: JSX.Element }) {
@@ -7,7 +7,7 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
   const initializing = useAuth((state: any): any => state.initializing)
   const router = useRouter()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!initializing) {
       //auth is initialized and there is no user
       if (!user) {
