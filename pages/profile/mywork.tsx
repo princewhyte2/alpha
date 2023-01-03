@@ -16,12 +16,14 @@ import useSWR, { useSWRConfig } from "swr"
 import { styled } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import IconButton from "@mui/material/IconButton"
+import { AlertColor } from "@mui/material"
 import { useTheme, Theme } from "@mui/material/styles"
 import MyWorkIllustration from "../../components/icons/MyWorkIllustration"
 import uploadService from "../../services/upload"
 import Grid from "@mui/material/Grid"
 import projectService from "../../services/project"
 import profileServices from "../../services/profile"
+import { ErrorComponent } from "../../components/alert"
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -40,6 +42,11 @@ function Page() {
   const [isNeProjectAdded, setIsNewProjectAdded] = useState(false)
   const [projectData, setProjectData] = useState<ProjectResponseData>()
   const [isViewProjectInfo, setIsViewProjectInfo] = useState(false)
+
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
 
   const projectTitleRef = useRef<HTMLInputElement>()
   const projectDescriptionRef = useRef<HTMLInputElement>()
@@ -69,20 +76,38 @@ function Page() {
       const formData = new FormData()
       formData.append("file", file)
       const res = await uploadService.uploadFile(formData)
+      setMessage(res?.message)
+      setType("success")
+      setIsError(true)
 
       const item = res.result.file
       setProjectImages((prevFiles) => [...prevFiles, item])
       // const resp = await profileServices.updateUserProfile({ profile_image_id: item })
       // console.log(resp)
       // mutate("userProfile")
-    } catch (error) {
-      console.log("error", error)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
     }
   }, [])
 
   const handlePostProject = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
+
+      if (projectImages?.length < 1) {
+        setMessage("Please add an Image of your project")
+        setType("error")
+        setIsError(true)
+        return
+      }
 
       const t = projectImages.map((item) => item.id)
 
@@ -95,19 +120,31 @@ function Page() {
       try {
         if (projectData) {
           const response = await projectService.updateProject(String(projectData.id), data as ProjectPostData)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
           mutate("userProjects")
-          console.log("response", response)
           handleCloseModal()
           return
         } else {
           const response = await projectService.addProjects(data as ProjectPostData)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
           mutate("userProjects")
           setIsNewProjectAdded(true)
-          console.log("response", response)
         }
         handleCloseModal()
-      } catch (error) {
-        console.log(error)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
       }
     },
     [projectImages, projectData],
@@ -120,8 +157,16 @@ function Page() {
         const response = await projectService.deleteProject(id)
         mutate("userProjects")
         console.log("response", response)
-      } catch (error) {
-        console.log("err", error)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
       }
     },
     [],
@@ -349,6 +394,7 @@ function Page() {
           </Grid>
         </Box>
       </Modal>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

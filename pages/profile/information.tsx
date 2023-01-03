@@ -13,6 +13,7 @@ import InputAdornment from "@mui/material/InputAdornment"
 import Autocomplete from "@mui/material/Autocomplete"
 import Modal from "@mui/material/Modal"
 import CloseIcon from "@mui/icons-material/Close"
+import { AlertColor } from "@mui/material"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import Tooltip from "@mui/material/Tooltip"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
@@ -34,6 +35,7 @@ import profileServices from "../../services/profile"
 import locationService from "../../services/location"
 import uploadService from "../../services/upload"
 import { hobbiesList } from "../../utils"
+import { ErrorComponent } from "../../components/alert"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -121,9 +123,15 @@ function Page() {
   const [isEditOccupation, setIsEditOccupation] = useState(false)
   const [isEditEducation, setIsEditEducation] = useState(false)
   const [isEditWorkHistory, setIsEditWorkHistory] = useState(false)
+
   const [isEditHobbies, setIsEditHobbies] = useState(false)
   const [educationId, setEducationId] = useState<UserQualification | undefined>()
   const [workId, setWorkId] = useState<UserWorkHistory | undefined>()
+
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
 
   //profile refs
   const titleRef = useRef<HTMLInputElement>()
@@ -161,8 +169,16 @@ function Page() {
       const resp = await profileServices.updateUserProfile({ profile_image_id: item })
       console.log(resp)
       mutate("userProfile")
-    } catch (error) {
-      console.log("error", error)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
     }
   }
 
@@ -182,8 +198,16 @@ function Page() {
       const response = await profileServices.updateUserProfile(data as OnboardingData)
       mutate("userProfile")
       console.log("response", response)
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
     }
   }
 
@@ -204,16 +228,28 @@ function Page() {
             String(educationId.detail.id),
             data as QualificationsPostData,
           )
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
           mutate("userProfile")
-          console.log("response", response)
         } else {
           const response = await profileServices.addUserQualification(data as QualificationsPostData)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
           mutate("userProfile")
-          console.log("response", response)
         }
         onCloseEducationModal()
-      } catch (error) {
-        console.log(error)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
       }
     },
     [educationId],
@@ -238,16 +274,28 @@ function Page() {
             String(workId.id),
             data as WorkExperiencePostData,
           )
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
           mutate("userProfile")
-          console.log("response", response)
         } else {
           const response = await profileServices.addUserWorkHistory(data as WorkExperiencePostData)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
           mutate("userProfile")
-          console.log("response", response)
         }
         onCloseWorkHistoryModal()
-      } catch (error) {
-        console.log(error)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
       }
     },
     [workId],
@@ -260,10 +308,20 @@ function Page() {
     }
     try {
       const response = await profileServices.updateHobbies(hobbies)
+      setMessage(response?.message)
+      setType("success")
+      setIsError(true)
       mutate("userProfile")
-      console.log("response", response)
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
     }
     setIsEditHobbies(false)
   }
@@ -283,10 +341,20 @@ function Page() {
     (id: string) => async (e: any) => {
       try {
         const response = await profileServices.deleteUserQualification(id)
+        setMessage(response?.message)
+        setType("success")
+        setIsError(true)
         mutate("userProfile")
-        console.log("response", response)
-      } catch (error) {
-        console.log("err", error)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
       }
     },
     [],
@@ -296,10 +364,20 @@ function Page() {
     (id: string) => async (e: any) => {
       try {
         const response = await profileServices.deleteUserWorkHistory(id)
+        setMessage(response?.message)
+        setType("success")
+        setIsError(true)
         mutate("userProfile")
-        console.log("response", response)
-      } catch (error) {
-        console.log("err", error)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
       }
     },
     [],
@@ -1229,6 +1307,7 @@ function Page() {
           </Stack>
         </Box>
       </Modal>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }
