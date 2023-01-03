@@ -49,10 +49,6 @@ const Verification = () => {
     }
   }
 
-  useEffect(() => {
-    const token = localStorage.getItem("access_token")
-    if (token) authService.setToken(token)
-  }, [])
   return (
     <Box
       sx={{

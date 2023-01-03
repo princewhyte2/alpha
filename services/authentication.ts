@@ -1,9 +1,6 @@
 import axiosInstance from './instance'
 
-let token:string|null = null
-const setToken = (userToken:string) => {
-  token = userToken
-}
+
 const emailLogin = async (email:string, password:string):Promise<any> => {
     const data = {email,password,login_mode:'email'}
     const response = await axiosInstance.post('/auth/login', data)
@@ -55,6 +52,16 @@ const resendEmailToken = async () => {
     return response.data
 }
 
-const authService = {setToken,emailLogin,phoneLogin,forgotPasswordEmail,forgotPasswordPhone,resetPassword,userRegistration,verifyEmail,resendEmailToken}
+const googleLogin = async () => {
+    const response = await axiosInstance.get('/auth/social/login/google')
+    return response.data
+}
+
+const faceBookLogin = async () => {
+    const response = await axiosInstance.get('/auth/social/login/facebook')
+    return response.data
+}
+
+const authService = {faceBookLogin,googleLogin, emailLogin,phoneLogin,forgotPasswordEmail,forgotPasswordPhone,resetPassword,userRegistration,verifyEmail,resendEmailToken}
 
 export default authService

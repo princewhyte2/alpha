@@ -83,3 +83,8 @@ interface OnboardingData { title?: string, first_name?: string, last_name?: stri
         relationships: PRelationships;
     }
 
+     interface DialogTitleProps {
+  id: string
+  children?: React.ReactNode
+  onClose: () => void
+}

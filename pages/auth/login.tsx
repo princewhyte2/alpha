@@ -20,7 +20,7 @@ import FormControl from "@mui/material/FormControl"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useCallback } from "react"
 import authService from "../../services/authentication"
 import { ErrorComponent } from "../../components/alert"
 import { validateEmail } from "../../utils"
@@ -93,6 +93,23 @@ const Login = () => {
       setIsLoading(false)
     }
   }
+
+  const onGoogleLogin = useCallback(async () => {
+    try {
+      const response = await authService.googleLogin()
+      console.log("google", response)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    }
+  }, [])
   return (
     <Box
       sx={{
@@ -128,7 +145,12 @@ const Login = () => {
         <Typography sx={{ mt: { sm: 4, xs: 2 }, color: "primary.dark" }} variant="h5" component="h5">
           Welcome Back
         </Typography>
-        <Button sx={{ mt: 2, color: "primary.dark" }} startIcon={<GoogleIcon />} variant="outlined">
+        <Button
+          onClick={onGoogleLogin}
+          sx={{ mt: 2, color: "primary.dark" }}
+          startIcon={<GoogleIcon />}
+          variant="outlined"
+        >
           Log in with Google
         </Button>
         <Button sx={{ mt: 2, color: "primary.dark" }} startIcon={<FacebookIcon />} variant="outlined">

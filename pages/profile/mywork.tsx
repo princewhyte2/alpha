@@ -9,7 +9,10 @@ import Modal from "@mui/material/Modal"
 import CloseIcon from "@mui/icons-material/Close"
 import CancelIcon from "@mui/icons-material/Cancel"
 import BorderColorIcon from "@mui/icons-material/BorderColor"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
 import DeleteIcon from "@mui/icons-material/Delete"
+import DialogContent from "@mui/material/DialogContent"
 import TextField from "@mui/material/TextField"
 import Paper from "@mui/material/Paper"
 import useSWR, { useSWRConfig } from "swr"
@@ -33,6 +36,39 @@ const Item = styled(Paper)(({ theme }) => ({
   position: "relative",
 }))
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1),
+  },
+}))
+
+function BootstrapDialogTitle(props: DialogTitleProps) {
+  const { children, onClose, ...other } = props
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.primary.main,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  )
+}
+
 function Page() {
   const theme = useTheme()
   const { mutate } = useSWRConfig()
@@ -53,20 +89,6 @@ function Page() {
 
   const [isAddNewProject, setIsAddNewProject] = useState(false)
 
-  const style = {
-    position: "absolute" as "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    minWidth: "400px",
-    bgcolor: "background.paper",
-    borderRadius: "8px",
-    boxShadow: 24,
-    px: { xs: 2, md: 4 },
-    pb: 4,
-    pt: 3,
-  }
-
   const handleFileChange = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return
 
@@ -82,9 +104,6 @@ function Page() {
 
       const item = res.result.file
       setProjectImages((prevFiles) => [...prevFiles, item])
-      // const resp = await profileServices.updateUserProfile({ profile_image_id: item })
-      // console.log(resp)
-      // mutate("userProfile")
     } catch (error: any) {
       setType("error")
       if (error.response) {
@@ -103,7 +122,7 @@ function Page() {
       e.preventDefault()
 
       if (projectImages?.length < 1) {
-        setMessage("Please add an Image of your project")
+        setMessage("Please add Images of your project")
         setType("error")
         setIsError(true)
         return
@@ -179,8 +198,6 @@ function Page() {
     },
     [],
   )
-
-  console.log("projects", userProjects)
 
   const handleCloseModal = useCallback(() => {
     setIsNewProjectAdded(false)
@@ -261,127 +278,117 @@ function Page() {
           </Typography>
         </Stack>
       )}
-      <Modal
+      <BootstrapDialog
         open={isAddNewProject}
         onClose={handleCloseModal}
         aria-labelledby="project-modal-title"
         aria-describedby="project-modal-description"
       >
         {!isNeProjectAdded ? (
-          <Box onSubmit={handlePostProject} component="form" sx={style}>
-            <Stack sx={{ position: "relative" }} direction="row" justifyContent="space-between" alignItems="center">
-              <Typography id="project-modal-title" variant="h6" component="h2">
-                {projectData ? "Update" : `Add New`} Work
-              </Typography>
-              <IconButton
-                onClick={handleCloseModal}
-                size="small"
-                sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "15px", right: "-15px" }}
-                aria-label="close project modal"
-              >
-                <CloseIcon sx={{ color: "white" }} />
-              </IconButton>
-            </Stack>
+          <>
+            <BootstrapDialogTitle id="projects-dialog-title" onClose={handleCloseModal}>
+              {projectData ? "Update" : `Add New`} Work
+            </BootstrapDialogTitle>
+            <DialogContent>
+              <Box onSubmit={handlePostProject} component="form" sx={{ pt: 2 }}>
+                {/* <Stack sx={{ position: "relative" }} direction="row" justifyContent="space-between" alignItems="center">
+                <Typography id="project-modal-title" variant="h6" component="h2">
+                  {projectData ? "Update" : `Add New`} Work
+                </Typography>
+                <IconButton
+                  onClick={handleCloseModal}
+                  size="small"
+                  sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "15px", right: "-15px" }}
+                  aria-label="close project modal"
+                >
+                  <CloseIcon sx={{ color: "white" }} />
+                </IconButton>
+              </Stack> */}
 
-            <TextField
-              fullWidth
-              id="profile-Project"
-              label="Project Title"
-              placeholder="Project Title"
-              variant="outlined"
-              required
-              defaultValue={projectData?.title || ""}
-              inputRef={projectTitleRef}
-              sx={{ my: "1rem" }}
-            />
-            <TextField
-              required
-              defaultValue={projectData?.description || ""}
-              inputRef={projectDescriptionRef}
-              fullWidth
-              id="profile-Description"
-              label="Project Description"
-              placeholder="Project Title"
-              variant="outlined"
-              multiline
-              rows={4}
-            />
-            <Button component="label" sx={{ my: "1rem" }} variant="text" startIcon={<AddIcon />}>
-              <input onChange={handleFileChange} hidden accept="image/*" type="file" />
-              Add Work/Project Image(s)
-            </Button>
-            <Grid container spacing={2}>
-              {projectImages?.map((images) => (
-                <Grid key={images.id} item xs={12} md={4}>
-                  <Item>
-                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
-                      <Box sx={{ width: "52px", height: "32px", overflow: "hidden" }}>
-                        <img width={"100%"} height="auto" src={images.url} alt={images.name} loading="lazy" />
-                      </Box>
+                <TextField
+                  fullWidth
+                  id="profile-Project"
+                  label="Project Title"
+                  placeholder="Project Title"
+                  variant="outlined"
+                  required
+                  defaultValue={projectData?.title || ""}
+                  inputRef={projectTitleRef}
+                  sx={{ my: "1rem" }}
+                />
+                <TextField
+                  required
+                  defaultValue={projectData?.description || ""}
+                  inputRef={projectDescriptionRef}
+                  fullWidth
+                  id="profile-Description"
+                  label="Project Description"
+                  placeholder="Project Title"
+                  variant="outlined"
+                  multiline
+                  rows={4}
+                />
+                <Button component="label" sx={{ my: "1rem" }} variant="text" startIcon={<AddIcon />}>
+                  <input onChange={handleFileChange} hidden accept="image/*" type="file" />
+                  Add Work/Project Image(s)
+                </Button>
+                <Grid container spacing={2}>
+                  {projectImages?.map((images) => (
+                    <Grid key={images.id} item xs={12} md={4}>
+                      <Item>
+                        <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                          <Box sx={{ width: "52px", height: "32px", overflow: "hidden" }}>
+                            <img width={"100%"} height="auto" src={images.url} alt={images.name} loading="lazy" />
+                          </Box>
 
-                      <Typography variant="h5" noWrap sx={{ fontSize: "12px", fontWeight: "450px" }}>
-                        {images.name}
-                      </Typography>
-                    </Stack>
-                    <IconButton
-                      onClick={() => setProjectImages((prev) => prev.filter((item) => item.id !== images.id))}
-                      sx={{ position: "absolute", top: 0, right: 0 }}
-                      aria-label="delete"
-                      size="small"
-                    >
-                      <CancelIcon fontSize="inherit" />
-                    </IconButton>
-                  </Item>
+                          <Typography variant="h5" noWrap sx={{ fontSize: "12px", fontWeight: "450px" }}>
+                            {images.name}
+                          </Typography>
+                        </Stack>
+                        <IconButton
+                          onClick={() => setProjectImages((prev) => prev.filter((item) => item.id !== images.id))}
+                          sx={{ position: "absolute", top: 0, right: 0 }}
+                          aria-label="delete"
+                          size="small"
+                        >
+                          <CancelIcon fontSize="inherit" />
+                        </IconButton>
+                      </Item>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
-            <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-              <Button type="submit" fullWidth sx={{ px: 6 }} variant="contained">
-                Save
-              </Button>
-            </Stack>
-          </Box>
+                <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
+                  <Button type="submit" fullWidth sx={{ px: 6 }} variant="contained">
+                    Save
+                  </Button>
+                </Stack>
+              </Box>
+            </DialogContent>
+          </>
         ) : (
-          <Box sx={style}>
-            <Box sx={{ position: "relative" }}>
-              <IconButton
-                onClick={handleCloseModal}
-                size="small"
-                sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "-15px", right: "-15px" }}
-                aria-label="close project modal"
-              >
-                <CloseIcon sx={{ color: "white" }} />
-              </IconButton>
-            </Box>
-            <Stack sx={{ py: "2rem" }} direction="column" justifyContent="center" alignItems="center" spacing={2}>
-              <MyWorkIllustration />
-              <Typography variant="body1" sx={{ my: 1, color: "primary.main" }}>
-                A new project titled “{projectTitleRef.current?.value}” has been successfully added
-              </Typography>
-            </Stack>
-          </Box>
+          <>
+            <BootstrapDialogTitle id="projects-dialog-title" onClose={handleCloseModal}></BootstrapDialogTitle>
+            <DialogContent sx={{ pt: 2 }}>
+              <Stack sx={{ py: "2rem" }} direction="column" justifyContent="center" alignItems="center" spacing={2}>
+                <MyWorkIllustration />
+                <Typography variant="body1" sx={{ my: 1, color: "primary.main" }}>
+                  A new project titled “{projectTitleRef.current?.value}” has been successfully added
+                </Typography>
+              </Stack>
+            </DialogContent>
+          </>
         )}
-      </Modal>
-      <Modal
+      </BootstrapDialog>
+      <BootstrapDialog
         open={isViewProjectInfo}
         onClose={handleCloseModal}
         aria-labelledby="project-modal-title"
         aria-describedby="project-modal-description"
       >
-        <Box sx={style}>
-          <Stack sx={{ position: "relative" }} direction="row" justifyContent="space-between" alignItems="center">
-            <Typography id="project-modal-title" variant="h6" component="h2">
-              {projectData?.title}
-            </Typography>
-            <IconButton
-              onClick={handleCloseModal}
-              size="small"
-              sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "15px", right: "-15px" }}
-              aria-label="close project modal"
-            >
-              <CloseIcon sx={{ color: "white" }} />
-            </IconButton>
-          </Stack>
+        <BootstrapDialogTitle id="projects-dialog-title" onClose={handleCloseModal}>
+          {projectData?.title}
+        </BootstrapDialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
           <Typography variant="body1" sx={{ my: 2, color: "#4D5761" }}>
             {projectData?.description}
           </Typography>
@@ -392,8 +399,8 @@ function Page() {
               </Grid>
             ))}
           </Grid>
-        </Box>
-      </Modal>
+        </DialogContent>
+      </BootstrapDialog>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )

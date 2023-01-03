@@ -11,8 +11,11 @@ import FormControl from "@mui/material/FormControl"
 import EmailIcon from "@mui/icons-material/Email"
 import InputAdornment from "@mui/material/InputAdornment"
 import Autocomplete from "@mui/material/Autocomplete"
-import Modal from "@mui/material/Modal"
+import DialogContent from "@mui/material/DialogContent"
+import CircularProgress from "@mui/material/CircularProgress"
 import CloseIcon from "@mui/icons-material/Close"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
 import { AlertColor } from "@mui/material"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import Tooltip from "@mui/material/Tooltip"
@@ -26,6 +29,7 @@ import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import DeleteIcon from "@mui/icons-material/Delete"
 import PhoneIcon from "@mui/icons-material/Phone"
+import { styled } from "@mui/material/styles"
 import Stack from "@mui/material/Stack"
 import AddIcon from "@mui/icons-material/Add"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
@@ -39,14 +43,6 @@ import { ErrorComponent } from "../../components/alert"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-}
 
 const months = [
   "January",
@@ -63,38 +59,37 @@ const months = [
   "December",
 ]
 
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-]
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(2),
+  },
+}))
 
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
-  }
-}
+function BootstrapDialogTitle(props: DialogTitleProps) {
+  const { children, onClose, ...other } = props
 
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  minWidth: "400px",
-  bgcolor: "background.paper",
-  borderRadius: "8px",
-  boxShadow: 24,
-  px: { xs: 2, md: 4 },
-  pb: 4,
-  pt: 3,
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.primary.main,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  )
 }
 
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
@@ -123,6 +118,7 @@ function Page() {
   const [isEditOccupation, setIsEditOccupation] = useState(false)
   const [isEditEducation, setIsEditEducation] = useState(false)
   const [isEditWorkHistory, setIsEditWorkHistory] = useState(false)
+  const [isImageLoading, setIsImageLoading] = useState(false)
 
   const [isEditHobbies, setIsEditHobbies] = useState(false)
   const [educationId, setEducationId] = useState<UserQualification | undefined>()
@@ -154,11 +150,11 @@ function Page() {
   const workEndDateRef = useRef<HTMLInputElement>()
   const workSummaryRef = useRef<HTMLInputElement>()
 
-  const [hobbies, setHobbies] = useState<string[]>(() => user?.hobbies)
+  const [hobbies, setHobbies] = useState<string[]>(() => user?.hobbies ?? [])
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return
-
+    setIsImageLoading(true)
     try {
       const file = event.target.files[0]
 
@@ -179,6 +175,8 @@ function Page() {
         console.log("Error", error.message)
       }
       setIsError(true)
+    } finally {
+      setIsImageLoading(false)
     }
   }
 
@@ -192,7 +190,6 @@ function Page() {
       gender: genderRef.current?.value,
       country_id: countryId,
       state_id: stateRef.current?.value,
-      // "profile_image_id":
     }
     try {
       const response = await profileServices.updateUserProfile(data as OnboardingData)
@@ -239,7 +236,7 @@ function Page() {
           setIsError(true)
           mutate("userProfile")
         }
-        onCloseEducationModal()
+        onCloseEducationBootstrapDialog()
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -285,7 +282,7 @@ function Page() {
           setIsError(true)
           mutate("userProfile")
         }
-        onCloseWorkHistoryModal()
+        onCloseWorkHistoryBootstrapDialog()
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -327,12 +324,12 @@ function Page() {
   }
 
   //close modals
-  const onCloseEducationModal = useCallback(() => {
+  const onCloseEducationBootstrapDialog = useCallback(() => {
     setIsEditEducation(false)
     setEducationId(undefined)
   }, [])
 
-  const onCloseWorkHistoryModal = useCallback(() => {
+  const onCloseWorkHistoryBootstrapDialog = useCallback(() => {
     setIsEditWorkHistory(false)
     setWorkId(undefined)
   }, [])
@@ -398,10 +395,14 @@ function Page() {
                 overlap="circular"
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 badgeContent={
-                  <IconButton sx={{ bgcolor: "primary.main" }} aria-label="upload picture" component="label">
-                    <input onChange={handleFileChange} hidden accept="image/*" type="file" />
-                    <PhotoCameraIcon sx={{ color: "white" }} />
-                  </IconButton>
+                  isImageLoading ? (
+                    <CircularProgress />
+                  ) : (
+                    <IconButton sx={{ bgcolor: "primary.main" }} aria-label="upload picture" component="label">
+                      <input onChange={handleFileChange} hidden accept="image/*" type="file" />
+                      <PhotoCameraIcon sx={{ color: "white" }} />
+                    </IconButton>
+                  )
                 }
               >
                 <Avatar
@@ -419,15 +420,19 @@ function Page() {
                   overlap="circular"
                   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                   badgeContent={
-                    <IconButton
-                      size="small"
-                      sx={{ bgcolor: "primary.main" }}
-                      aria-label="upload picture"
-                      component="label"
-                    >
-                      <input onChange={handleFileChange} hidden accept="image/*" type="file" />
-                      <PhotoCameraIcon fontSize="small" sx={{ color: "white" }} />
-                    </IconButton>
+                    isImageLoading ? (
+                      <CircularProgress />
+                    ) : (
+                      <IconButton
+                        size="small"
+                        sx={{ bgcolor: "primary.main" }}
+                        aria-label="upload picture"
+                        component="label"
+                      >
+                        <input onChange={handleFileChange} hidden accept="image/*" type="file" />
+                        <PhotoCameraIcon fontSize="inherit" sx={{ color: "white" }} />
+                      </IconButton>
+                    )
                   }
                 >
                   <Avatar
@@ -805,7 +810,7 @@ function Page() {
                       Your Occupations and Skills
                     </Typography>
                   </Grid>
-                  <Grid container item direction="row" justifyContent="flex-end" alignItems="center">
+                  <Grid item>
                     {matches ? (
                       <Button onClick={() => setIsEditOccupation(true)} variant="text" startIcon={<AddIcon />}>
                         Add Occupation & Skills
@@ -859,11 +864,11 @@ function Page() {
                             spacing={1}
                             sx={{ position: { xs: "absolute", md: "relative" }, top: 0, bottom: 0, right: 0 }}
                           >
-                            <IconButton color="secondary" aria-label="add an alarm">
-                              <BorderColorIcon />
+                            <IconButton size="small" color="secondary" aria-label="add an alarm">
+                              <BorderColorIcon fontSize="inherit" />
                             </IconButton>
-                            <IconButton color="secondary" aria-label="add an alarm">
-                              <DeleteIcon />
+                            <IconButton size="small" color="secondary" aria-label="add an alarm">
+                              <DeleteIcon fontSize="inherit" />
                             </IconButton>
                           </Stack>
                         </Stack>
@@ -901,7 +906,7 @@ function Page() {
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                       <Stack mt={1} alignItems="center" direction="row" spacing={1}>
                         <Typography sx={{ color: "primary.dark" }} variant="body1">
                           {item.detail?.institution}
@@ -909,8 +914,8 @@ function Page() {
                       </Stack>
                     </Grid>
 
-                    <Grid item xs={8}>
-                      <Stack mt={0} alignItems="center" direction="row" spacing={1}>
+                    <Grid item xs={6}>
+                      <Stack mt={1} alignItems="center" direction="row" spacing={1}>
                         <Typography sx={{ color: "primary.dark" }} variant="body1">
                           {`${months[new Date(item.detail.graduation_date).getMonth()]} ${new Date(
                             item.detail.graduation_date,
@@ -927,17 +932,19 @@ function Page() {
                               setEducationId(item)
                               setIsEditEducation(true)
                             }}
+                            size="small"
                             color="secondary"
                             aria-label="add an alarm"
                           >
-                            <BorderColorIcon />
+                            <BorderColorIcon fontSize="inherit" />
                           </IconButton>
                           <IconButton
+                            size="small"
                             onClick={handleDeleteEducation(String(item.detail.id))}
                             color="secondary"
                             aria-label="add an alarm"
                           >
-                            <DeleteIcon />
+                            <DeleteIcon fontSize="inherit" />
                           </IconButton>
                         </Stack>
                       </Stack>
@@ -1006,15 +1013,17 @@ function Page() {
                           }}
                           color="secondary"
                           aria-label="add an alarm"
+                          size="small"
                         >
-                          <BorderColorIcon />
+                          <BorderColorIcon fontSize="inherit" />
                         </IconButton>
                         <IconButton
+                          size="small"
                           onClick={handleDeleteWorkHistory(String(item.id))}
                           color="secondary"
                           aria-label="add an alarm"
                         >
-                          <DeleteIcon />
+                          <DeleteIcon fontSize="inherit" />
                         </IconButton>
                       </Stack>
                     </Grid>
@@ -1055,7 +1064,6 @@ function Page() {
                       <Autocomplete
                         multiple
                         fullWidth
-                        defaultValue={user?.hobbies}
                         value={hobbies}
                         options={hobbiesList}
                         onChange={(_ev, val) => setHobbies(val)}
@@ -1081,27 +1089,16 @@ function Page() {
           </Grid>
         </Grid>
       </Box>
-      <Modal
+      <BootstrapDialog
         open={isEditOccupation}
         onClose={() => setIsEditOccupation(false)}
         aria-labelledby="occupation-modal-title"
         aria-describedby="occupation-modal-description"
       >
-        <Box sx={style}>
-          <Stack sx={{ position: "relative" }} direction="row" justifyContent="space-between" alignItems="center">
-            <Typography id="occupation-modal-title" variant="h6" component="h2">
-              Add Occupation and Skills
-            </Typography>
-            <IconButton
-              onClick={() => setIsEditOccupation(false)}
-              size="small"
-              sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "15px", right: "-15px" }}
-              aria-label="close occupation modal"
-            >
-              <CloseIcon sx={{ color: "white" }} />
-            </IconButton>
-          </Stack>
-
+        <BootstrapDialogTitle id="occupation-dialog-title" onClose={() => setIsEditOccupation(false)}>
+          Add Occupation and Skills
+        </BootstrapDialogTitle>
+        <DialogContent>
           <TextField
             fullWidth
             id="profile-Ocupation"
@@ -1122,191 +1119,163 @@ function Page() {
               Save
             </Button>
           </Stack>
-        </Box>
-      </Modal>
-      <Modal
+        </DialogContent>
+      </BootstrapDialog>
+      <BootstrapDialog
         open={isEditEducation}
-        onClose={onCloseEducationModal}
+        onClose={onCloseEducationBootstrapDialog}
         aria-labelledby="qualification-modal-title"
         aria-describedby="qualification-modal-description"
       >
-        <Box onSubmit={handleAddQualifications} component="form" sx={style}>
-          <Stack
-            sx={{ position: "relative", mb: "1.9rem" }}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography id="qualification-modal-title" variant="h6" component="h2">
-              {educationId ? "Update " : `Add `}Educational Qualification
-            </Typography>
-            <IconButton
-              onClick={onCloseEducationModal}
-              size="small"
-              sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "2px", right: "-15px" }}
-              aria-label="close qualification modal"
-            >
-              <CloseIcon fontSize="small" sx={{ color: "white" }} />
-            </IconButton>
-          </Stack>
-
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={5}>
-              <FormControl required fullWidth>
-                <InputLabel id="qualification-simple-select-label">Qualification</InputLabel>
-                <Select
-                  labelId="qualification-select-label"
-                  id="qualification-select"
-                  defaultValue={educationId?.id || ""}
-                  label="Qualification"
+        <BootstrapDialogTitle id="education-modal" onClose={onCloseEducationBootstrapDialog}>
+          {educationId ? "Update " : `Add `}Educational Qualification
+        </BootstrapDialogTitle>
+        <DialogContent>
+          <Box onSubmit={handleAddQualifications} component="form">
+            <Grid sx={{ pt: 2 }} container spacing={2}>
+              <Grid item xs={12} md={5}>
+                <FormControl required fullWidth>
+                  <InputLabel id="qualification-simple-select-label">Qualification</InputLabel>
+                  <Select
+                    labelId="qualification-select-label"
+                    id="qualification-select"
+                    defaultValue={educationId?.id || ""}
+                    label="Qualification"
+                    required
+                    inputRef={qualificationIdRef}
+                  >
+                    {qualificationsList?.map((item: Qualifications) => (
+                      <MenuItem title={item.description} key={item.id} value={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={7}>
+                <TextField
+                  fullWidth
+                  id="profile-institute"
+                  label="Institution/School"
+                  placeholder="Institution/school attended"
+                  variant="outlined"
                   required
-                  inputRef={qualificationIdRef}
-                >
-                  {qualificationsList?.map((item: Qualifications) => (
-                    <MenuItem title={item.description} key={item.id} value={item.id}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  defaultValue={educationId?.detail?.institution || ""}
+                  inputRef={institutionRef}
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  id="date"
+                  label="Graduation Date"
+                  type="date"
+                  defaultValue={educationId?.detail?.graduation_date || ""}
+                  fullWidth
+                  required
+                  inputRef={graduationDateRef}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={7}>
-              <TextField
-                fullWidth
-                id="profile-institute"
-                label="Institution/School"
-                placeholder="Institution/school attended"
-                variant="outlined"
-                required
-                defaultValue={educationId?.detail?.institution || ""}
-                inputRef={institutionRef}
-              />
-            </Grid>
-            <Grid item xs={12} md={5}>
-              <TextField
-                id="date"
-                label="Graduation Date"
-                type="date"
-                defaultValue={educationId?.detail?.graduation_date || ""}
-                fullWidth
-                required
-                inputRef={graduationDateRef}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-          </Grid>
 
-          <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-            <Button type="submit" fullWidth={!matches} sx={{ px: 6 }} variant="contained">
-              {educationId ? "Update " : `Save `}
-            </Button>
-          </Stack>
-        </Box>
-      </Modal>
-      <Modal
+            <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
+              <Button type="submit" fullWidth={!matches} sx={{ px: 6 }} variant="contained">
+                {educationId ? "Update " : `Save `}
+              </Button>
+            </Stack>
+          </Box>
+        </DialogContent>
+      </BootstrapDialog>
+      <BootstrapDialog
         open={isEditWorkHistory}
-        onClose={onCloseWorkHistoryModal}
+        onClose={onCloseWorkHistoryBootstrapDialog}
         aria-labelledby="workhistory-modal-title"
         aria-describedby="workhistory-modal-description"
       >
-        <Box onSubmit={handleAddWorkExperience} component={"form"} sx={style}>
-          <Stack
-            sx={{ position: "relative", mb: "1.9rem" }}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography id="workhistory-modal-title" variant="h6" component="h2">
-              {workId ? "Update " : `Add `} Work History
-            </Typography>
-            <IconButton
-              size="small"
-              onClick={onCloseWorkHistoryModal}
-              sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "2px", right: "-22px" }}
-              aria-label="close workhistory modal"
-            >
-              <CloseIcon fontSize="small" sx={{ color: "white" }} />
-            </IconButton>
-          </Stack>
+        <BootstrapDialogTitle id="title-work-history" onClose={onCloseWorkHistoryBootstrapDialog}>
+          {workId ? "Update " : `Add `} Work History
+        </BootstrapDialogTitle>
+        <DialogContent>
+          <Box onSubmit={handleAddWorkExperience} component={"form"}>
+            <Grid sx={{ pt: 2 }} container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  id="profile-company"
+                  label="Company"
+                  placeholder="Name of Company"
+                  defaultValue={workId?.company_name || ""}
+                  variant="outlined"
+                  required
+                  inputRef={companyNameRef}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  id="profile-job-title"
+                  label="Job Title"
+                  required
+                  defaultValue={workId?.job_title || ""}
+                  placeholder="Your job title"
+                  variant="outlined"
+                  inputRef={jobTitleRef}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="date"
+                  label="Start Date*"
+                  type="date"
+                  inputRef={workStartDateRef}
+                  required
+                  defaultValue={workId?.start_date || ""}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="date"
+                  label="End Date"
+                  type="date"
+                  inputRef={workEndDateRef}
+                  required
+                  defaultValue={workId?.end_date || ""}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  id="profile-job-summary"
+                  label="Summary of Work Done"
+                  placeholder="What was your job"
+                  variant="outlined"
+                  multiline
+                  rows={4}
+                  required
+                  defaultValue={workId?.summary || ""}
+                  inputRef={workSummaryRef}
+                />
+              </Grid>
+            </Grid>
 
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                id="profile-company"
-                label="Company"
-                placeholder="Name of Company"
-                defaultValue={workId?.company_name || ""}
-                variant="outlined"
-                required
-                inputRef={companyNameRef}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                id="profile-job-title"
-                label="Job Title"
-                required
-                defaultValue={workId?.job_title || ""}
-                placeholder="Your job title"
-                variant="outlined"
-                inputRef={jobTitleRef}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="date"
-                label="Start Date*"
-                type="date"
-                inputRef={workStartDateRef}
-                required
-                defaultValue={workId?.start_date || ""}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="date"
-                label="End Date"
-                type="date"
-                inputRef={workEndDateRef}
-                required
-                defaultValue={workId?.end_date || ""}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                id="profile-job-summary"
-                label="Summary of Work Done"
-                placeholder="What was your job"
-                variant="outlined"
-                multiline
-                rows={4}
-                required
-                defaultValue={workId?.summary || ""}
-                inputRef={workSummaryRef}
-              />
-            </Grid>
-          </Grid>
-
-          <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-            <Button type="submit" fullWidth={!matches} sx={{ px: 6 }} variant="contained">
-              {workId ? "Update " : `Save `}
-            </Button>
-          </Stack>
-        </Box>
-      </Modal>
+            <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
+              <Button type="submit" fullWidth={!matches} sx={{ px: 6 }} variant="contained">
+                {workId ? "Update " : `Save `}
+              </Button>
+            </Stack>
+          </Box>
+        </DialogContent>
+      </BootstrapDialog>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
