@@ -7,3 +7,12 @@ body {
 * {
   box-sizing: border-box;
 }
+
+.overlay-image {
+  object-fit: cover;
+  opacity: 0.4;
+}
+
+.img {
+  object-fit: cover;
+}

@@ -56,4 +56,30 @@ interface OnboardingData { title?: string, first_name?: string, last_name?: stri
         created_at: Date;
         updated_at: Date;
         duration: string;
+       }
+    
+       interface ProjectPostData {
+        title: string;
+        description: string;
+        images: number[];
     }
+
+    interface ImageResponse {
+        name: string;
+        mimetype: string;
+        type: string;
+        id: number;
+        url: string;
+    }
+
+     interface PRelationships {
+        images: ImageResponse[];
+    }
+
+     interface ProjectResponseData {
+        id: string;
+        title: string;
+        description: string;
+        relationships: PRelationships;
+    }
+

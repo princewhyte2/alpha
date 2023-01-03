@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react"
+import { ReactElement, useState, useRef, ChangeEvent, useCallback, FormEvent } from "react"
 import Box from "@mui/material/Box"
 import ProfileLayout from "../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
@@ -7,15 +7,42 @@ import Button from "@mui/material/Button"
 import AddIcon from "@mui/icons-material/Add"
 import Modal from "@mui/material/Modal"
 import CloseIcon from "@mui/icons-material/Close"
-import IconButton from "@mui/material/IconButton"
+import CancelIcon from "@mui/icons-material/Cancel"
+import BorderColorIcon from "@mui/icons-material/BorderColor"
+import DeleteIcon from "@mui/icons-material/Delete"
 import TextField from "@mui/material/TextField"
+import Paper from "@mui/material/Paper"
+import useSWR, { useSWRConfig } from "swr"
+import { styled } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
+import IconButton from "@mui/material/IconButton"
 import { useTheme, Theme } from "@mui/material/styles"
 import MyWorkIllustration from "../../components/icons/MyWorkIllustration"
+import uploadService from "../../services/upload"
+import Grid from "@mui/material/Grid"
+import projectService from "../../services/project"
+import profileServices from "../../services/profile"
+
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  color: theme.palette.text.secondary,
+  width: "100%",
+  position: "relative",
+}))
 
 function Page() {
   const theme = useTheme()
+  const { mutate } = useSWRConfig()
+  const { data: userProjects } = useSWR<ProjectResponseData[]>("userProjects", projectService.projectFetcher)
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const [projectImages, setProjectImages] = useState<ImageResponse[]>([])
+  const [isNeProjectAdded, setIsNewProjectAdded] = useState(false)
+  const [projectData, setProjectData] = useState<ProjectResponseData>()
+  const [isViewProjectInfo, setIsViewProjectInfo] = useState(false)
+
+  const projectTitleRef = useRef<HTMLInputElement>()
+  const projectDescriptionRef = useRef<HTMLInputElement>()
 
   const [isAddNewProject, setIsAddNewProject] = useState(false)
 
@@ -32,6 +59,91 @@ function Page() {
     pb: 4,
     pt: 3,
   }
+
+  const handleFileChange = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return
+
+    try {
+      const file = event.target.files[0]
+
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await uploadService.uploadFile(formData)
+
+      const item = res.result.file
+      setProjectImages((prevFiles) => [...prevFiles, item])
+      // const resp = await profileServices.updateUserProfile({ profile_image_id: item })
+      // console.log(resp)
+      // mutate("userProfile")
+    } catch (error) {
+      console.log("error", error)
+    }
+  }, [])
+
+  const handlePostProject = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+
+      const t = projectImages.map((item) => item.id)
+
+      const data = {
+        title: projectTitleRef.current?.value,
+        description: projectDescriptionRef.current?.value,
+        images: t,
+      }
+
+      try {
+        if (projectData) {
+          const response = await projectService.updateProject(String(projectData.id), data as ProjectPostData)
+          mutate("userProjects")
+          console.log("response", response)
+          handleCloseModal()
+          return
+        } else {
+          const response = await projectService.addProjects(data as ProjectPostData)
+          mutate("userProjects")
+          setIsNewProjectAdded(true)
+          console.log("response", response)
+        }
+        handleCloseModal()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    [projectImages, projectData],
+  )
+
+  const handleDeleteProject = useCallback(
+    (id: string) => async (e: any) => {
+      e.stopPropagation()
+      try {
+        const response = await projectService.deleteProject(id)
+        mutate("userProjects")
+        console.log("response", response)
+      } catch (error) {
+        console.log("err", error)
+      }
+    },
+    [],
+  )
+
+  const onViewProject = useCallback(
+    (item: ProjectResponseData) => (e: any) => {
+      setProjectData(item)
+      setIsViewProjectInfo(true)
+    },
+    [],
+  )
+
+  console.log("projects", userProjects)
+
+  const handleCloseModal = useCallback(() => {
+    setIsNewProjectAdded(false)
+    setIsViewProjectInfo(false)
+    setIsAddNewProject(false)
+    setProjectImages([])
+    setProjectData(undefined)
+  }, [])
 
   return (
     <Box sx={{ p: 2 }}>
@@ -51,26 +163,73 @@ function Page() {
           Add Project
         </Button>
       </Stack>
-      <Stack sx={{ py: "4rem" }} direction="column" justifyContent="center" alignItems="center" spacing={2}>
-        <MyWorkIllustration />
-        <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
-          No Project Added
-        </Typography>
-      </Stack>
+      {userProjects && userProjects?.length > 0 ? (
+        <Grid container spacing={2}>
+          {userProjects?.map((item) => (
+            <Grid onClick={onViewProject(item)} key={item.id} item xs={12} md={4}>
+              <Item>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Box sx={{ width: "180px", height: "131px", overflow: "hidden", background: "black" }}>
+                    <img
+                      width="180px"
+                      height="131px"
+                      className="overlay-image"
+                      src={item.relationships.images[0]?.url}
+                      alt={item.relationships.images[0]?.name}
+                      loading="lazy"
+                    />
+                  </Box>
+                  <Stack direction="column" spacing={2}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setProjectData(item)
+                        setProjectImages(item.relationships.images)
+                        setIsAddNewProject(true)
+                      }}
+                      color="secondary"
+                      aria-label="add an alarm"
+                    >
+                      <BorderColorIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={handleDeleteProject(String(item.id))}
+                      color="secondary"
+                      aria-label="add an alarm"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Stack>
+                </Stack>
+                <Typography variant="body1" sx={{ mt: 1, color: "primary.main" }}>
+                  {item.title}
+                </Typography>
+              </Item>
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <Stack sx={{ py: "4rem" }} direction="column" justifyContent="center" alignItems="center" spacing={2}>
+          <MyWorkIllustration />
+          <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
+            No Project Added
+          </Typography>
+        </Stack>
+      )}
       <Modal
         open={isAddNewProject}
-        onClose={() => setIsAddNewProject(false)}
+        onClose={handleCloseModal}
         aria-labelledby="project-modal-title"
         aria-describedby="project-modal-description"
       >
-        {false ? (
-          <Box sx={style}>
+        {!isNeProjectAdded ? (
+          <Box onSubmit={handlePostProject} component="form" sx={style}>
             <Stack sx={{ position: "relative" }} direction="row" justifyContent="space-between" alignItems="center">
               <Typography id="project-modal-title" variant="h6" component="h2">
-                Add New Work
+                {projectData ? "Update" : `Add New`} Work
               </Typography>
               <IconButton
-                onClick={() => setIsAddNewProject(false)}
+                onClick={handleCloseModal}
                 size="small"
                 sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "15px", right: "-15px" }}
                 aria-label="close project modal"
@@ -82,12 +241,18 @@ function Page() {
             <TextField
               fullWidth
               id="profile-Project"
-              label="Project Title*"
+              label="Project Title"
               placeholder="Project Title"
               variant="outlined"
+              required
+              defaultValue={projectData?.title || ""}
+              inputRef={projectTitleRef}
               sx={{ my: "1rem" }}
             />
             <TextField
+              required
+              defaultValue={projectData?.description || ""}
+              inputRef={projectDescriptionRef}
               fullWidth
               id="profile-Description"
               label="Project Description"
@@ -96,11 +261,37 @@ function Page() {
               multiline
               rows={4}
             />
-            <Button sx={{ mt: "1rem" }} variant="text" startIcon={<AddIcon />}>
+            <Button component="label" sx={{ my: "1rem" }} variant="text" startIcon={<AddIcon />}>
+              <input onChange={handleFileChange} hidden accept="image/*" type="file" />
               Add Work/Project Image(s)
             </Button>
+            <Grid container spacing={2}>
+              {projectImages?.map((images) => (
+                <Grid key={images.id} item xs={12} md={4}>
+                  <Item>
+                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                      <Box sx={{ width: "52px", height: "32px", overflow: "hidden" }}>
+                        <img width={"100%"} height="auto" src={images.url} alt={images.name} loading="lazy" />
+                      </Box>
+
+                      <Typography variant="h5" noWrap sx={{ fontSize: "12px", fontWeight: "450px" }}>
+                        {images.name}
+                      </Typography>
+                    </Stack>
+                    <IconButton
+                      onClick={() => setProjectImages((prev) => prev.filter((item) => item.id !== images.id))}
+                      sx={{ position: "absolute", top: 0, right: 0 }}
+                      aria-label="delete"
+                      size="small"
+                    >
+                      <CancelIcon fontSize="inherit" />
+                    </IconButton>
+                  </Item>
+                </Grid>
+              ))}
+            </Grid>
             <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-              <Button fullWidth sx={{ px: 6 }} variant="contained">
+              <Button type="submit" fullWidth sx={{ px: 6 }} variant="contained">
                 Save
               </Button>
             </Stack>
@@ -109,7 +300,7 @@ function Page() {
           <Box sx={style}>
             <Box sx={{ position: "relative" }}>
               <IconButton
-                onClick={() => setIsAddNewProject(false)}
+                onClick={handleCloseModal}
                 size="small"
                 sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "-15px", right: "-15px" }}
                 aria-label="close project modal"
@@ -120,11 +311,43 @@ function Page() {
             <Stack sx={{ py: "2rem" }} direction="column" justifyContent="center" alignItems="center" spacing={2}>
               <MyWorkIllustration />
               <Typography variant="body1" sx={{ my: 1, color: "primary.main" }}>
-                A new project titled “Project title” has been successfully added
+                A new project titled “{projectTitleRef.current?.value}” has been successfully added
               </Typography>
             </Stack>
           </Box>
         )}
+      </Modal>
+      <Modal
+        open={isViewProjectInfo}
+        onClose={handleCloseModal}
+        aria-labelledby="project-modal-title"
+        aria-describedby="project-modal-description"
+      >
+        <Box sx={style}>
+          <Stack sx={{ position: "relative" }} direction="row" justifyContent="space-between" alignItems="center">
+            <Typography id="project-modal-title" variant="h6" component="h2">
+              {projectData?.title}
+            </Typography>
+            <IconButton
+              onClick={handleCloseModal}
+              size="small"
+              sx={{ backgroundColor: "#3E4095", position: "absolute", bottom: "15px", right: "-15px" }}
+              aria-label="close project modal"
+            >
+              <CloseIcon sx={{ color: "white" }} />
+            </IconButton>
+          </Stack>
+          <Typography variant="body1" sx={{ my: 2, color: "#4D5761" }}>
+            {projectData?.description}
+          </Typography>
+          <Grid container spacing={2}>
+            {projectData?.relationships.images.map((item) => (
+              <Grid key={item.id} item xs={12} md={6}>
+                <img width="100%" height="224px" className="img" src={item.url} alt={item.name} loading="lazy" />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Modal>
     </Box>
   )
