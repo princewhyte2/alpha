@@ -1,4 +1,6 @@
 import { ChangeEvent, ReactElement, useRef, useState, FormEvent, useCallback } from "react"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
@@ -194,7 +196,6 @@ function Page() {
     try {
       const response = await profileServices.updateUserProfile(data as OnboardingData)
       mutate("userProfile")
-      console.log("response", response)
     } catch (error: any) {
       setType("error")
       if (error.response) {
@@ -215,7 +216,7 @@ function Page() {
         qualification_id: Number(qualificationIdRef.current?.value),
         course_of_study: "",
         institution: institutionRef.current?.value,
-        month_of_graduation: new Date(graduationDateRef.current?.value as string).getMonth(),
+        month_of_graduation: new Date(graduationDateRef.current?.value as string).getMonth() + 1,
         year_of_graduation: new Date(graduationDateRef.current?.value as string).getFullYear(),
       }
 
@@ -258,9 +259,9 @@ function Page() {
       const data = {
         company_name: companyNameRef.current?.value,
         job_title: jobTitleRef.current?.value,
-        start_month: new Date(workStartDateRef.current?.value as string).getMonth(),
+        start_month: new Date(workStartDateRef.current?.value as string).getMonth() + 1,
         start_year: new Date(workStartDateRef.current?.value as string).getFullYear(),
-        end_month: new Date(workEndDateRef.current?.value as string).getMonth(),
+        end_month: new Date(workEndDateRef.current?.value as string).getMonth() + 1,
         end_year: new Date(workEndDateRef.current?.value as string).getFullYear(),
         summary: workSummaryRef.current?.value,
       }
@@ -1090,6 +1091,7 @@ function Page() {
         </Grid>
       </Box>
       <BootstrapDialog
+        PaperProps={{ style: { margin: 8 } }}
         open={isEditOccupation}
         onClose={() => setIsEditOccupation(false)}
         aria-labelledby="occupation-modal-title"
@@ -1122,6 +1124,7 @@ function Page() {
         </DialogContent>
       </BootstrapDialog>
       <BootstrapDialog
+        PaperProps={{ style: { margin: 8 } }}
         open={isEditEducation}
         onClose={onCloseEducationBootstrapDialog}
         aria-labelledby="qualification-modal-title"
@@ -1189,6 +1192,7 @@ function Page() {
         </DialogContent>
       </BootstrapDialog>
       <BootstrapDialog
+        PaperProps={{ style: { margin: 8 } }}
         open={isEditWorkHistory}
         onClose={onCloseWorkHistoryBootstrapDialog}
         aria-labelledby="workhistory-modal-title"
@@ -1251,7 +1255,9 @@ function Page() {
                     shrink: true,
                   }}
                 />
+                <FormControlLabel control={<Checkbox />} label="I’m currently working here." />
               </Grid>
+
               <Grid item xs={12}>
                 <TextField
                   fullWidth
