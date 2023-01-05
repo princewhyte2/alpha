@@ -1,4 +1,6 @@
-import { ReactElement, useState } from "react"
+import { ReactElement, useState, useRef, useCallback, FormEvent } from "react"
+import useSWR, { useSWRConfig } from "swr"
+import { AlertColor } from "@mui/material"
 import Box from "@mui/material/Box"
 import ProfileLayout from "../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
@@ -15,11 +17,70 @@ import IconButton from "@mui/material/IconButton"
 import FormControl from "@mui/material/FormControl"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import { useRouter } from "next/router"
+import securityService from "../../../services/security"
+import { ErrorComponent } from "../../../components/alert"
 
 function Page() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
+
+  const { data: userSecurityQuestion } = useSWR(
+    "userSecurityQuestions",
+    securityService.getUserSecurityQuestionsFetcher,
+  )
+
+  //input refs
+  const answerRef = useRef<HTMLInputElement>()
+  const passwordRef = useRef<HTMLInputElement>()
+  const newPasswordRef = useRef<HTMLInputElement>()
+  const confirmPasswordRef = useRef<HTMLInputElement>()
+
+  const handleUpdatePassword = useCallback(async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (newPasswordRef.current?.value !== confirmPasswordRef.current?.value) {
+      setMessage("New password don't match")
+      setType("error")
+      setIsError(true)
+      return
+    }
+
+    const data = {
+      answer: answerRef.current?.value,
+      current_password: passwordRef.current?.value,
+      new_password: newPasswordRef.current?.value,
+      confirm_password: confirmPasswordRef.current?.value,
+    }
+
+    setIsLoading(true)
+
+    try {
+      const response = await securityService.updatePassword(data as UpdatePasswordPostData)
+      router.replace("/auth/login")
+      setMessage(response?.message)
+      setType("success")
+      setIsError(true)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
@@ -40,13 +101,14 @@ function Page() {
           maxWidth: "29.68rem",
           width: "100%",
         }}
-        onSubmit={() => console.log("submit")}
+        onSubmit={handleUpdatePassword}
       >
         <FormControl required sx={{ m: 1, width: "100%" }} variant="outlined">
           <InputLabel htmlFor="outlined-security-password">Current Password</InputLabel>
           <OutlinedInput
             id="outlined-security-password"
             type={showPassword ? "text" : "password"}
+            inputRef={passwordRef}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -67,6 +129,7 @@ function Page() {
           />
         </FormControl>
         <TextField
+          inputRef={newPasswordRef}
           margin="dense"
           required
           fullWidth
@@ -94,6 +157,7 @@ function Page() {
           variant="outlined"
         />
         <TextField
+          inputRef={confirmPasswordRef}
           margin="dense"
           required
           fullWidth
@@ -120,6 +184,24 @@ function Page() {
           label="Confirm New Password"
           variant="outlined"
         />
+
+        {userSecurityQuestion?.question ? (
+          <TextField
+            fullWidth
+            id="security-title-question"
+            label={userSecurityQuestion?.question?.question}
+            placeholder="Answer"
+            variant="outlined"
+            required
+            // defaultValue={projectData?.title || ""}
+            inputRef={answerRef}
+            sx={{ my: "1rem" }}
+          />
+        ) : (
+          <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
+            Please set your security question and return.
+          </Typography>
+        )}
         <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
           Can’t remember my password.
         </Typography>
@@ -133,6 +215,7 @@ function Page() {
           Save Changes
         </LoadingButton>
       </Box>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

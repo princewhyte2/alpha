@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
 import Button from "@mui/material/Button"
 import AddIcon from "@mui/icons-material/Add"
-import Modal from "@mui/material/Modal"
+import LoadingButton from "@mui/lab/LoadingButton"
 import CloseIcon from "@mui/icons-material/Close"
 import CancelIcon from "@mui/icons-material/Cancel"
 import BorderColorIcon from "@mui/icons-material/BorderColor"
@@ -78,6 +78,8 @@ function Page() {
   const [isNeProjectAdded, setIsNewProjectAdded] = useState(false)
   const [projectData, setProjectData] = useState<ProjectResponseData>()
   const [isViewProjectInfo, setIsViewProjectInfo] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -136,6 +138,8 @@ function Page() {
         images: t,
       }
 
+      setIsLoading(true)
+
       try {
         if (projectData) {
           const response = await projectService.updateProject(String(projectData.id), data as ProjectPostData)
@@ -164,6 +168,8 @@ function Page() {
           console.log("Error", error.message)
         }
         setIsError(true)
+      } finally {
+        setIsLoading(false)
       }
     },
     [projectImages, projectData],
@@ -172,6 +178,7 @@ function Page() {
   const handleDeleteProject = useCallback(
     (id: string) => async (e: any) => {
       e.stopPropagation()
+      setIsDeleting(true)
       try {
         const response = await projectService.deleteProject(id)
         mutate("userProjects")
@@ -186,6 +193,8 @@ function Page() {
           console.log("Error", error.message)
         }
         setIsError(true)
+      } finally {
+        setIsDeleting(false)
       }
     },
     [],
@@ -255,6 +264,7 @@ function Page() {
                       <BorderColorIcon />
                     </IconButton>
                     <IconButton
+                      disabled={isDeleting}
                       onClick={handleDeleteProject(String(item.id))}
                       color="secondary"
                       aria-label="add an alarm"
@@ -358,9 +368,9 @@ function Page() {
                   ))}
                 </Grid>
                 <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-                  <Button type="submit" fullWidth sx={{ px: 6 }} variant="contained">
+                  <LoadingButton loading={isLoading} type="submit" fullWidth sx={{ px: 6 }} variant="contained">
                     Save
-                  </Button>
+                  </LoadingButton>
                 </Stack>
               </Box>
             </DialogContent>

@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useRef, useState, FormEvent, useCallback } from "react"
+import { ChangeEvent, ReactElement, useRef, useState, FormEvent, useCallback, MutableRefObject } from "react"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import Checkbox from "@mui/material/Checkbox"
 import Typography from "@mui/material/Typography"
@@ -19,6 +19,7 @@ import CloseIcon from "@mui/icons-material/Close"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import { AlertColor } from "@mui/material"
+import LoadingButton from "@mui/lab/LoadingButton"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import Tooltip from "@mui/material/Tooltip"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
@@ -139,6 +140,7 @@ function Page() {
   const genderRef = useRef<HTMLInputElement>()
   const dobRef = useRef<HTMLInputElement>()
   const stateRef = useRef<HTMLInputElement>()
+  const otherNumberRef = useRef<HTMLInputElement>()
 
   //qualification refs
   const institutionRef = useRef<HTMLInputElement>()
@@ -151,6 +153,13 @@ function Page() {
   const workStartDateRef = useRef<HTMLInputElement>()
   const workEndDateRef = useRef<HTMLInputElement>()
   const workSummaryRef = useRef<HTMLInputElement>()
+  const presentWorkRef = useRef<HTMLInputElement>(null)
+  const [isPresentWork, setIsPresentWork] = useState(Boolean(workId?.end_date === null) || false)
+
+  //loading states
+  const [isOnBoardingLoading, setIsOnBoardingLoading] = useState(false)
+  const [isWorkloading, setIsWorkLoading] = useState(false)
+  const [isEducationLoading, setIsEducationLoading] = useState(false)
 
   const [hobbies, setHobbies] = useState<string[]>(() => user?.hobbies ?? [])
 
@@ -193,8 +202,17 @@ function Page() {
       country_id: countryId,
       state_id: stateRef.current?.value,
     }
+    setIsOnBoardingLoading(true)
     try {
+      if (otherNumberRef.current?.value !== user?.relationships?.phone_numbers[1]?.phone_number) {
+        await profileServices.addPhoneNumber({ phone_number: otherNumberRef.current?.value as string })
+      }
       const response = await profileServices.updateUserProfile(data as OnboardingData)
+
+      setMessage(response?.message)
+      setType("success")
+      setIsError(true)
+      setIsEditPersonalInfo(false)
       mutate("userProfile")
     } catch (error: any) {
       setType("error")
@@ -206,6 +224,8 @@ function Page() {
         console.log("Error", error.message)
       }
       setIsError(true)
+    } finally {
+      setIsOnBoardingLoading(false)
     }
   }
 
@@ -219,7 +239,7 @@ function Page() {
         month_of_graduation: new Date(graduationDateRef.current?.value as string).getMonth() + 1,
         year_of_graduation: new Date(graduationDateRef.current?.value as string).getFullYear(),
       }
-
+      setIsEducationLoading(true)
       try {
         if (educationId) {
           const response = await profileServices.updateUserQualification(
@@ -248,6 +268,8 @@ function Page() {
           console.log("Error", error.message)
         }
         setIsError(true)
+      } finally {
+        setIsEducationLoading(false)
       }
     },
     [educationId],
@@ -261,11 +283,12 @@ function Page() {
         job_title: jobTitleRef.current?.value,
         start_month: new Date(workStartDateRef.current?.value as string).getMonth() + 1,
         start_year: new Date(workStartDateRef.current?.value as string).getFullYear(),
-        end_month: new Date(workEndDateRef.current?.value as string).getMonth() + 1,
-        end_year: new Date(workEndDateRef.current?.value as string).getFullYear(),
+        end_month: isPresentWork ? null : new Date(workEndDateRef.current?.value as string).getMonth() + 1,
+        end_year: isPresentWork ? null : new Date(workEndDateRef.current?.value as string).getFullYear(),
         summary: workSummaryRef.current?.value,
       }
 
+      setIsWorkLoading(true)
       try {
         if (workId) {
           const response = await profileServices.updateUserWorkHistory(
@@ -294,9 +317,11 @@ function Page() {
           console.log("Error", error.message)
         }
         setIsError(true)
+      } finally {
+        setIsWorkLoading(false)
       }
     },
-    [workId],
+    [workId, isPresentWork],
   )
 
   const handleUpateHobbies = async () => {
@@ -333,7 +358,12 @@ function Page() {
   const onCloseWorkHistoryBootstrapDialog = useCallback(() => {
     setIsEditWorkHistory(false)
     setWorkId(undefined)
+    setIsPresentWork(false)
   }, [])
+
+  const handleIsPresentWorkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsPresentWork(event.target.checked)
+  }
 
   const handleDeleteEducation = useCallback(
     (id: string) => async (e: any) => {
@@ -569,7 +599,7 @@ function Page() {
                           Phone Number
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_numbers}
+                          {user?.relationships?.phone_numbers[0]?.phone_number}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
@@ -577,7 +607,7 @@ function Page() {
                           Other Phone
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_numbers}
+                          {user?.relationships?.phone_numbers[1]?.phone_number || null}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -699,7 +729,7 @@ function Page() {
                         label="Email"
                         id="email-start-adornment"
                         disabled
-                        defaultValue={user?.email}
+                        defaultValue={user?.email || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (
@@ -714,6 +744,7 @@ function Page() {
                       <TextField
                         label="Phone Number"
                         id="phone-number-start-adornment"
+                        defaultValue={user?.relationships?.phone_numbers[0]?.phone_number || ""}
                         disabled
                         fullWidth
                         InputProps={{
@@ -734,7 +765,8 @@ function Page() {
                       <TextField
                         label="Other Number "
                         id="phone-number-start-adornment"
-                        disabled
+                        inputRef={otherNumberRef}
+                        defaultValue={user?.relationships?.phone_numbers[1]?.phone_number || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (
@@ -788,9 +820,14 @@ function Page() {
                         <Button onClick={() => setIsEditPersonalInfo(false)} fullWidth color="error" variant="outlined">
                           Cancel
                         </Button>
-                        <Button onClick={handleOnBoarding} fullWidth variant="contained">
+                        <LoadingButton
+                          loading={isOnBoardingLoading}
+                          onClick={handleOnBoarding}
+                          fullWidth
+                          variant="contained"
+                        >
                           Save
-                        </Button>
+                        </LoadingButton>
                       </Stack>
                     </Grid>
                   </Grid>
@@ -996,7 +1033,11 @@ function Page() {
                             item.start_date,
                           ).getUTCFullYear()}`}{" "}
                           -{" "}
-                          {`${months[new Date(item.end_date).getMonth()]} ${new Date(item.end_date).getUTCFullYear()}`}
+                          {item.end_date === null
+                            ? "present"
+                            : `${months[new Date(item.end_date).getMonth()]} ${new Date(
+                                item.end_date,
+                              ).getUTCFullYear()}`}
                         </Typography>
                       </Stack>
                     </Grid>
@@ -1184,9 +1225,15 @@ function Page() {
             </Grid>
 
             <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-              <Button type="submit" fullWidth={!matches} sx={{ px: 6 }} variant="contained">
+              <LoadingButton
+                loading={isEducationLoading}
+                type="submit"
+                fullWidth={!matches}
+                sx={{ px: 6 }}
+                variant="contained"
+              >
                 {educationId ? "Update " : `Save `}
-              </Button>
+              </LoadingButton>
             </Stack>
           </Box>
         </DialogContent>
@@ -1247,6 +1294,7 @@ function Page() {
                   id="date"
                   label="End Date"
                   type="date"
+                  disabled={isPresentWork}
                   inputRef={workEndDateRef}
                   required
                   defaultValue={workId?.end_date || ""}
@@ -1255,7 +1303,12 @@ function Page() {
                     shrink: true,
                   }}
                 />
-                <FormControlLabel control={<Checkbox />} label="I’m currently working here." />
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={isPresentWork} onChange={handleIsPresentWorkChange} inputRef={presentWorkRef} />
+                  }
+                  label="I’m currently working here."
+                />
               </Grid>
 
               <Grid item xs={12}>
@@ -1275,9 +1328,15 @@ function Page() {
             </Grid>
 
             <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-              <Button type="submit" fullWidth={!matches} sx={{ px: 6 }} variant="contained">
+              <LoadingButton
+                loading={isWorkloading}
+                type="submit"
+                fullWidth={!matches}
+                sx={{ px: 6 }}
+                variant="contained"
+              >
                 {workId ? "Update " : `Save `}
-              </Button>
+              </LoadingButton>
             </Stack>
           </Box>
         </DialogContent>

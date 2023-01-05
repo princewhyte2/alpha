@@ -87,4 +87,20 @@ interface OnboardingData { title?: string, first_name?: string, last_name?: stri
   id: string
   children?: React.ReactNode
   onClose: () => void
-}
+     }
+ interface SecurityQuestion {
+        id: number;
+        question: string;
+ }
+    
+interface SecurityQuestionPostData {
+    question_id: string,
+    answer: string
+    }
+
+     interface UpdatePasswordPostData {
+        answer: string;
+        current_password: string;
+        new_password: string;
+        confirm_password: string;
+    }

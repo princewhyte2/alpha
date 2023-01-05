@@ -5,6 +5,11 @@ const getUserProfile = async () => {
   return response.data
 }
 
+const addPhoneNumber = async (data:{phone_number:string}) => {
+  const response = await axiosInstance.post("/create/phone-number", data)
+  return response.data
+}
+
 const updateUserProfile = async (data: OnboardingData) => {
   const response = await axiosInstance.patch("/update/profile", data)
   return response.data
@@ -63,7 +68,7 @@ const profileServices = {
   updateUserQualification,
   deleteUserQualification,
   updateUserWorkHistory,
-  deleteUserWorkHistory,
+  deleteUserWorkHistory,addPhoneNumber
 }
 
 export default profileServices
