@@ -34,20 +34,12 @@ interface Props {
 const drawerWidth = 240
 const navItems = [
   {
-    name: "Profile Information",
-    route: "/profile/information",
-  },
-  {
-    name: "My Work",
-    route: "/profile/mywork",
+    name: "Business Information",
+    route: "/employer/profile/information",
   },
   {
     name: "Password & Security",
-    route: "/profile/security",
-  },
-  {
-    name: "Referral",
-    route: "/profile/referral",
+    route: "/employer/profile/security",
   },
 ]
 
@@ -61,8 +53,8 @@ const mainNav = [
     route: "/connection",
   },
   {
-    name: "Jobs",
-    route: "/jobs",
+    name: "My Jobs",
+    route: "/employer/jobs",
   },
   {
     name: "Messaging",
@@ -74,7 +66,7 @@ const mainNav = [
   },
 ]
 
-export default function ProfileLayout(props: Props) {
+export default function EmployerProfileLayout(props: Props) {
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const { window, children } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)

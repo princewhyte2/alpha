@@ -61,8 +61,8 @@ const mainNav = [
     route: "/connection",
   },
   {
-    name: "Jobs",
-    route: "/jobs",
+    name: "My Jobs",
+    route: "/employer/jobs",
   },
   {
     name: "Messaging",
@@ -74,7 +74,7 @@ const mainNav = [
   },
 ]
 
-export default function ProfileLayout(props: Props) {
+export default function EmployerNavLayout(props: Props) {
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const { window, children } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
@@ -176,7 +176,7 @@ export default function ProfileLayout(props: Props) {
       <Box component="main" sx={{ p: { xs: 0, md: 3 }, width: "100%" }}>
         <Toolbar />
         <Grid container spacing={2}>
-          <Grid sx={{ display: { xs: "none", md: "grid" } }} item sm={2}>
+          {/* <Grid sx={{ display: { xs: "none", md: "grid" } }} item sm={2}>
             <Box
               sx={{
                 width: "100%",
@@ -206,8 +206,8 @@ export default function ProfileLayout(props: Props) {
                 ))}
               </List>
             </Box>
-          </Grid>
-          <Grid item xs={12} md={10}>
+          </Grid> */}
+          <Grid item xs={12}>
             {children}
           </Grid>
         </Grid>

@@ -2,19 +2,25 @@ import { ReactElement, useState } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
+import Avatar from "@mui/material/Avatar"
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
+import InputAdornment from "@mui/material/InputAdornment"
 import CardContent from "@mui/material/CardContent"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
-import Avatar from "@mui/material/Avatar"
 import IconButton, { IconButtonProps } from "@mui/material/IconButton"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
+import Tabs from "@mui/material/Tabs"
+import Tab from "@mui/material/Tab"
 import Paper from "@mui/material/Paper"
 import TextField from "@mui/material/TextField"
 import { styled } from "@mui/material/styles"
+import Chip from "@mui/material/Chip"
+import SearchIcon from "@mui/icons-material/Search"
 import CardHeader from "@mui/material/CardHeader"
 import CardMedia from "@mui/material/CardMedia"
 import CardActions from "@mui/material/CardActions"
@@ -32,6 +38,35 @@ import NavLayout from "../components/layouts/nav"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  )
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  }
 }
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
@@ -59,133 +94,96 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 }
 
 function Page() {
-  const [expanded, setExpanded] = useState(false)
+  const [value, setValue] = useState(0)
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded)
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue)
   }
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container maxWidth="xl">
         <Grid container spacing={2}>
           <Grid item xs={9}>
-            <Stack direction="column" spacing={3} sx={{ p: 2 }}>
-              <Paper elevation={1} sx={{ p: 2, boxShadow: "0px 8px 48px #EEEEEE" }}>
-                <Typography sx={{ fontSize: 16 }} color="primary.dark" gutterBottom>
-                  New Post
-                </Typography>
+            <Container maxWidth="md">
+              <Stack sx={{ p: 2 }} direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                <Box sx={{ width: "100%" }}>
+                  <Typography sx={{ fontSize: 20 }} color="primary.dark">
+                    Jobs
+                  </Typography>
+                </Box>
                 <TextField
-                  fullWidth
-                  id="post-field"
-                  label="Share something with your network"
-                  placeholder="Share something with your network"
+                  sx={{ width: "100%" }}
+                  id="search-connections"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton aria-label="Search for Jobs" edge="end">
+                          <SearchIcon sx={{ color: "primary.dark" }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  label="Search for Jobs"
                   variant="outlined"
-                  multiline
-                  rows={4}
-                  margin="dense"
                 />
-                <Stack sx={{ mt: 1 }} direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
-                  <Button sx={{ display: "flex", flexDirection: "column" }}>
-                    <InsertPhotoIcon sx={{ color: "#757575" }} />
-                    <Typography sx={{ fontSize: 13, color: "#757575" }}>Picture</Typography>
-                  </Button>
-                  <Button sx={{ display: "flex", flexDirection: "column" }}>
-                    <TheatersIcon sx={{ color: "#757575" }} />
-                    <Typography sx={{ fontSize: 13, color: "#757575" }}>Video</Typography>
-                  </Button>
-                  <Button sx={{ display: "flex", flexDirection: "column" }}>
-                    <SendIcon sx={{ color: "#757575" }} />
-                    <Typography sx={{ fontSize: 13, color: "#757575" }}>Post</Typography>
-                  </Button>
-                </Stack>
-              </Paper>
+              </Stack>
               <Stack direction="column" spacing={2}>
-                {[1, 2, 3, 4].map((item) => (
-                  <Card
+                {[1, 2, 3, 4, 5].map((item) => (
+                  <Paper
                     key={item}
+                    elevation={1}
                     sx={{
-                      width: "100%",
+                      p: 2,
                       boxShadow:
-                        "0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                        " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                      borderRadius: "8px",
+                      width: "100%",
                     }}
                   >
-                    <CardHeader
-                      avatar={
-                        <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                          R
-                        </Avatar>
-                      }
-                      action={
-                        <IconButton aria-label="settings">
-                          <MoreVertIcon />
-                        </IconButton>
-                      }
-                      title="Shrimp and Chorizo Paella"
-                      subheader="September 14, 2016"
-                    />
-                    <CardContent>
-                      <Typography variant="body2" color="text.secondary">
-                        This impressive paella is a perfect party dish and a fun meal to cook together with your guests.
-                        Add 1 cup of frozen peas along with the mussels, if you like.
-                        <ExpandMore
-                          expand={expanded}
-                          onClick={handleExpandClick}
-                          aria-expanded={expanded}
-                          aria-label="show more"
-                        >
-                          readmore
-                        </ExpandMore>
+                    <Stack direction="column" spacing={2}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+                        <Typography sx={{ fontSize: 20 }} color="primary.main">
+                          Fashoin Designer
+                        </Typography>
+                        <Typography sx={{ fontSize: 14 }} color="primary.dark">
+                          Name of Company/Author
+                        </Typography>
+                      </Stack>
+                      <Typography sx={{ fontSize: 14, color: "#667085" }}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
+                        neque molestie et. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales
+                        tempus diam vel, neque molestie et.
                       </Typography>
-                    </CardContent>
-                    <CardContent>
-                      <Collapse in={expanded} timeout="auto" unmountOnExit>
-                        <Typography paragraph>Method:</Typography>
-                        <Typography paragraph>
-                          Heat 1/2 cup of the broth in a pot until simmering, add saffron and set aside for 10 minutes.
+                      <Stack direction="row" spacing={1}>
+                        <Chip label="Tailor" />
+                        <Chip label="Embroidery" />
+                        <Chip label="Monogram" />
+                      </Stack>
+                      <Stack direction="row" spacing={2}>
+                        <Typography sx={{ fontSize: 14 }} color="primary.main">
+                          Location: Lagos
                         </Typography>
-                        <Typography paragraph>
-                          Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high heat. Add
-                          chicken, shrimp and chorizo, and cook, stirring occasionally until lightly browned, 6 to 8
-                          minutes. Transfer shrimp to a large plate and set aside, leaving chicken and chorizo in the
-                          pan. Add pimentón, bay leaves, garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                          often until thickened and fragrant, about 10 minutes. Add saffron broth and remaining 4 1/2
-                          cups chicken broth; bring to a boil.
+                        <Typography sx={{ fontSize: 14 }} color="primary.main">
+                          Job Duration: 6 Months
                         </Typography>
-                        <Typography paragraph>
-                          Add rice and stir very gently to distribute. Top with artichokes and peppers, and cook without
-                          stirring, until most of the liquid is absorbed, 15 to 18 minutes. Reduce heat to medium-low,
-                          add reserved shrimp and mussels, tucking them down into the rice, and cook again without
-                          stirring, until mussels have opened and rice is just tender, 5 to 7 minutes more. (Discard any
-                          mussels that don&apos;t open.)
+                        <Typography sx={{ fontSize: 14 }} color="primary.main">
+                          Gender Required: Male
                         </Typography>
-                        <Typography>Set aside off of the heat to let rest for 10 minutes, and then serve.</Typography>
-                      </Collapse>
-                      <CardMedia
-                        component="img"
-                        height="231"
-                        image={"https://reactjs.org/logo-og.png"}
-                        alt="Paella dish"
-                      />
-                    </CardContent>
-
-                    <CardActions disableSpacing sx={{ background: "#F8F9FC" }}>
-                      <Button aria-label="add to favorites" sx={{ display: "flex", flexDirection: "column", mr: 1 }}>
-                        <ThumbUpIcon />
-                        <Typography sx={{ fontSize: 13 }}>42 Likes</Typography>
-                      </Button>
-                      <Button aria-label="add comments" sx={{ display: "flex", flexDirection: "column" }}>
-                        <ChatIcon />
-                        <Typography sx={{ fontSize: 13 }}>9 Comments</Typography>
-                      </Button>
-                      <Button sx={{ marginLeft: "auto", display: "flex", flexDirection: "column" }} aria-label="share">
-                        <ShareIcon />
-                        <Typography sx={{ fontSize: 13 }}>7 Shares</Typography>
-                      </Button>
-                    </CardActions>
-                  </Card>
+                        <Typography sx={{ fontSize: 14 }} color="primary.main">
+                          Closing Date:30/12/2022
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
+                        <Button variant="contained">Apply</Button>
+                        <Typography sx={{ fontSize: 12 }} color="primary.main">
+                          Posted 2 days ago
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </Paper>
                 ))}
               </Stack>
-            </Stack>
+            </Container>
           </Grid>
           <Grid item xs={3}>
             <Stack direction="column" spacing={3} sx={{ p: 2 }}>
