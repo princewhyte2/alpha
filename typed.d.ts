@@ -1,4 +1,4 @@
-interface OnboardingData { title?: string, first_name?: string, last_name?: string, middle_name?: string, date_of_birth?: string, gender?: string, profile_image_id?: string, country_id?: string, state_id?: string }
+interface OnboardingData { other_phone_number:string, title?: string, first_name?: string, last_name?: string, middle_name?: string, date_of_birth?: string, gender?: string, profile_image_id?: string, country_id?: string, state_id?: string }
 
  interface Qualifications {
         id: number;
@@ -103,4 +103,10 @@ interface SecurityQuestionPostData {
         current_password: string;
         new_password: string;
         confirm_password: string;
+    }
+
+interface CreatePostData {
+    body: string;
+    file_type: 'video' | 'image';
+    images:any[]
     }

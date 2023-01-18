@@ -118,9 +118,9 @@ export default function EmployerProfileLayout(props: Props) {
             </Box>
           </Link>
 
-          <Box>
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
             {mainNav.map((item) => (
-              <Button onClick={() => router.push(item.route)} variant="text">
+              <Button key={item.name} onClick={() => router.push(item.route)} variant="text">
                 {item.name}
               </Button>
             ))}

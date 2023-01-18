@@ -20,6 +20,7 @@ import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import { AlertColor } from "@mui/material"
 import LoadingButton from "@mui/lab/LoadingButton"
+import CancelIcon from "@mui/icons-material/Cancel"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import Tooltip from "@mui/material/Tooltip"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
@@ -43,6 +44,7 @@ import locationService from "../../services/location"
 import uploadService from "../../services/upload"
 import { hobbiesList } from "../../utils"
 import { ErrorComponent } from "../../components/alert"
+import { Router, useRouter } from "next/router"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -111,6 +113,7 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const router = useRouter()
   const [countryId, setCountryId] = useState("160")
   const { mutate } = useSWRConfig()
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
@@ -173,7 +176,7 @@ function Page() {
       formData.append("file", file)
       const res = await uploadService.uploadFile(formData)
       const item = res.result.file.id
-      const resp = await profileServices.updateUserProfile({ profile_image_id: item })
+      const resp = await profileServices.updateUserProfile({ profile_image_id: item } as any)
       console.log(resp)
       mutate("userProfile")
     } catch (error: any) {
@@ -201,12 +204,10 @@ function Page() {
       gender: genderRef.current?.value,
       country_id: countryId,
       state_id: stateRef.current?.value,
+      other_phone_number: otherNumberRef.current?.value,
     }
     setIsOnBoardingLoading(true)
     try {
-      if (otherNumberRef.current?.value !== user?.relationships?.phone_numbers[1]?.phone_number) {
-        await profileServices.addPhoneNumber({ phone_number: otherNumberRef.current?.value as string })
-      }
       const response = await profileServices.updateUserProfile(data as OnboardingData)
 
       setMessage(response?.message)
@@ -283,8 +284,8 @@ function Page() {
         job_title: jobTitleRef.current?.value,
         start_month: new Date(workStartDateRef.current?.value as string).getMonth() + 1,
         start_year: new Date(workStartDateRef.current?.value as string).getFullYear(),
-        end_month: isPresentWork ? null : new Date(workEndDateRef.current?.value as string).getMonth() + 1,
-        end_year: isPresentWork ? null : new Date(workEndDateRef.current?.value as string).getFullYear(),
+        ...(!isPresentWork && { end_month: new Date(workEndDateRef.current?.value as string).getMonth() + 1 }),
+        ...(!isPresentWork && { end_year: new Date(workEndDateRef.current?.value as string).getFullYear() }),
         summary: workSummaryRef.current?.value,
       }
 
@@ -411,13 +412,25 @@ function Page() {
     [],
   )
 
-  // console.log("profile", user)
-
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
-        Profile Information
-      </Typography>
+      <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
+        <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
+          Profile Information
+        </Typography>
+        {!matches && (
+          <IconButton
+            aria-label="close"
+            onClick={() => router.back()}
+            sx={{
+              color: (theme) => theme.palette.primary.main,
+            }}
+          >
+            <CancelIcon fontSize="inherit" />
+          </IconButton>
+        )}
+      </Stack>
+
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           {matches && (
@@ -477,6 +490,7 @@ function Page() {
                 <Typography sx={{ color: "#4D5761" }} variant="body1" gutterBottom>
                   Profile Completion
                 </Typography>
+
                 <LinearProgressWithLabel value={80} />
               </Box>
             </Stack>
@@ -755,11 +769,6 @@ function Page() {
                           ),
                         }}
                       />
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                      <Button variant="text" startIcon={<AddIcon />}>
-                        Add Another Phone No
-                      </Button>
                     </Grid>
                     <Grid item xs={12} md={8}>
                       <TextField

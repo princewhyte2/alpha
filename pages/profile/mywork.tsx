@@ -27,6 +27,7 @@ import Grid from "@mui/material/Grid"
 import projectService from "../../services/project"
 import profileServices from "../../services/profile"
 import { ErrorComponent } from "../../components/alert"
+import { useRouter } from "next/router"
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -80,6 +81,7 @@ function Page() {
   const [isViewProjectInfo, setIsViewProjectInfo] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const router = useRouter()
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -218,9 +220,22 @@ function Page() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
-        My Work
-      </Typography>
+      <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
+        <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
+          My Work
+        </Typography>
+        {!matches && (
+          <IconButton
+            aria-label="close"
+            onClick={() => router.back()}
+            sx={{
+              color: (theme) => theme.palette.primary.main,
+            }}
+          >
+            <CancelIcon fontSize="inherit" />
+          </IconButton>
+        )}
+      </Stack>
       <Stack
         direction={{ xs: "column-reverse", md: "row" }}
         justifyContent="space-between"

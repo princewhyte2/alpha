@@ -86,12 +86,12 @@ export default function NavLayout(props: Props) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "left", color: "primary.dark" }}>
-      <Typography variant="h6" sx={{ mx: 1, my: 1 }}>
+      {/* <Typography variant="h6" sx={{ mx: 1, my: 1 }}>
         Profile
-      </Typography>
+      </Typography> */}
       <Divider />
       <List>
-        {navItems.map((item) => (
+        {mainNav.map((item) => (
           <ListItem key={item.name} disablePadding>
             <ListItemButton onClick={() => router.push(item.route)} sx={{ textAlign: "left", color: "primary.dark" }}>
               <ListItemText
@@ -126,9 +126,9 @@ export default function NavLayout(props: Props) {
             </Box>
           </Link>
 
-          <Box>
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
             {mainNav.map((item) => (
-              <Button onClick={() => router.push(item.route)} variant="text">
+              <Button key={item.name} onClick={() => router.push(item.route)} variant="text">
                 {item.name}
               </Button>
             ))}

@@ -5,13 +5,34 @@ import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
 import Button from "@mui/material/Button"
 import ContentCopyIcon from "@mui/icons-material/ContentCopy"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import { useTheme, Theme } from "@mui/material/styles"
+import { useRouter } from "next/router"
+import CancelIcon from "@mui/icons-material/Cancel"
+import IconButton from "@mui/material/IconButton"
 
 function Page() {
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const router = useRouter()
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
-        Referral
-      </Typography>
+      <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
+        <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
+          Referral
+        </Typography>
+        {!matches && (
+          <IconButton
+            aria-label="close"
+            onClick={() => router.back()}
+            sx={{
+              color: (theme) => theme.palette.primary.main,
+            }}
+          >
+            <CancelIcon fontSize="inherit" />
+          </IconButton>
+        )}
+      </Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
         <Typography variant="body1" sx={{ my: 1, color: "primary.dark" }}>
           Tortor vitae porttitor purus nibh Tortor vitae porttitor purus nibh.
@@ -20,7 +41,6 @@ function Page() {
       <Box
         sx={{
           bgcolor: "primary.main",
-
           borderRadius: "0.5rem",
           width: "100%",
           maxWidth: "647px",
