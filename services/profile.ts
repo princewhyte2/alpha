@@ -1,5 +1,15 @@
 import axiosInstance from "./instance"
 
+const joinAsArtisan = async () => {
+  const response = await axiosInstance.get('/join/as/artisan')
+  return response.data
+}
+
+const joinAsEmployer = async () => {
+  const response = await axiosInstance.get('/join/as/employer')
+  return response.data
+}
+
 const getUserProfile = async () => {
   const response = await axiosInstance.get("/my/profile")
   return response.data
@@ -68,7 +78,7 @@ const profileServices = {
   updateUserQualification,
   deleteUserQualification,
   updateUserWorkHistory,
-  deleteUserWorkHistory,addPhoneNumber
+  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer
 }
 
 export default profileServices

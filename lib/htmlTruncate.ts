@@ -1,3 +1,7 @@
+
+
+// @ts-nocheck
+
 /**
  * Truncate HTML string and keep tag safe.
  *
