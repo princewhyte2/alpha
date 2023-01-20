@@ -613,7 +613,7 @@ function Page() {
                           Phone Number
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_numbers[0]?.phone_number}
+                          {user?.relationships?.phone_number}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
@@ -621,7 +621,7 @@ function Page() {
                           Other Phone
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_numbers[1]?.phone_number || null}
+                          {user?.relationships?.other_phone_number}
                         </Typography>
                       </Grid>
                     </Grid>
