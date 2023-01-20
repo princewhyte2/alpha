@@ -36,12 +36,12 @@ const getAllPostComments = async (postId: string) => {
 }
 
 const likePost = async (postId: string) => {
-    const response = await axiosInstance
+    const response = await axiosInstance.get(`/posts/${postId}/likes`)
     return response.data
 }
 
 const unlikePost = async (postId: string) => {
-    const response = await axiosInstance
+     const response = await axiosInstance.get(`/posts/${postId}/unlikes`)
     return response.data
 }
 

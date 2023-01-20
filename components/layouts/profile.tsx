@@ -83,6 +83,9 @@ export default function ProfileLayout(props: Props) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
+  const goToProfile = React.useCallback(() => {
+    router.push("/profile/information")
+  }, [])
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "left", color: "primary.dark" }}>
@@ -120,7 +123,7 @@ export default function ProfileLayout(props: Props) {
           >
             <MenuLine />
           </IconButton>
-          <Link href="/" underline="none">
+          <Link href="/feed" underline="none">
             <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
               <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
             </Box>
@@ -145,7 +148,7 @@ export default function ProfileLayout(props: Props) {
               {/* <Badge badgeContent={17} color="error">
               </Badge> */}
             </IconButton>
-            <IconButton>
+            <IconButton onClick={goToProfile}>
               <Avatar
                 sx={{ bgcolor: "primary.main" }}
                 alt={`${user?.first_name} ${user?.last_name}`}

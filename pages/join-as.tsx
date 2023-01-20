@@ -1,4 +1,4 @@
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import Box from "@mui/material/Box"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { styled, useTheme } from "@mui/material/styles"
@@ -6,28 +6,66 @@ import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 // import Grid from "@mui/material/Grid"
 import Stack from "@mui/material/Stack"
+import { AlertColor } from "@mui/material"
 import Link from "@mui/material/Link"
 import profileServices from "../services/profile"
 import { useRouter } from "next/router"
+import { ErrorComponent } from "../components/alert"
 
 const JoinAs = () => {
   const router = useRouter()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
 
   const onJoinAsArtisan = useCallback(async () => {
+    if (isLoading) return
+    setIsLoading(true)
     try {
-      const response = await profileServices.joinAsArtisan()
-      return response.data
-    } catch (error) {}
-  }, [])
+      //   const response = await profileServices.joinAsArtisan()
+      //   console.log("res", response)
+      setMessage("Verification successfull")
+      setType("success")
+      setIsError(true)
+      router.push("/feed")
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isLoading])
 
   const onJoinAsEmployer = useCallback(async () => {
+    if (isLoading) return
+    setIsLoading(true)
     try {
       const response = await profileServices.joinAsEmployer()
-      return response.data
-    } catch (error) {}
-  }, [])
+      console.log("res", response)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isLoading])
 
   return (
     <Box
@@ -117,6 +155,7 @@ const JoinAs = () => {
           </Stack>
         </Box>
       </Paper>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

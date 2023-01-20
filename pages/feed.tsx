@@ -1,4 +1,4 @@
-import { ReactElement, useState, useMemo } from "react"
+import { ReactElement, useState, useMemo, useCallback } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
@@ -254,6 +254,26 @@ function Page() {
     }
   }
 
+  const handleLike = useCallback(
+    (postId: number) => async () => {
+      try {
+        const response = await postService.likePost(String(postId))
+        console.log("like", response)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
   console.log("posts", posts)
 
   return (
@@ -307,7 +327,7 @@ function Page() {
                   </Stack>
                 )}
                 {posts?.map((item: any) => (
-                  <PostCard key={item.id} item={item} />
+                  <PostCard key={item.id} item={item} onLike={handleLike} />
                 ))}
               </Stack>
             </Stack>
@@ -457,7 +477,7 @@ Page.getLayout = function getLayout(page: ReactElement) {
 }
 
 export default Page
-function PostCard({ item }: any) {
+function PostCard({ item, onLike }: any) {
   const [isShowMore, setIsShowMore] = useState(false)
   const content = useMemo(() => {
     if (!item?.body) return ""
@@ -517,33 +537,17 @@ function PostCard({ item }: any) {
         }
       </CardContent>
       <CardContent>
-        {/* <Collapse timeout="auto" unmountOnExit>
-          <Typography paragraph>Method:</Typography>
-          <Typography paragraph>
-            Heat 1/2 cup of the broth in a pot until simmering, add saffron and set aside for 10 minutes.
-          </Typography>
-          <Typography paragraph>
-            Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high heat. Add chicken,
-            shrimp and chorizo, and cook, stirring occasionally until lightly browned, 6 to 8 minutes. Transfer shrimp
-            to a large plate and set aside, leaving chicken and chorizo in the pan. Add pimentón, bay leaves, garlic,
-            tomatoes, onion, salt and pepper, and cook, stirring often until thickened and fragrant, about 10 minutes.
-            Add saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
-          </Typography>
-          <Typography paragraph>
-            Add rice and stir very gently to distribute. Top with artichokes and peppers, and cook without stirring,
-            until most of the liquid is absorbed, 15 to 18 minutes. Reduce heat to medium-low, add reserved shrimp and
-            mussels, tucking them down into the rice, and cook again without stirring, until mussels have opened and
-            rice is just tender, 5 to 7 minutes more. (Discard any mussels that don&apos;t open.)
-          </Typography>
-          <Typography>Set aside off of the heat to let rest for 10 minutes, and then serve.</Typography>
-        </Collapse> */}
         {item.relationships?.medias.length > 0 && (
           <CardMedia component="img" height="231" src={item.relationships.medias[0].url} alt="Paella dish" />
         )}
       </CardContent>
 
       <CardActions disableSpacing sx={{ background: "#F8F9FC" }}>
-        <Button aria-label="add to favorites" sx={{ display: "flex", flexDirection: "column", mr: 1 }}>
+        <Button
+          onClick={onLike(item.id)}
+          aria-label="add to favorites"
+          sx={{ display: "flex", flexDirection: "column", mr: 1 }}
+        >
           <ThumbUpIcon />
           <Typography sx={{ fontSize: 13 }}>{item.total_likes} Likes</Typography>
         </Button>
@@ -556,6 +560,30 @@ function PostCard({ item }: any) {
           <Typography sx={{ fontSize: 13 }}>7 Shares</Typography>
         </Button>
       </CardActions>
+      <CardContent>
+        <Stack direction="row" spacing={2}>
+          <Avatar
+            sx={{ bgcolor: red[500] }}
+            alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
+            src={item?.relationships.created_by.relationships.profile_image?.url}
+            aria-label="recipe"
+          />
+
+          <Stack sx={{ flexGrow: 1 }} direction="column" spacing={2}>
+            <TextField
+              fullWidth
+              id="comment-field"
+              label="Add a comment "
+              placeholder="Add a comment "
+              variant="outlined"
+              margin="dense"
+            />
+            <Box>
+              <Button variant="contained">Post</Button>
+            </Box>
+          </Stack>
+        </Stack>
+      </CardContent>
     </Card>
   )
 }
