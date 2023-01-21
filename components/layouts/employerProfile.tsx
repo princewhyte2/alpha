@@ -46,11 +46,11 @@ const navItems = [
 const mainNav = [
   {
     name: "Your Feed",
-    route: "/feed",
+    route: "/employer/feed",
   },
   {
     name: "Connection",
-    route: "/connection",
+    route: "/employer/connection",
   },
   {
     name: "My Jobs",
@@ -58,11 +58,11 @@ const mainNav = [
   },
   {
     name: "Messaging",
-    route: "/messaging",
+    route: "/employer/messaging",
   },
   {
     name: "Profile",
-    route: "/profile/information",
+    route: "/employer/profile/information",
   },
 ]
 

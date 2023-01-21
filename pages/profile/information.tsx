@@ -758,7 +758,7 @@ function Page() {
                       <TextField
                         label="Phone Number"
                         id="phone-number-start-adornment"
-                        defaultValue={user?.relationships?.phone_numbers[0]?.phone_number || ""}
+                        defaultValue={user?.relationships?.phone_number || ""}
                         disabled
                         fullWidth
                         InputProps={{
@@ -775,7 +775,7 @@ function Page() {
                         label="Other Number "
                         id="phone-number-start-adornment"
                         inputRef={otherNumberRef}
-                        defaultValue={user?.relationships?.phone_numbers[1]?.phone_number || ""}
+                        defaultValue={user?.relationships?.other_phone_number || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (

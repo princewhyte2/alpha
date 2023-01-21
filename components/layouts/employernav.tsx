@@ -35,42 +35,42 @@ const drawerWidth = 240
 const navItems = [
   {
     name: "Profile Information",
-    route: "/profile/information",
+    route: "/employer/profile/information",
   },
   {
     name: "My Work",
-    route: "/profile/mywork",
+    route: "/employer/profile/mywork",
   },
   {
     name: "Password & Security",
-    route: "/profile/security",
+    route: "/employer/profile/security",
   },
   {
     name: "Referral",
-    route: "/profile/referral",
+    route: "/employer/profile/referral",
   },
 ]
 
 const mainNav = [
   {
     name: "Your Feed",
-    route: "/feed",
+    route: "/employer/feed",
   },
   {
     name: "Connection",
-    route: "/connection",
+    route: "/employer/connection",
   },
   {
     name: "My Jobs",
-    route: "/employer/jobs",
+    route: "/employer/employer/jobs",
   },
   {
     name: "Messaging",
-    route: "/messaging",
+    route: "/employer/messaging",
   },
   {
     name: "Profile",
-    route: "/profile/information",
+    route: "/employer/profile/information",
   },
 ]
 

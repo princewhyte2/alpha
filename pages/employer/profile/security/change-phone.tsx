@@ -1,6 +1,6 @@
 import { ReactElement, useState, useRef, useCallback, FormEvent } from "react"
 import Box from "@mui/material/Box"
-import ProfileLayout from "../../../components/layouts/profile"
+import ProfileLayout from "../../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
@@ -17,10 +17,10 @@ import InputAdornment from "@mui/material/InputAdornment"
 import TextField from "@mui/material/TextField"
 import IconButton from "@mui/material/IconButton"
 import { useRouter } from "next/router"
-import securityService from "../../../services/security"
-import { ErrorComponent } from "../../../components/alert"
-import { validateEmail } from "../../../utils"
-import profileServices from "../../../services/profile"
+import securityService from "../../../../services/security"
+import { ErrorComponent } from "../../../../components/alert"
+import { validateEmail } from "../../../../utils"
+import profileServices from "../../../../services/profile"
 
 function Page() {
   const router = useRouter()

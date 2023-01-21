@@ -1,20 +1,31 @@
-import type { ReactElement } from "react"
+import { ReactElement, useCallback, useState } from "react"
 import Box from "@mui/material/Box"
 import ProfileLayout from "../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
 import Button from "@mui/material/Button"
+import useSWR from "swr"
 import ContentCopyIcon from "@mui/icons-material/ContentCopy"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme, Theme } from "@mui/material/styles"
 import { useRouter } from "next/router"
 import CancelIcon from "@mui/icons-material/Cancel"
 import IconButton from "@mui/material/IconButton"
+import profileServices from "../../services/profile"
+import { ErrorComponent } from "../../components/alert"
 
 function Page() {
   const theme = useTheme()
+  const [isError, setIsError] = useState(false)
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
+
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  const handleCopyClick = useCallback(() => {
+    navigator.clipboard.writeText(`https://alpha-fynder.vercel.app/auth/signup?ref=${user?.referrer_code}`)
+    setIsError(true)
+  }, [user])
+
   return (
     <Box sx={{ p: 2 }}>
       <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
@@ -52,7 +63,7 @@ function Page() {
               Your Referral Points:
             </Typography>
             <Typography variant="h6" sx={{ my: 1, color: "white" }}>
-              0
+              {user?.referrer_point}
             </Typography>
           </Stack>
         </Box>
@@ -63,7 +74,7 @@ function Page() {
                 Your Referrals:
               </Typography>
               <Typography variant="h6" sx={{ my: 1, color: "white" }}>
-                0
+                {user?.relationships.referrals.length}
               </Typography>
             </Stack>
             <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
@@ -78,9 +89,10 @@ function Page() {
                   spacing={2}
                 >
                   <Typography variant="body2" sx={{ my: 1, color: "white" }}>
-                    www.workfinder.ng/ref=olakunle01
+                    https://alpha-fynder.vercel.app/auth/signup?ref={user?.referrer_code}
                   </Typography>
                   <Button
+                    onClick={handleCopyClick}
                     sx={{ color: "white" }}
                     variant="text"
                     startIcon={<ContentCopyIcon sx={{ color: "white" }} />}
@@ -89,6 +101,12 @@ function Page() {
                   </Button>
                 </Stack>
               </Box>
+              <ErrorComponent
+                type={"success"}
+                open={isError}
+                message={"Copied to clipboard!"}
+                handleClose={() => setIsError(false)}
+              />
             </Stack>
           </Stack>
         </Box>

@@ -916,7 +916,7 @@ function Page() {
                           Phone Number
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_numbers[0]?.phone_number}
+                          {user?.relationships?.phone_number}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
@@ -924,7 +924,7 @@ function Page() {
                           Other Phone
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_numbers[1]?.phone_number || null}
+                          {user?.relationships?.other_phone_number || null}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -1061,7 +1061,7 @@ function Page() {
                       <TextField
                         label="Phone Number"
                         id="phone-number-start-adornment"
-                        defaultValue={user?.relationships?.phone_numbers[0]?.phone_number || ""}
+                        defaultValue={user?.relationships?.phone_number || ""}
                         disabled
                         fullWidth
                         InputProps={{
@@ -1083,7 +1083,7 @@ function Page() {
                         label="Other Number "
                         id="phone-number-start-adornment"
                         inputRef={otherNumberRef}
-                        defaultValue={user?.relationships?.phone_numbers[1]?.phone_number || ""}
+                        defaultValue={user?.relationships?.other_phone_number || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (

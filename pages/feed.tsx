@@ -17,7 +17,7 @@ import Avatar from "@mui/material/Avatar"
 import { AlertColor } from "@mui/material"
 import IconButton, { IconButtonProps } from "@mui/material/IconButton"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
-import useSWR, { useSWRConfig } from "swr"
+import useSWR, { mutate, useSWRConfig } from "swr"
 import { generateHTML } from "@tiptap/core"
 import Paper from "@mui/material/Paper"
 import TextField from "@mui/material/TextField"
@@ -58,12 +58,16 @@ import Paragraph from "@tiptap/extension-paragraph"
 import { Text as TestTipTap } from "@tiptap/extension-text"
 import { Breakpoint, Theme, ThemeProvider, useTheme, createTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
+import Menu from "@mui/material/Menu"
+import MenuItem from "@mui/material/MenuItem"
 
 import postService from "../services/post"
 import uploadService from "../services/upload"
 import { ErrorComponent } from "../components/alert"
 import NoPostIllustration from "../components/icons/NoPostIllustration"
 import htmlTruncate from "../lib/htmlTruncate"
+import { useAuth } from "../store"
+import profileServices from "../services/profile"
 
 dayjs.extend(relativeTime)
 type BreakpointOrNull = Breakpoint | null
@@ -142,6 +146,7 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 
 function Page() {
   const theme = useTheme()
+  const { mutate } = useSWRConfig()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const { data: posts } = useSWR("posts", postService.postFetcher)
 
@@ -150,9 +155,12 @@ function Page() {
   const [isImageLoading, setIsImageLoading] = useState(false)
   const [isPost, setIsPost] = useState(false)
   const [editor, setEditor] = useState<any>()
+  const [isEditPost, setIsEditPost] = useState(false)
   const [editorContent, setEditorContent] = useState()
   const [mediaType, setMediaType] = useState<"image" | "video" | undefined>()
   const [files, setFiles] = useState<ImageResponse[]>([])
+  const [initContent, setInitContent] = useState("")
+  const [editId, setEditId] = useState("")
   //error handler
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
@@ -163,10 +171,13 @@ function Page() {
   }
 
   const onCloseModal = () => {
+    setInitContent("")
     editor?.commands?.clearContent(true)
     setFiles([])
     setMediaType(undefined)
+    setIsEditPost(false)
     setIsPost(false)
+    setEditId("")
   }
 
   const handleSendPost = async (e: any) => {
@@ -179,9 +190,16 @@ function Page() {
     }
 
     try {
-      //@ts-ignore
-      const response = await postService.createPost(data as CreatePostData)
-      setMessage(response?.message)
+      if (isEditPost && editId) {
+        //@ts-ignore
+        const response = await postService.updatePost(editId, data as CreatePostData)
+        setMessage(response?.message)
+      } else {
+        //@ts-ignore
+        const response = await postService.createPost(data as CreatePostData)
+        setMessage(response?.message)
+      }
+      mutate("posts")
       setType("success")
       setIsError(true)
       onCloseModal()
@@ -258,6 +276,7 @@ function Page() {
     (postId: number) => async () => {
       try {
         const response = await postService.likePost(String(postId))
+        mutate("posts")
         console.log("like", response)
       } catch (error: any) {
         setType("error")
@@ -274,7 +293,80 @@ function Page() {
     [],
   )
 
-  console.log("posts", posts)
+  const handleUnLike = useCallback(
+    (postId: number) => async () => {
+      try {
+        const response = await postService.unlikePost(String(postId))
+        mutate("posts")
+        console.log("like", response)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+  const handleComment = useCallback(
+    (postId: number, comment: string) => async () => {
+      try {
+        const response = await postService.addComment(String(postId), { body: comment })
+        mutate(`/posts/${postId}/comments`)
+        console.log("comment", response)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
+  const handleEdit = useCallback(
+    (postItem: any) => () => {
+      const content = JSON.parse(postItem.body)
+      setIsPost(true)
+      setIsEditPost(true)
+      setInitContent(content)
+      setEditId(postItem.id)
+
+      setFiles(postItem.relationships.medias)
+      setMediaType(postItem.relationships.medias[0]?.type)
+    },
+    [],
+  )
+
+  const handleDelete = useCallback(
+    (postId: number) => async () => {
+      try {
+        const response = await postService.deletePost(String(postId))
+        mutate("posts")
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -327,7 +419,15 @@ function Page() {
                   </Stack>
                 )}
                 {posts?.map((item: any) => (
-                  <PostCard key={item.id} item={item} onLike={handleLike} />
+                  <PostCard
+                    key={item.id}
+                    item={item}
+                    onUnLike={handleUnLike}
+                    onLike={handleLike}
+                    onComment={handleComment}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
                 ))}
               </Stack>
             </Stack>
@@ -404,12 +504,12 @@ function Page() {
         aria-describedby="workhistory-modal-description"
       >
         <BootstrapDialogTitle id="title-work-history" onClose={() => onCloseModal()}>
-          Create Post
+          {isEditPost ? "Update" : "Create"} Post
         </BootstrapDialogTitle>
         <DialogContent>
           <Box onSubmit={handleSendPost} sx={{ width: "100%" }} component={"form"}>
             <Paper elevation={1} sx={{ p: 2, boxShadow: "0px 8px 48px #EEEEEE" }}>
-              <TiptapEditor setEditorContent={setEditorContent} setTextEditor={setEditor} initContent={""} />
+              <TiptapEditor setEditorContent={setEditorContent} setTextEditor={setEditor} initContent={initContent} />
               {files?.length < 1 && (
                 <Stack sx={{ mt: 1 }} direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
                   <Button
@@ -461,7 +561,7 @@ function Page() {
                 sx={{ px: 6 }}
                 variant="contained"
               >
-                Post
+                {isEditPost ? "Update" : "Post"}
               </LoadingButton>
             </Stack>
           </Box>
@@ -477,8 +577,20 @@ Page.getLayout = function getLayout(page: ReactElement) {
 }
 
 export default Page
-function PostCard({ item, onLike }: any) {
+function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+  // const {mutate} = useSWRConfig()
+  const { data: appUser } = useSWR("userProfile", profileServices.profileFetcher)
   const [isShowMore, setIsShowMore] = useState(false)
+  const [userComment, setUserComment] = useState("")
+  const { data: postComments } = useSWR(`/posts/${item.id}/comments`, postService.getAllPostComments)
   const content = useMemo(() => {
     if (!item?.body) return ""
     return generateHTML(JSON.parse(item.body), [
@@ -500,6 +612,15 @@ function PostCard({ item, onLike }: any) {
       // other extensions …
     ])
   }, [])
+
+  const isLiked = useMemo(() => {
+    return Boolean(item.relationships.likes?.find((like: any) => like?.liked_by === appUser?.id))
+  }, [item])
+
+  const isPostCreator = useMemo(() => {
+    return item.relationships.created_by.id === appUser?.id
+  }, [item])
+
   return (
     <Card
       key={item.id}
@@ -518,9 +639,31 @@ function PostCard({ item, onLike }: any) {
           />
         }
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
+          isPostCreator && (
+            <div>
+              <IconButton
+                aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={Boolean(anchorEl) ? "true" : undefined}
+                onClick={handleClick}
+                aria-label="settings"
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+              >
+                <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
+                <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
+              </Menu>
+            </div>
+          )
         }
         title={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
         subheader={dayjs(item.created_at).fromNow()}
@@ -544,11 +687,11 @@ function PostCard({ item, onLike }: any) {
 
       <CardActions disableSpacing sx={{ background: "#F8F9FC" }}>
         <Button
-          onClick={onLike(item.id)}
+          onClick={isLiked ? onUnLike(item.id) : onLike(item.id)}
           aria-label="add to favorites"
           sx={{ display: "flex", flexDirection: "column", mr: 1 }}
         >
-          <ThumbUpIcon />
+          <ThumbUpIcon sx={isLiked ? null : { color: "#757575" }} />
           <Typography sx={{ fontSize: 13 }}>{item.total_likes} Likes</Typography>
         </Button>
         <Button aria-label="add comments" sx={{ display: "flex", flexDirection: "column" }}>
@@ -572,14 +715,25 @@ function PostCard({ item, onLike }: any) {
           <Stack sx={{ flexGrow: 1 }} direction="column" spacing={2}>
             <TextField
               fullWidth
+              value={userComment}
               id="comment-field"
               label="Add a comment "
               placeholder="Add a comment "
               variant="outlined"
               margin="dense"
+              onChange={({ target }) => setUserComment(target.value)}
             />
             <Box>
-              <Button variant="contained">Post</Button>
+              <Button
+                onClick={() => {
+                  onComment(item.id, userComment)
+                  setUserComment("")
+                }}
+                disabled={Boolean(!userComment)}
+                variant="contained"
+              >
+                Post
+              </Button>
             </Box>
           </Stack>
         </Stack>

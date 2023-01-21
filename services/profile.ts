@@ -65,6 +65,16 @@ const updateHobbies = async (hobbies: string[]) => {
   return response.data
 }
 
+const updateUserEmail = async (data:{answer:string,email:string}) => {
+  const response = await axiosInstance.patch('/update/email', data)
+  return response.data
+}
+
+const updateMainNumber = async (data: { answer: string, phone_number: string }) => {
+  const response = await axiosInstance.patch('/update/phoneNumber', data)
+  return response.data
+}
+
 const profileFetcher = () => getUserProfile().then((res) => res.result)
 const qualifcationsFetcher = () => getQualifications().then((res) => res.result.occupations)
 
@@ -78,7 +88,7 @@ const profileServices = {
   updateUserQualification,
   deleteUserQualification,
   updateUserWorkHistory,
-  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer
+  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber
 }
 
 export default profileServices

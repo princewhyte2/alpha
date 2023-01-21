@@ -25,9 +25,9 @@ const JoinAs = () => {
     if (isLoading) return
     setIsLoading(true)
     try {
-      //   const response = await profileServices.joinAsArtisan()
-      //   console.log("res", response)
-      setMessage("Verification successfull")
+      const response = await profileServices.joinAsArtisan()
+
+      setMessage(response?.message)
       setType("success")
       setIsError(true)
       router.push("/feed")
@@ -51,7 +51,10 @@ const JoinAs = () => {
     setIsLoading(true)
     try {
       const response = await profileServices.joinAsEmployer()
-      console.log("res", response)
+      setMessage(response?.message)
+      setType("success")
+      setIsError(true)
+      router.push("/employer/profile/information")
     } catch (error: any) {
       setType("error")
       if (error.response) {
