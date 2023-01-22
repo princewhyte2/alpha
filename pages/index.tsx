@@ -50,8 +50,8 @@ function Page() {
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Stack direction="column" spacing={3}>
-              <Typography sx={{ fontSize: 58, fontWeight: 500 }} color="primary.dark" gutterBottom>
-                The Marketplace for Artisans
+              <Typography sx={{ m: 0, fontSize: 58, fontWeight: 500 }} color="primary.dark">
+                The <span className="bold-text">Marketplace</span> <br /> for Artisans
               </Typography>
             </Stack>
           </Grid>
@@ -65,5 +65,7 @@ function Page() {
 Page.getLayout = function getLayout(page: ReactElement) {
   return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page

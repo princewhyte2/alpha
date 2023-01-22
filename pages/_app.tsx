@@ -2,6 +2,7 @@ import "../styles/globals.css"
 import { useEffect } from "react"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import { useAuth } from "../store"
+import CssBaseline from "@mui/material/CssBaseline"
 import { AuthGuard } from "../hooks/AuthGuard"
 import { NextPage } from "next"
 import Head from "next/head"
@@ -54,6 +55,7 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
       </Head>
 
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         {Component.requireAuth
           ? getLayout(
               <AuthGuard>
