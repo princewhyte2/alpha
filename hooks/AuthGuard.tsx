@@ -23,7 +23,6 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
       }
       if (user && !user?.user_type) {
         router.push("/join-as")
-        return
       }
     }
   }, [initializing, router, user])
