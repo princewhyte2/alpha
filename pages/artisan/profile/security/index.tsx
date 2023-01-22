@@ -15,13 +15,17 @@ import { useRouter } from "next/router"
 import NavLayout from "../../../../components/layouts/nav"
 
 const navItems = [
-  { icon: <LockOpenIcon color="primary" />, name: "Change Password", route: "/profile/security/change-password" },
-  { icon: <MailIcon color="primary" />, name: "Change Email Address", route: "/profile/security/change-email" },
-  { icon: <PhoneIcon color="primary" />, name: "Change Phone Number", route: "/profile/security/change-phone" },
+  {
+    icon: <LockOpenIcon color="primary" />,
+    name: "Change Password",
+    route: "/artisan/profile/security/change-password",
+  },
+  { icon: <MailIcon color="primary" />, name: "Change Email Address", route: "/artisan/profile/security/change-email" },
+  { icon: <PhoneIcon color="primary" />, name: "Change Phone Number", route: "/artisan/profile/security/change-phone" },
   {
     icon: <SecurityIcon color="primary" />,
     name: "Generate Security Question",
-    route: "/profile/security/question",
+    route: "/artisan/profile/security/question",
   },
 ]
 
