@@ -101,7 +101,26 @@ export default function NavLayout(props: Props) {
       {/* <Typography variant="h6" sx={{ mx: 1, my: 1 }}>
         Profile
       </Typography> */}
+      {/* <Link href="/artisan/feed" underline="none">
+        <Box sx={{ py: 4, display: "flex", justifyContent: "center" }}>
+          <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
+        </Box>
+      </Link>
       <Divider />
+      <List>
+        <ListItem>
+         
+          <Button sx={{ width: "100%" }} variant="contained">
+            Sign up
+          </Button>
+        </ListItem>
+        <ListItem>
+      
+          <Button sx={{ width: "100%" }} variant="text">
+            Login
+          </Button>
+        </ListItem>
+      </List> */}
       <List>
         {mainNav.map((item) => (
           <ListItem key={item.name} disablePadding>
@@ -170,6 +189,8 @@ export default function NavLayout(props: Props) {
           </Box>
 
           <Box sx={{ display: { xs: "block", sm: "block" } }}>
+            {/* <Button variant="text">Login</Button>
+            <Button variant="contained">Sign up</Button> */}
             <IconButton
               size="large"
               sx={{ color: "primary.main" }}

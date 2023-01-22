@@ -30,7 +30,7 @@ const JoinAs = () => {
       setMessage(response?.message)
       setType("success")
       setIsError(true)
-      router.push("/feed")
+      router.push("/artisan/profile/information")
     } catch (error: any) {
       setType("error")
       if (error.response) {
