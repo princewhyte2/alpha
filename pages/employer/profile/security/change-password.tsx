@@ -19,6 +19,8 @@ import OutlinedInput from "@mui/material/OutlinedInput"
 import { useRouter } from "next/router"
 import securityService from "../../../../services/security"
 import { ErrorComponent } from "../../../../components/alert"
+import EmployerProfileLayout from "../../../../components/layouts/employerProfile"
+import EmployerNavLayout from "../../../../components/layouts/employernav"
 
 function Page() {
   const router = useRouter()
@@ -221,7 +223,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <EmployerNavLayout>{page}</EmployerNavLayout>
 }
 
 export default Page

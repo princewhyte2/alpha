@@ -1,6 +1,6 @@
 import { ReactElement, useCallback, useState } from "react"
 import Box from "@mui/material/Box"
-import ProfileLayout from "../../components/layouts/profile"
+import ProfileLayout from "../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
 import Button from "@mui/material/Button"
@@ -11,8 +11,9 @@ import { useTheme, Theme } from "@mui/material/styles"
 import { useRouter } from "next/router"
 import CancelIcon from "@mui/icons-material/Cancel"
 import IconButton from "@mui/material/IconButton"
-import profileServices from "../../services/profile"
-import { ErrorComponent } from "../../components/alert"
+import profileServices from "../../../services/profile"
+import { ErrorComponent } from "../../../components/alert"
+import NavLayout from "../../../components/layouts/nav"
 
 function Page() {
   const theme = useTheme()
@@ -116,7 +117,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <NavLayout>{page}</NavLayout>
 }
 
 export default Page

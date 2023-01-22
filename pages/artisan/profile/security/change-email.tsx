@@ -1,15 +1,14 @@
 import { ReactElement, useState, useRef, useCallback, FormEvent } from "react"
 import Box from "@mui/material/Box"
-import ProfileLayout from "../../../components/layouts/profile"
+import ProfileLayout from "../../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import LoadingButton from "@mui/lab/LoadingButton"
-import { styled, useTheme } from "@mui/material/styles"
 import { AlertColor } from "@mui/material"
-import useSWR, { useSWRConfig } from "swr"
+import { styled, useTheme } from "@mui/material/styles"
 import { MuiOtpInput } from "mui-one-time-password-input"
-import PhoneIcon from "@mui/icons-material/Phone"
+import useSWR, { useSWRConfig } from "swr"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import EmailIcon from "@mui/icons-material/Email"
 import OutlinedInput from "@mui/material/OutlinedInput"
@@ -17,10 +16,11 @@ import InputAdornment from "@mui/material/InputAdornment"
 import TextField from "@mui/material/TextField"
 import IconButton from "@mui/material/IconButton"
 import { useRouter } from "next/router"
-import securityService from "../../../services/security"
-import { ErrorComponent } from "../../../components/alert"
-import { validateEmail } from "../../../utils"
-import profileServices from "../../../services/profile"
+import securityService from "../../../../services/security"
+import { ErrorComponent } from "../../../../components/alert"
+import { validateEmail } from "../../../../utils"
+import profileServices from "../../../../services/profile"
+import NavLayout from "../../../../components/layouts/nav"
 
 function Page() {
   const router = useRouter()
@@ -36,33 +36,33 @@ function Page() {
   const [type, setType] = useState<AlertColor>("error")
 
   const answerRef = useRef<HTMLInputElement>()
-  const phoneNumberRef = useRef<HTMLInputElement>()
+  const emailRef = useRef<HTMLInputElement>()
 
   const { data: userSecurityQuestion } = useSWR(
     "userSecurityQuestions",
     securityService.getUserSecurityQuestionsFetcher,
   )
 
-  const handleUpdatePhone = useCallback(async (e: FormEvent<HTMLFormElement>) => {
+  const handleUpdateEmail = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // if (!validateEmail(emailRef.current?.value as string)) {
-    //   setMessage("invalid email")
-    //   setType("error")
-    //   setIsError(true)
-    //   return
-    // }
+    if (!validateEmail(emailRef.current?.value as string)) {
+      setMessage("invalid email")
+      setType("error")
+      setIsError(true)
+      return
+    }
 
     const data = {
       answer: answerRef.current?.value,
-      phone_number: phoneNumberRef.current?.value,
+      email: emailRef.current?.value,
     }
 
     setIsLoading(true)
 
     try {
       // @ts-ignore
-      const response = await profileServices.updateMainNumber(data)
+      const response = await profileServices.updateUserEmail(data)
       mutate("userProfile")
       setMessage(response?.message)
       setType("success")
@@ -91,10 +91,10 @@ function Page() {
         Password & Security
       </Typography>
       <Button onClick={() => router.back()} variant="text" startIcon={<KeyboardBackspaceIcon />}>
-        Change Phone Number
+        Change Email Address
       </Button>
       <Typography variant="body2" sx={{ my: 1, color: "primary.dark" }}>
-        To change your phone number, a token will be sent to your registered phone number
+        To change your email address, a token will be sent to your registered email address
       </Typography>
       <Box
         component="form"
@@ -106,25 +106,25 @@ function Page() {
           maxWidth: "29.68rem",
           width: "100%",
         }}
-        onSubmit={handleUpdatePhone}
+        onSubmit={handleUpdateEmail}
       >
         <TextField
-          id="change-phone"
+          id="email"
           margin="dense"
           fullWidth
           required
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton aria-label="Phone Number" edge="end">
-                  <PhoneIcon sx={{ color: "primary.dark" }} />
+                <IconButton aria-label="Email" edge="end">
+                  <EmailIcon sx={{ color: "primary.dark" }} />
                 </IconButton>
               </InputAdornment>
             ),
           }}
-          label="Phone Number"
+          label="Email"
           variant="outlined"
-          inputRef={phoneNumberRef}
+          inputRef={emailRef}
         />
 
         {userSecurityQuestion?.question ? (
@@ -150,7 +150,7 @@ function Page() {
           sx={{ maxWidth: "25rem", my: 4, width: { xs: "100%", md: "229px" }, alignSelf: "flex-end" }}
           variant="contained"
         >
-          Send Token
+          Update
         </LoadingButton>
       </Box>
       {/* <Box
@@ -189,7 +189,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <NavLayout>{page}</NavLayout>
 }
 
 export default Page

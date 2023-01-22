@@ -1,6 +1,6 @@
 import { ReactElement, useState, useRef, ChangeEvent, useCallback, FormEvent } from "react"
 import Box from "@mui/material/Box"
-import ProfileLayout from "../../components/layouts/profile"
+import ProfileLayout from "../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
 import Button from "@mui/material/Button"
@@ -21,13 +21,14 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 import IconButton from "@mui/material/IconButton"
 import { AlertColor } from "@mui/material"
 import { useTheme, Theme } from "@mui/material/styles"
-import MyWorkIllustration from "../../components/icons/MyWorkIllustration"
-import uploadService from "../../services/upload"
+import MyWorkIllustration from "../../../components/icons/MyWorkIllustration"
+import uploadService from "../../../services/upload"
 import Grid from "@mui/material/Grid"
-import projectService from "../../services/project"
-import profileServices from "../../services/profile"
-import { ErrorComponent } from "../../components/alert"
+import projectService from "../../../services/project"
+import profileServices from "../../../services/profile"
+import { ErrorComponent } from "../../../components/alert"
 import { useRouter } from "next/router"
+import NavLayout from "../../../components/layouts/nav"
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -432,7 +433,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <NavLayout>{page}</NavLayout>
 }
 
 export default Page

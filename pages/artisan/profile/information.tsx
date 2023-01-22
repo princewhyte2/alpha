@@ -37,14 +37,15 @@ import { styled } from "@mui/material/styles"
 import Stack from "@mui/material/Stack"
 import AddIcon from "@mui/icons-material/Add"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
-import ProfileLayout from "../../components/layouts/profile"
+import ProfileLayout from "../../../components/layouts/profile"
 import useSWR, { useSWRConfig } from "swr"
-import profileServices from "../../services/profile"
-import locationService from "../../services/location"
-import uploadService from "../../services/upload"
-import { hobbiesList } from "../../utils"
-import { ErrorComponent } from "../../components/alert"
+import profileServices from "../../../services/profile"
+import locationService from "../../../services/location"
+import uploadService from "../../../services/upload"
+import { hobbiesList } from "../../../utils"
+import { ErrorComponent } from "../../../components/alert"
 import { Router, useRouter } from "next/router"
+import NavLayout from "../../../components/layouts/nav"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -1356,7 +1357,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <NavLayout>{page}</NavLayout>
 }
 
 export default Page

@@ -5,6 +5,11 @@ const joinAsArtisan = async () => {
   return response.data
 }
 
+const createCompany = async(data:any) => {
+  const response = await axiosInstance.post('/companies', data)
+  return response.data
+}
+
 const joinAsEmployer = async () => {
   const response = await axiosInstance.get('/join/as/employer')
   return response.data
@@ -88,7 +93,7 @@ const profileServices = {
   updateUserQualification,
   deleteUserQualification,
   updateUserWorkHistory,
-  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber
+  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber,createCompany
 }
 
 export default profileServices

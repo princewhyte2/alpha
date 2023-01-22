@@ -10,7 +10,10 @@ import ListItem from "@mui/material/ListItem"
 import ListItemButton from "@mui/material/ListItemButton"
 import ListItemText from "@mui/material/ListItemText"
 import Toolbar from "@mui/material/Toolbar"
+import ExpandLess from "@mui/icons-material/ExpandLess"
+import ExpandMore from "@mui/icons-material/ExpandMore"
 import Typography from "@mui/material/Typography"
+import Collapse from "@mui/material/Collapse"
 import Grid from "@mui/material/Grid"
 import Container from "@mui/material/Container"
 import useSWR from "swr"
@@ -32,37 +35,37 @@ interface Props {
 }
 
 const drawerWidth = 240
-const navItems = [
+const profileNav = [
   {
     name: "Profile Information",
-    route: "/profile/information",
+    route: "/artisan/profile/information",
   },
   {
     name: "My Work",
-    route: "/profile/mywork",
+    route: "/artisan/profile/mywork",
   },
   {
     name: "Password & Security",
-    route: "/profile/security",
+    route: "/artisan/profile/security",
   },
   {
     name: "Referral",
-    route: "/profile/referral",
+    route: "/artisan/profile/referral",
   },
 ]
 
 const mainNav = [
   {
     name: "Your Feed",
-    route: "/feed",
+    route: "/artisan/feed",
   },
   {
     name: "Connection",
-    route: "/connection",
+    route: "/artisan/connection",
   },
   {
     name: "Jobs",
-    route: "/jobs",
+    route: "/artisan/jobs",
   },
   {
     name: "Messaging",
@@ -70,7 +73,7 @@ const mainNav = [
   },
   {
     name: "Profile",
-    route: "/profile/information",
+    route: "/artisan/profile/information",
   },
 ]
 
@@ -79,6 +82,11 @@ export default function NavLayout(props: Props) {
   const { window, children } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const router = useRouter()
+  const [open, setOpen] = React.useState(true)
+
+  const handleClick = React.useCallback(() => {
+    setOpen(!open)
+  }, [open])
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -97,14 +105,37 @@ export default function NavLayout(props: Props) {
       <List>
         {mainNav.map((item) => (
           <ListItem key={item.name} disablePadding>
-            <ListItemButton onClick={() => router.push(item.route)} sx={{ textAlign: "left", color: "primary.dark" }}>
+            <ListItemButton
+              onClick={(e) => {
+                if (item.name === "Profile") {
+                  e.stopPropagation()
+                  handleClick()
+                } else {
+                  router.push(item.route)
+                }
+              }}
+              sx={{ textAlign: "left", color: "primary.dark" }}
+            >
               <ListItemText
                 sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
                 primary={item.name}
               />
+              {item.name !== "Profile" ? null : open ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
           </ListItem>
         ))}
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          {profileNav.map((item) => (
+            <List key={item.name} component="div" disablePadding>
+              <ListItemButton onClick={() => router.push(item.route)} sx={{ pl: 4 }}>
+                <ListItemText
+                  sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
+                  primary={item.name}
+                />
+              </ListItemButton>
+            </List>
+          ))}
+        </Collapse>
       </List>
     </Box>
   )

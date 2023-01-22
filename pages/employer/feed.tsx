@@ -7,6 +7,7 @@ import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
 import CardContent from "@mui/material/CardContent"
 import Button from "@mui/material/Button"
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import Typography from "@mui/material/Typography"
 import Dialog from "@mui/material/Dialog"
 import LoadingButton from "@mui/lab/LoadingButton"
@@ -36,11 +37,11 @@ import Container from "@mui/material/Container"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
-import ProfileLayout from "../components/layouts/profile"
-import NavLayout from "../components/layouts/nav"
+import ProfileLayout from "../../components/layouts/profile"
+import NavLayout from "../../components/layouts/nav"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import TiptapEditor from "../components/TiptapEditor"
+import TiptapEditor from "../../components/TiptapEditor"
 import BlockQuote from "@tiptap/extension-blockquote"
 import BulletList from "@tiptap/extension-bullet-list"
 import Bold from "@tiptap/extension-bold"
@@ -61,13 +62,14 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 
-import postService from "../services/post"
-import uploadService from "../services/upload"
-import { ErrorComponent } from "../components/alert"
-import NoPostIllustration from "../components/icons/NoPostIllustration"
-import htmlTruncate from "../lib/htmlTruncate"
-import { useAuth } from "../store"
-import profileServices from "../services/profile"
+import postService from "../../services/post"
+import uploadService from "../../services/upload"
+import { ErrorComponent } from "../../components/alert"
+import NoPostIllustration from "../../components/icons/NoPostIllustration"
+import htmlTruncate from "../../lib/htmlTruncate"
+import { useAuth } from "../../store"
+import profileServices from "../../services/profile"
+import EmployerNavLayout from "../../components/layouts/employernav"
 
 dayjs.extend(relativeTime)
 type BreakpointOrNull = Breakpoint | null
@@ -318,7 +320,9 @@ function Page() {
       try {
         const response = await postService.addComment(String(postId), { body: comment })
         mutate(`/posts/${postId}/comments`)
-        console.log("comment", response)
+        setMessage(response?.message)
+        setType("success")
+        setIsError(true)
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -353,6 +357,9 @@ function Page() {
       try {
         const response = await postService.deletePost(String(postId))
         mutate("posts")
+        setMessage(response?.message)
+        setType("success")
+        setIsError(true)
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -407,7 +414,7 @@ function Page() {
                 </Stack>
               </Paper>
               <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
-                {!posts && (
+                {!posts || posts?.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
@@ -417,18 +424,19 @@ function Page() {
                       </Typography>
                     </Stack>
                   </Stack>
+                ) : (
+                  posts?.map((item: any) => (
+                    <PostCard
+                      key={item.id}
+                      item={item}
+                      onUnLike={handleUnLike}
+                      onLike={handleLike}
+                      onComment={handleComment}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  ))
                 )}
-                {posts?.map((item: any) => (
-                  <PostCard
-                    key={item.id}
-                    item={item}
-                    onUnLike={handleUnLike}
-                    onLike={handleLike}
-                    onComment={handleComment}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
-                ))}
               </Stack>
             </Stack>
           </Grid>
@@ -458,38 +466,6 @@ function Page() {
                     </Typography>
                   </CardContent>
                 </Card>
-                <Paper
-                  elevation={3}
-                  sx={{ p: 2, boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE" }}
-                >
-                  <Typography sx={{ fontSize: 16 }} variant="body1" color="primary.main" gutterBottom>
-                    Recent Jobs Fitting your profile
-                  </Typography>
-                  <Stack spacing={2}>
-                    {[1, 2].map((item) => (
-                      <Box key={item} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
-                        <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
-                          Fashoin Designer
-                        </Typography>
-                        <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                          neque molestie et.
-                        </Typography>
-                        <Stack
-                          direction="row"
-                          sx={{ mt: 2 }}
-                          justifyContent="space-between"
-                          alignItems="center"
-                          spacing={2}
-                        >
-                          <Button variant="contained">Apply</Button>
-                          <Typography sx={{ fontSize: 12, color: "#475467" }}>Posted 2 days ago</Typography>
-                        </Stack>
-                      </Box>
-                    ))}
-                    <Button variant="text">View all</Button>
-                  </Stack>
-                </Paper>
               </Stack>
             </Grid>
           )}
@@ -573,7 +549,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <NavLayout>{page}</NavLayout>
+  return <EmployerNavLayout>{page}</EmployerNavLayout>
 }
 
 export default Page
@@ -621,6 +597,14 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
     return item.relationships.created_by.id === appUser?.id
   }, [item])
 
+  const [expanded, setExpanded] = useState(false)
+
+  const handleExpandClick = useCallback(() => {
+    setExpanded(!expanded)
+  }, [expanded])
+
+  // console.log("comments", postComments)
+
   return (
     <Card
       key={item.id}
@@ -640,33 +624,40 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
         }
         action={
           isPostCreator && (
-            <div>
-              <IconButton
-                aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={Boolean(anchorEl) ? "true" : undefined}
-                onClick={handleClick}
-                aria-label="settings"
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                }}
-              >
-                <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
-                <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
-              </Menu>
-            </div>
+            <Stack sx={{ pr: 1 }} direction={"column"} alignItems="flex-end" justifyContent="flex-end">
+              <div>
+                <IconButton
+                  aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  size="small"
+                  aria-expanded={Boolean(anchorEl) ? "true" : undefined}
+                  onClick={handleClick}
+                  aria-label="settings"
+                >
+                  <MoreHorizIcon fontSize="inherit" />
+                </IconButton>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    "aria-labelledby": "basic-button",
+                  }}
+                >
+                  <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
+                  <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
+                </Menu>
+              </div>
+              <Box sx={{ display: "flex", alignContent: "flex-start" }}>
+                <Typography sx={{ fontSize: 13, color: "#475467" }}>{dayjs(item.created_at).fromNow()}</Typography>
+              </Box>
+            </Stack>
           )
         }
         title={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
-        subheader={dayjs(item.created_at).fromNow()}
+        // subheader={dayjs(item.created_at).fromNow()}
+        subheader={`${item.relationships.created_by.title}`}
       />
       <CardContent>
         {
@@ -694,7 +685,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
           <ThumbUpIcon sx={isLiked ? null : { color: "#757575" }} />
           <Typography sx={{ fontSize: 13 }}>{item.total_likes} Likes</Typography>
         </Button>
-        <Button aria-label="add comments" sx={{ display: "flex", flexDirection: "column" }}>
+        <Button onClick={handleExpandClick} aria-label="add comments" sx={{ display: "flex", flexDirection: "column" }}>
           <ChatIcon />
           <Typography sx={{ fontSize: 13 }}>{item.total_comments} Comments</Typography>
         </Button>
@@ -703,41 +694,106 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
           <Typography sx={{ fontSize: 13 }}>7 Shares</Typography>
         </Button>
       </CardActions>
-      <CardContent>
-        <Stack direction="row" spacing={2}>
-          <Avatar
-            sx={{ bgcolor: red[500] }}
-            alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
-            src={item?.relationships.created_by.relationships.profile_image?.url}
-            aria-label="recipe"
-          />
-
-          <Stack sx={{ flexGrow: 1 }} direction="column" spacing={2}>
-            <TextField
-              fullWidth
-              value={userComment}
-              id="comment-field"
-              label="Add a comment "
-              placeholder="Add a comment "
-              variant="outlined"
-              margin="dense"
-              onChange={({ target }) => setUserComment(target.value)}
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <Stack direction="row" spacing={2}>
+            <Avatar
+              sx={{ bgcolor: red[500] }}
+              alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
+              src={item?.relationships.created_by.relationships.profile_image?.url}
+              aria-label="recipe"
             />
-            <Box>
-              <Button
-                onClick={() => {
-                  onComment(item.id, userComment)
-                  setUserComment("")
-                }}
-                disabled={Boolean(!userComment)}
-                variant="contained"
-              >
-                Post
-              </Button>
-            </Box>
+
+            <Stack sx={{ flexGrow: 1 }} direction="column" spacing={2}>
+              <TextField
+                fullWidth
+                value={userComment}
+                id="comment-field"
+                label="Add a comment "
+                placeholder="Add a comment "
+                variant="outlined"
+                margin="dense"
+                onChange={({ target }) => setUserComment(target.value)}
+              />
+              <Box>
+                <Button
+                  onClick={() => {
+                    onComment(item.id, userComment)
+                    setUserComment("")
+                  }}
+                  disabled={Boolean(!userComment)}
+                  variant="contained"
+                >
+                  Post
+                </Button>
+              </Box>
+            </Stack>
           </Stack>
-        </Stack>
-      </CardContent>
+          <Stack direction="column" sx={{ m: 2 }} spacing={2}>
+            {postComments?.map((item: any) => (
+              <Card
+                key={item.id}
+                sx={{
+                  width: "100%",
+                  boxShadow: "none",
+                  background: "#F8F9FC",
+                }}
+              >
+                <CardHeader
+                  avatar={
+                    <Avatar
+                      sx={{ bgcolor: red[500] }}
+                      alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
+                      src={item?.relationships.created_by.relationships.profile_image?.url}
+                      aria-label="recipe"
+                    />
+                  }
+                  action={
+                    // isPostCreator && (
+                    <Stack sx={{ pr: 1 }} direction={"column"} alignItems="flex-end" justifyContent="flex-end">
+                      {/* <div>
+                        <IconButton
+                          aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
+                          aria-haspopup="true"
+                          size="small"
+                          aria-expanded={Boolean(anchorEl) ? "true" : undefined}
+                          onClick={handleClick}
+                          aria-label="settings"
+                        >
+                          <MoreHorizIcon fontSize="inherit" />
+                        </IconButton>
+                        <Menu
+                          id="basic-menu"
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleClose}
+                          MenuListProps={{
+                            "aria-labelledby": "basic-button",
+                          }}
+                        >
+                          <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
+                          <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
+                        </Menu>
+                      </div> */}
+                      <Box sx={{ display: "flex", alignContent: "flex-start" }}>
+                        <Typography sx={{ fontSize: 13, color: "#475467" }}>
+                          {dayjs(item.created_at).fromNow()}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    // )
+                  }
+                  title={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
+                  subheader={item.relationships.created_by.title}
+                />
+                <CardContent>
+                  <Typography sx={{ fontSize: 14, color: "#1D2939" }}>body</Typography>
+                </CardContent>
+              </Card>
+            ))}
+          </Stack>
+        </CardContent>
+      </Collapse>
     </Card>
   )
 }

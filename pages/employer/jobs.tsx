@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react"
+import { ReactElement, useCallback, useState, useRef, FormEvent } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
@@ -7,12 +7,21 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
+import Menu from "@mui/material/Menu"
+import MenuItem from "@mui/material/MenuItem"
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
 import InputAdornment from "@mui/material/InputAdornment"
 import CardContent from "@mui/material/CardContent"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
 import IconButton, { IconButtonProps } from "@mui/material/IconButton"
+import Dialog from "@mui/material/Dialog"
+import LoadingButton from "@mui/lab/LoadingButton"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import CloseIcon from "@mui/icons-material/Close"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
@@ -20,7 +29,15 @@ import Paper from "@mui/material/Paper"
 import TextField from "@mui/material/TextField"
 import { styled } from "@mui/material/styles"
 import Chip from "@mui/material/Chip"
+import useSWR, { useSWRConfig } from "swr"
 import SearchIcon from "@mui/icons-material/Search"
+import { hobbiesList } from "../../utils"
+import Autocomplete from "@mui/material/Autocomplete"
+import InputLabel from "@mui/material/InputLabel"
+import { Breakpoint, Theme, ThemeProvider, useTheme, createTheme } from "@mui/material/styles"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import FormControl from "@mui/material/FormControl"
+import Select, { SelectChangeEvent } from "@mui/material/Select"
 import CardHeader from "@mui/material/CardHeader"
 import CardMedia from "@mui/material/CardMedia"
 import CardActions from "@mui/material/CardActions"
@@ -36,7 +53,12 @@ import MoreVertIcon from "@mui/icons-material/MoreVert"
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder"
 import EmployerNavLayout from "../../components/layouts/employernav"
 import { useRouter } from "next/router"
+import jobService from "../../services/job"
+import NoPostIllustration from "../../components/icons/NoPostIllustration"
+import { ErrorComponent } from "../../components/alert"
+import profileServices from "../../services/profile"
 
+dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
 }
@@ -45,6 +67,19 @@ interface TabPanelProps {
   children?: React.ReactNode
   index: number
   value: number
+}
+
+const debounce = (func: any) => {
+  let timer: any
+  return function (...args: any) {
+    // @ts-ignore
+    const context = this
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      timer = null
+      func.apply(context, args)
+    }, 500)
+  }
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -94,131 +129,237 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   )
 }
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(2),
+  },
+}))
+
+function BootstrapDialogTitle(props: DialogTitleProps) {
+  const { children, onClose, ...other } = props
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.primary.main,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  )
+}
 function Page() {
   const [value, setValue] = useState(0)
+  const [searchTerm, setSearchTerm] = useState("")
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
+  const { mutate } = useSWRConfig()
+  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs)
+  const [isLoading, setIsLoading] = useState(false)
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  const [skills, setSkills] = useState<string[]>([])
+  const [jobDetails, setJobDetails] = useState<any>()
+  const [isPostJob, setIsPostJob] = useState(false)
+
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<"error" | "success">("error")
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
+
+  const optimizedFn = useCallback(debounce(setSearchTerm), [])
+
+  const jobTitleRef = useRef<HTMLInputElement>()
+  const jobDescriptionRef = useRef<HTMLInputElement>()
+  const jobLocationRef = useRef<HTMLInputElement>()
+  const jobDurationRef = useRef<HTMLInputElement>()
+  const genderRef = useRef<HTMLInputElement>()
+  const closingDateRef = useRef<HTMLInputElement>()
+
+  const handlePostJob = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const data = {
+        company_id: user?.relationships.company.id,
+        user_id: user?.id,
+        title: jobTitleRef.current?.value,
+        description: jobDescriptionRef.current?.value,
+        location: jobLocationRef.current?.value,
+        duration: jobDurationRef.current?.value,
+        preferred_gender: genderRef.current?.value,
+        closing_at: closingDateRef.current?.value,
+        skills,
+      }
+      setIsLoading(true)
+      try {
+        if (jobDetails) {
+          const response = await jobService.updateJob(String(jobDetails.id), data)
+          mutate(`/jobs?searchTerm=${searchTerm}`)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
+        } else {
+          const response = await jobService.postJob(data)
+          mutate(`/jobs?searchTerm=${searchTerm}`)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
+        }
+        onCloseJobModal()
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [user, skills],
+  )
+
+  const onCloseJobModal = useCallback(() => {
+    setJobDetails(undefined)
+    setIsPostJob(false)
+    setSkills([])
+  }, [])
+
+  const handleEdit = useCallback(
+    (jobItem: any) => () => {
+      setSkills(jobItem.skills)
+      setJobDetails(jobItem)
+      setIsPostJob(true)
+    },
+    [],
+  )
+
+  const handleDelete = useCallback(
+    (jobId: number) => async () => {
+      try {
+        const response = await jobService.deleteJob(String(jobId))
+        mutate(`/jobs?searchTerm=${searchTerm}`)
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Container maxWidth="xl">
+      <Container disableGutters maxWidth="xl">
         <Grid container spacing={2}>
-          <Grid item xs={9}>
+          <Grid item xs={12} md={9}>
             <Container maxWidth="md">
-              <Stack sx={{ p: 2 }} direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
+              <Stack
+                sx={{ px: { xs: 0, md: 2 }, py: 2 }}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={1}
+              >
                 <Box>
                   <Typography sx={{ fontSize: 20 }} color="primary.dark">
                     Jobs
                   </Typography>
                 </Box>
-                <TextField
-                  id="search-connections"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton aria-label="Search for Jobs" edge="end">
-                          <SearchIcon sx={{ color: "primary.dark" }} />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  label="Search for Jobs"
-                  variant="outlined"
-                />
-                <Button
-                  onClick={() => router.push("/employer/create-job")}
-                  variant="contained"
-                  startIcon={<CreateNewFolderIcon />}
-                >
+                {matches && (
+                  <TextField
+                    id="search-connections"
+                    onChange={(e) => optimizedFn(e.target.value)}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton aria-label="Search for Jobs" edge="end">
+                            <SearchIcon sx={{ color: "primary.dark" }} />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    label="Search for Jobs"
+                    variant="outlined"
+                  />
+                )}
+                <Button onClick={() => setIsPostJob(true)} variant="contained" startIcon={<CreateNewFolderIcon />}>
                   Create Job
                 </Button>
               </Stack>
               <Stack direction="column" spacing={2}>
-                {[1, 2, 3, 4, 5].map((item) => (
-                  <Paper
-                    key={item}
-                    elevation={1}
-                    sx={{
-                      p: 2,
-                      boxShadow:
-                        " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
-                      borderRadius: "8px",
-                      width: "100%",
-                    }}
-                  >
-                    <Stack direction="column" spacing={2}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-                        <Typography sx={{ fontSize: 20 }} color="primary.main">
-                          Fashoin Designer
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.dark">
-                          Name of Company/Author
-                        </Typography>
-                      </Stack>
-                      <Typography sx={{ fontSize: 14, color: "#667085" }}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                        neque molestie et. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales
-                        tempus diam vel, neque molestie et.
-                      </Typography>
-                      <Stack direction="row" spacing={1}>
-                        <Chip label="Tailor" />
-                        <Chip label="Embroidery" />
-                        <Chip label="Monogram" />
-                      </Stack>
-                      <Stack direction="row" spacing={2}>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Location: Lagos
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Job Duration: 6 Months
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Gender Required: Male
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Closing Date:30/12/2022
-                        </Typography>
-                      </Stack>
-                      <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
-                        <Button variant="text">View applications</Button>
-                        <Typography sx={{ fontSize: 12 }} color="primary.main">
-                          Posted 2 days ago
-                        </Typography>
-                      </Stack>
+                {!jobsList || jobsList.length < 1 ? (
+                  <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
+                    <NoPostIllustration />
+                    <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
+                      <Typography sx={{ fontSize: 16, color: "#1F204A" }}>There is no job to display.</Typography>
                     </Stack>
-                  </Paper>
-                ))}
+                  </Stack>
+                ) : (
+                  jobsList?.map((item: any) => (
+                    <JobCard key={item.id} item={item} onEdit={handleEdit} onDelete={handleDelete} />
+                  ))
+                )}
               </Stack>
             </Container>
           </Grid>
-          <Grid item xs={3}>
-            <Stack direction="column" spacing={3} sx={{ p: 2 }}>
-              <Card
-                sx={{
-                  backgroundColor: "#F8F9FC",
-                  boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE",
-                }}
-              >
-                <CardContent>
-                  <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                    <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+          {matches && (
+            <Grid item xs={3}>
+              <Stack direction="column" spacing={3} sx={{ p: 2 }}>
+                <Card
+                  sx={{
+                    backgroundColor: "#F8F9FC",
+                    boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE",
+                  }}
+                >
+                  <CardContent>
+                    <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
+                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Typography sx={{ fontSize: 16 }} color="primary.main">
+                        Babatunde Olakunle
+                      </Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                    </Stack>
+                    <Box sx={{ width: "100%", my: "2rem" }}>
+                      <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
+                      <LinearProgressWithLabel value={80} />
+                    </Box>
                     <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      Babatunde Olakunle
+                      40 Connections
                     </Typography>
-                    <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
-                  </Stack>
-                  <Box sx={{ width: "100%", my: "2rem" }}>
-                    <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
-                    <LinearProgressWithLabel value={80} />
-                  </Box>
-                  <Typography sx={{ fontSize: 16 }} color="primary.main">
-                    40 Connections
-                  </Typography>
-                </CardContent>
-              </Card>
-              {/* <Paper
+                  </CardContent>
+                </Card>
+                {/* <Paper
                 elevation={3}
                 sx={{ p: 2, boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE" }}
               >
@@ -250,10 +391,143 @@ function Page() {
                   <Button variant="text">View all</Button>
                 </Stack>
               </Paper> */}
-            </Stack>
-          </Grid>
+              </Stack>
+            </Grid>
+          )}
         </Grid>
       </Container>
+      <BootstrapDialog
+        PaperProps={{ style: { margin: 8 } }}
+        open={isPostJob}
+        fullWidth
+        onClose={onCloseJobModal}
+        aria-labelledby="workhistory-modal-title"
+        aria-describedby="workhistory-modal-description"
+      >
+        <BootstrapDialogTitle onClose={onCloseJobModal} id="title-work-history">
+          {jobDetails ? "Update" : "Create"} Job
+        </BootstrapDialogTitle>
+        <DialogContent>
+          <Box
+            component="form"
+            onSubmit={handlePostJob}
+            sx={{
+              width: "100%",
+              // px: { xs: "1rem", md: "3rem" },
+              mt: 1,
+            }}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={8}>
+                <TextField
+                  fullWidth
+                  id="profile-title"
+                  placeholder="Job  Title"
+                  label="Job  Title"
+                  variant="outlined"
+                  inputRef={jobTitleRef}
+                  required
+                  defaultValue={jobDetails?.title || ""}
+                />
+              </Grid>
+              <Grid item xs={12} md={12}>
+                <TextField
+                  fullWidth
+                  id="profile-title"
+                  placeholder="Description"
+                  label="Job Description"
+                  variant="outlined"
+                  defaultValue={jobDetails?.description || ""}
+                  multiline
+                  minRows={4}
+                  inputRef={jobDescriptionRef}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={12}>
+                <Autocomplete
+                  multiple
+                  fullWidth
+                  value={skills}
+                  onChange={(_ev, val) => setSkills(val)}
+                  options={hobbiesList}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Skills Needed" variant="outlined" placeholder="Skills Needed" />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <TextField
+                  fullWidth
+                  id="profile-title"
+                  placeholder="eg 234, Odogbolu street, surulere, lagos"
+                  label="Job Location"
+                  variant="outlined"
+                  required
+                  defaultValue={jobDetails?.location || ""}
+                  inputRef={jobLocationRef}
+                />
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <TextField
+                  fullWidth
+                  id="profile-title"
+                  placeholder="eg 8 months"
+                  label="Job Duration"
+                  variant="outlined"
+                  required
+                  defaultValue={jobDetails?.duration || ""}
+                  inputRef={jobDurationRef}
+                />
+              </Grid>
+              {/* <Grid item xs={12} md={4}></Grid> */}
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Gender Required</InputLabel>
+                  <Select
+                    labelId="gender-select-label"
+                    id="gender-select"
+                    placeholder="Gender"
+                    inputRef={genderRef}
+                    label="Gender Required"
+                    required
+                    defaultValue={jobDetails?.preferred_gender || ""}
+                  >
+                    <MenuItem value={"male"}>Male</MenuItem>
+                    <MenuItem value={"female"}>Female</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  id="date"
+                  label="Closing Date"
+                  type="date"
+                  fullWidth
+                  inputRef={closingDateRef}
+                  defaultValue={jobDetails?.closing_at.split(" ")[0] || ""}
+                  required
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <LoadingButton
+                  disabled={skills.length <= 0}
+                  type="submit"
+                  loading={isLoading}
+                  fullWidth
+                  variant="contained"
+                >
+                  Save
+                </LoadingButton>
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+      </BootstrapDialog>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }
@@ -263,3 +537,90 @@ Page.getLayout = function getLayout(page: ReactElement) {
 }
 
 export default Page
+
+function JobCard({ item, onEdit, onDelete }: any) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
+
+  console.log("applicants", jobApplicantsList)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+  return (
+    <Paper
+      key={item.id}
+      elevation={1}
+      sx={{
+        p: 2,
+        boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+        borderRadius: "8px",
+        width: "100%",
+      }}
+    >
+      <Stack direction="column" spacing={2}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+          <Typography sx={{ fontSize: 20 }} color="primary.main">
+            {item.title}
+          </Typography>
+          {/* <Typography sx={{ fontSize: 14 }} color="primary.dark">
+                            Name of Company/Author
+                          </Typography> */}
+          <div>
+            <IconButton
+              aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              size="small"
+              aria-expanded={Boolean(anchorEl) ? "true" : undefined}
+              onClick={handleClick}
+              aria-label="settings"
+            >
+              <MoreHorizIcon fontSize="inherit" />
+            </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
+              <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
+            </Menu>
+          </div>
+        </Stack>
+        <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography>
+        <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
+          {item.skills.map((skill: string) => (
+            <Chip key={skill} label={skill} />
+          ))}
+        </Stack>
+        <Stack sx={{ flexWrap: "wrap", gap: 2 }} direction="row">
+          <Typography sx={{ fontSize: 13 }} color="primary.main">
+            Location: {item.location}
+          </Typography>
+          <Typography sx={{ fontSize: 13 }} color="primary.main">
+            Job Duration: {item.duration}
+          </Typography>
+          <Typography sx={{ fontSize: 13 }} color="primary.main">
+            Gender Required: {item.preferred_gender}
+          </Typography>
+          <Typography sx={{ fontSize: 13 }} color="primary.main">
+            Closing Date: {dayjs().to(item.closing_at)}
+          </Typography>
+        </Stack>
+        <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
+          <Button variant="text">View applications</Button>
+          <Typography sx={{ fontSize: 12 }} color="primary.main">
+            Posted {dayjs(item.created_at).fromNow()}
+          </Typography>
+        </Stack>
+      </Stack>
+    </Paper>
+  )
+}

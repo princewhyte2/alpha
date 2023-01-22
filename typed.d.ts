@@ -86,7 +86,7 @@ interface OnboardingData { other_phone_number:string, title?: string, first_name
      interface DialogTitleProps {
   id: string
   children?: React.ReactNode
-  onClose: () => void
+  onClose?: () => void
      }
  interface SecurityQuestion {
         id: number;

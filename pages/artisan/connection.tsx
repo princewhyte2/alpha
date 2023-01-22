@@ -33,8 +33,8 @@ import Container from "@mui/material/Container"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
-import ProfileLayout from "../components/layouts/profile"
-import NavLayout from "../components/layouts/nav"
+import ProfileLayout from "../../components/layouts/profile"
+import NavLayout from "../../components/layouts/nav"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean

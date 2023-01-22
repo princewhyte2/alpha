@@ -42,6 +42,7 @@ import ProfileLayout from "../../../components/layouts/profile"
 import EmployerProfileLayout from "../../../components/layouts/employerProfile"
 import profileServices from "../../../services/profile"
 import locationService from "../../../services/location"
+import EmployerNavLayout from "../../../components/layouts/employernav"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -116,15 +117,10 @@ function Page() {
   const { data: countryList } = useSWR("countries", locationService.countriesFetcher)
   const { data: statesList } = useSWR(`country_id=${countryId}`, locationService.statesFetcher)
   //   const { data: qualificationsList } = useSWR(`qualificationsList`, profileServices.qualifcationsFetcher)
+  const [logo, setLogo] = useState<any>()
   const [isEditPersonalInfo, setIsEditPersonalInfo] = useState(false)
-  const [isEditOccupation, setIsEditOccupation] = useState(false)
-  const [isEditEducation, setIsEditEducation] = useState(false)
-  const [isEditWorkHistory, setIsEditWorkHistory] = useState(false)
+  const [isEditBusinessInfo, setisEditBusinessInfo] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(false)
-
-  const [isEditHobbies, setIsEditHobbies] = useState(false)
-  const [educationId, setEducationId] = useState<UserQualification | undefined>()
-  const [workId, setWorkId] = useState<UserWorkHistory | undefined>()
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -141,26 +137,16 @@ function Page() {
   const stateRef = useRef<HTMLInputElement>()
   const otherNumberRef = useRef<HTMLInputElement>()
 
-  //qualification refs
-  const institutionRef = useRef<HTMLInputElement>()
-  const graduationDateRef = useRef<HTMLInputElement>()
-  const qualificationIdRef = useRef<HTMLInputElement>()
-
-  //work experience refs
-  const companyNameRef = useRef<HTMLInputElement>()
-  const jobTitleRef = useRef<HTMLInputElement>()
-  const workStartDateRef = useRef<HTMLInputElement>()
-  const workEndDateRef = useRef<HTMLInputElement>()
-  const workSummaryRef = useRef<HTMLInputElement>()
-  const presentWorkRef = useRef<HTMLInputElement>(null)
-  const [isPresentWork, setIsPresentWork] = useState(Boolean(workId?.end_date === null) || false)
+  //references to form
+  const businessNameRef = useRef<HTMLInputElement>()
+  const websiteRef = useRef<HTMLInputElement>()
+  const businessEmailRef = useRef<HTMLInputElement>()
+  const businessAddressRef = useRef<HTMLInputElement>()
+  const industryRef = useRef<HTMLInputElement>()
 
   //loading states
   const [isOnBoardingLoading, setIsOnBoardingLoading] = useState(false)
-  const [isWorkloading, setIsWorkLoading] = useState(false)
-  const [isEducationLoading, setIsEducationLoading] = useState(false)
-
-  //   const [hobbies, setHobbies] = useState<string[]>(() => user?.hobbies ?? [])
+  const [loading, setLoading] = useState(false)
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return
@@ -200,23 +186,25 @@ function Page() {
       gender: genderRef.current?.value,
       country_id: countryId,
       state_id: stateRef.current?.value,
+      other_phone_number: otherNumberRef.current?.value,
     }
     setIsOnBoardingLoading(true)
     try {
       //   if (otherNumberRef.current?.value !== user?.relationships?.phone_numbers[1]?.phone_number) {
       // await profileServices.addPhoneNumber({ phone_number: otherNumberRef.current?.value as string })
       //   }
-      //   const response = await profileServices.updateUserProfile(data as OnboardingData)
+      const response = await profileServices.updateUserProfile(data as OnboardingData)
 
-      //   setMessage(response?.message)
+      mutate("userProfile")
+      setMessage(response?.message)
       setType("success")
       setIsError(true)
       setIsEditPersonalInfo(false)
-      mutate("userProfile")
     } catch (error: any) {
       setType("error")
       if (error.response) {
         setMessage(error.response.data.message)
+        setType("error")
       } else if (error.request) {
         console.log(error.request)
       } else {
@@ -228,35 +216,27 @@ function Page() {
     }
   }
 
-  const handleAddQualifications = useCallback(
-    async (e: FormEvent<HTMLFormElement>) => {
+  console.log("user", user)
+
+  const handleCreateCompany = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
-      const data = {
-        qualification_id: Number(qualificationIdRef.current?.value),
-        course_of_study: "",
-        institution: institutionRef.current?.value,
-        month_of_graduation: new Date(graduationDateRef.current?.value as string).getMonth() + 1,
-        year_of_graduation: new Date(graduationDateRef.current?.value as string).getFullYear(),
-      }
-      setIsEducationLoading(true)
+      setLoading(true)
       try {
-        if (educationId) {
-          //   const response = await profileServices.updateUserQualification(
-          //     String(educationId.detail.id),
-          //     data as QualificationsPostData,
-          //   )
-          //   setMessage(response?.message)
-          setType("success")
-          setIsError(true)
-          mutate("userProfile")
-        } else {
-          //   const response = await profileServices.addUserQualification(data as QualificationsPostData)
-          //   setMessage(response?.message)
-          setType("success")
-          setIsError(true)
-          mutate("userProfile")
+        const data = {
+          owned_by: user?.id,
+          name: businessNameRef.current?.value,
+          website: websiteRef.current?.value,
+          address: businessAddressRef.current?.value,
+          email: businessEmailRef.current?.value,
+          logo_image_id: logo?.id,
+          industry_id: industryRef.current?.value,
         }
-        onCloseEducationBootstrapDialog()
+        const response = await profileServices.createCompany(data)
+        mutate("userProfile")
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -268,146 +248,10 @@ function Page() {
         }
         setIsError(true)
       } finally {
-        setIsEducationLoading(false)
+        setLoading(false)
       }
     },
-    [educationId],
-  )
-
-  const handleAddWorkExperience = useCallback(
-    async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      const data = {
-        company_name: companyNameRef.current?.value,
-        job_title: jobTitleRef.current?.value,
-        start_month: new Date(workStartDateRef.current?.value as string).getMonth() + 1,
-        start_year: new Date(workStartDateRef.current?.value as string).getFullYear(),
-        end_month: isPresentWork ? null : new Date(workEndDateRef.current?.value as string).getMonth() + 1,
-        end_year: isPresentWork ? null : new Date(workEndDateRef.current?.value as string).getFullYear(),
-        summary: workSummaryRef.current?.value,
-      }
-
-      setIsWorkLoading(true)
-      try {
-        if (workId) {
-          //   const response = await profileServices.updateUserWorkHistory(
-          //     String(workId.id),
-          //     data as WorkExperiencePostData,
-          //   )
-          //   setMessage(response?.message)
-          setType("success")
-          setIsError(true)
-          mutate("userProfile")
-        } else {
-          //   const response = await profileServices.addUserWorkHistory(data as WorkExperiencePostData)
-          //   setMessage(response?.message)
-          setType("success")
-          setIsError(true)
-          mutate("userProfile")
-        }
-        onCloseWorkHistoryBootstrapDialog()
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
-      } finally {
-        setIsWorkLoading(false)
-      }
-    },
-    [workId, isPresentWork],
-  )
-
-  const handleUpateHobbies = async () => {
-    // if (!hobbies?.length) {
-    //   setIsEditHobbies(false)
-    //   return
-    // }
-    try {
-      //   const response = await profileServices.updateHobbies(hobbies)
-      //   setMessage(response?.message)
-      setType("success")
-      setIsError(true)
-      mutate("userProfile")
-    } catch (error: any) {
-      setType("error")
-      if (error.response) {
-        setMessage(error.response.data.message)
-      } else if (error.request) {
-        console.log(error.request)
-      } else {
-        console.log("Error", error.message)
-      }
-      setIsError(true)
-    }
-    setIsEditHobbies(false)
-  }
-
-  //close modals
-  const onCloseEducationBootstrapDialog = useCallback(() => {
-    setIsEditEducation(false)
-    setEducationId(undefined)
-  }, [])
-
-  const onCloseWorkHistoryBootstrapDialog = useCallback(() => {
-    setIsEditWorkHistory(false)
-    setWorkId(undefined)
-    setIsPresentWork(false)
-  }, [])
-
-  const handleIsPresentWorkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsPresentWork(event.target.checked)
-  }
-
-  const handleDeleteEducation = useCallback(
-    (id: string) => async (e: any) => {
-      try {
-        // const response = await profileServices.deleteUserQualification(id)
-        // setMessage(response?.message)
-        // setType("success")
-        setIsError(true)
-        mutate("userProfile")
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
-      }
-    },
-    [],
-  )
-
-  const handleDeleteWorkHistory = useCallback(
-    (id: string) => async (e: any) => {
-      try {
-        // const response = await profileServices.deleteUserWorkHistory(id)
-        // setMessage(response?.message)
-        // setType("success")
-        setIsError(true)
-        mutate("userProfile")
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
-      }
-    },
-    [],
+    [user, logo],
   )
 
   // console.log("profile", user)
@@ -435,7 +279,7 @@ function Page() {
                   )
                 }
               >
-                <Avatar sx={{ width: "140px", height: "140px" }} alt={`richard`} src={""} />
+                <Avatar sx={{ width: "140px", height: "140px" }} alt={`richard`} src={logo?.url} />
               </Badge>
             </Grid>
           )}
@@ -477,7 +321,7 @@ function Page() {
             </Stack>
 
             <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
-              {!isEditPersonalInfo ? (
+              {!isEditBusinessInfo ? (
                 <>
                   <Box
                     sx={{
@@ -495,7 +339,7 @@ function Page() {
                       </Grid>
                       <Grid item>
                         <Button
-                          onClick={() => setIsEditPersonalInfo(true)}
+                          onClick={() => setisEditBusinessInfo(true)}
                           variant="text"
                           startIcon={<BorderColorIcon />}
                         >
@@ -620,132 +464,30 @@ function Page() {
                     pb: "1rem",
                   }}
                 >
-                  <Typography sx={{ color: "primary.dark", mb: "3rem" }} variant="body1">
+                  {/* <Typography sx={{ color: "primary.dark", mb: "3rem" }} variant="body1">
                     Update your personal information
-                  </Typography>
+                  </Typography> */}
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
                       <TextField
                         fullWidth
-                        id="profile-title"
+                        id="business-profile-title"
                         inputRef={titleRef}
                         defaultValue={'user?.title || ""'}
-                        placeholder="e.g Fashion Designer, Plumber e.t.c"
-                        label="Title"
+                        placeholder="Business Name"
+                        label="Business Name"
                         variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={4}></Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        defaultValue={'user?.first_name || ""'}
-                        fullWidth
-                        inputRef={firstNameRef}
-                        id="profile-firstName"
-                        label="First Name"
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        defaultValue={'user?.middle_name || ""'}
-                        fullWidth
-                        inputRef={middleNameRef}
-                        id="profile-midName"
-                        label="Middle Name"
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        defaultValue={'user?.last_name || ""'}
-                        fullWidth
-                        inputRef={lastNameRef}
-                        id="profile-lastName"
-                        label="Last Name"
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Gender</InputLabel>
-                        <Select
-                          labelId="gender-select-label"
-                          id="gender-select"
-                          defaultValue={'user?.gender || ""'}
-                          placeholder="Gender"
-                          label="Gender"
-                          inputRef={genderRef}
-                        >
-                          <MenuItem value={"male"}>Male</MenuItem>
-                          <MenuItem value={"female"}>Female</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        id="date"
-                        label="Date of Birth"
-                        type="date"
-                        inputRef={dobRef}
-                        defaultValue={"user?.date_of_birth"}
-                        fullWidth
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
                       />
                     </Grid>
                     <Grid item xs={12} md={8}>
                       <TextField
-                        label="Email"
-                        id="email-start-adornment"
-                        disabled
-                        defaultValue={'user?.email || ""'}
                         fullWidth
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <EmailIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                      <TextField
-                        label="Phone Number"
-                        id="phone-number-start-adornment"
-                        defaultValue={'user?.relationships?.phone_numbers[0]?.phone_number || ""'}
-                        disabled
-                        fullWidth
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <PhoneIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                      <Button variant="text" startIcon={<AddIcon />}>
-                        Add Another Phone No
-                      </Button>
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                      <TextField
-                        label="Other Number "
-                        id="phone-number-start-adornment"
-                        inputRef={otherNumberRef}
-                        defaultValue={'user?.relationships?.phone_numbers[1]?.phone_number || ""'}
-                        fullWidth
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <PhoneIcon />
-                            </InputAdornment>
-                          ),
-                        }}
+                        id="business-profile-address"
+                        inputRef={titleRef}
+                        defaultValue={'user?.title || ""'}
+                        placeholder="Address"
+                        label="Business/Office Address"
+                        variant="outlined"
                       />
                     </Grid>
                     <Grid item xs={4}></Grid>
@@ -759,11 +501,11 @@ function Page() {
                           label="Country"
                           onChange={({ target }) => setCountryId(target.value)}
                         >
-                          {/* {countryList?.map((country: { id: number; name: string }) => (
+                          {countryList?.map((country: { id: number; name: string }) => (
                             <MenuItem key={country.id} value={country.id}>
                               {country.name}
                             </MenuItem>
-                          ))} */}
+                          ))}
                         </Select>
                       </FormControl>
                     </Grid>
@@ -777,18 +519,65 @@ function Page() {
                           label="Gender"
                           inputRef={stateRef}
                         >
-                          {/* {statesList?.map((state: { id: number; name: string }) => (
+                          {statesList?.map((state: { id: number; name: string }) => (
                             <MenuItem key={state.id} value={state.id}>
                               {state.name}
                             </MenuItem>
-                          ))} */}
+                          ))}
                         </Select>
                       </FormControl>
                     </Grid>
 
+                    <Grid item xs={12} md={8}>
+                      <TextField
+                        label="Company Email Address"
+                        id="email-start-business"
+                        placeholder="Email Address"
+                        defaultValue={'user?.email || ""'}
+                        fullWidth
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <EmailIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={12}>
+                      <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Business Sector</InputLabel>
+                        <Select
+                          labelId="gender-select-label"
+                          id="gender-select"
+                          defaultValue={"Fashion"}
+                          placeholder="Gender"
+                          label="Gender"
+                          inputRef={genderRef}
+                        >
+                          <MenuItem value={"Fashion"}>Fashion</MenuItem>
+                          {/* <MenuItem value={"female"}>Female</MenuItem> */}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} md={8}>
+                      <TextField
+                        defaultValue={'user?.last_name || ""'}
+                        fullWidth
+                        multiline
+                        rows={4}
+                        placeholder="Description"
+                        inputRef={lastNameRef}
+                        id="profile-lastName"
+                        label="Services Provided"
+                        variant="outlined"
+                      />
+                    </Grid>
+
                     <Grid item xs={12} md={5}>
                       <Stack spacing={2} direction="row">
-                        <Button onClick={() => setIsEditPersonalInfo(false)} fullWidth color="error" variant="outlined">
+                        <Button onClick={() => setisEditBusinessInfo(false)} fullWidth color="error" variant="outlined">
                           Cancel
                         </Button>
                         <LoadingButton
@@ -1073,11 +862,11 @@ function Page() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} md={8}>
+                    {/* <Grid item xs={12} md={8}>
                       <Button variant="text" startIcon={<AddIcon />}>
                         Add Another Phone No
                       </Button>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} md={8}>
                       <TextField
                         label="Other Number "
@@ -1161,7 +950,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerProfileLayout>{page}</EmployerProfileLayout>
+  return <EmployerNavLayout>{page}</EmployerNavLayout>
 }
 
 export default Page

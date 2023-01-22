@@ -33,8 +33,9 @@ import Container from "@mui/material/Container"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
-import ProfileLayout from "../components/layouts/profile"
-import NavLayout from "../components/layouts/nav"
+import ProfileLayout from "../../components/layouts/profile"
+import NavLayout from "../../components/layouts/nav"
+import EmployerNavLayout from "../../components/layouts/employernav"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -107,9 +108,10 @@ function Page() {
             <Container maxWidth="md">
               <Stack sx={{ p: 2 }} direction="row" justifyContent="center" alignItems="center" spacing={1}>
                 <Box sx={{ width: "100%" }}>
-                  <Typography sx={{ fontSize: 20 }} color="primary.dark">
-                    Jobs
-                  </Typography>
+                  <Tabs value={value} onChange={handleChange} aria-label="secondary tabs example">
+                    <Tab label="Connections(10)" {...a11yProps(0)} />
+                    <Tab label="Invitations(4)" {...a11yProps(1)} />
+                  </Tabs>
                 </Box>
                 <TextField
                   sx={{ width: "100%" }}
@@ -117,72 +119,116 @@ function Page() {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton aria-label="Search for Jobs" edge="end">
+                        <IconButton aria-label="Search for artisans.." edge="end">
                           <SearchIcon sx={{ color: "primary.dark" }} />
                         </IconButton>
                       </InputAdornment>
                     ),
                   }}
-                  label="Search for Jobs"
+                  label="Search for artisans.."
                   variant="outlined"
                 />
               </Stack>
-              <Stack direction="column" spacing={2}>
-                {[1, 2, 3, 4, 5].map((item) => (
-                  <Paper
-                    key={item}
-                    elevation={1}
-                    sx={{
-                      p: 2,
-                      boxShadow:
-                        " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
-                      borderRadius: "8px",
-                      width: "100%",
-                    }}
-                  >
-                    <Stack direction="column" spacing={2}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-                        <Typography sx={{ fontSize: 20 }} color="primary.main">
-                          Fashoin Designer
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.dark">
-                          Name of Company/Author
-                        </Typography>
+              <TabPanel value={value} index={0}>
+                <Stack direction="column" spacing={1}>
+                  {[1, 2, 3, 4, 5].map((item) => (
+                    <Paper
+                      key={item}
+                      elevation={1}
+                      sx={{
+                        p: 2,
+                        boxShadow:
+                          " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                        borderRadius: "8px",
+                        width: "100%",
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={3}>
+                        <Avatar
+                          alt="Remy Sharp"
+                          src="/static/images/avatar/1.jpg"
+                          sx={{ width: "100px", height: "100px" }}
+                        />
+                        <Stack
+                          sx={{ flexGrow: 1 }}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          spacing={1}
+                        >
+                          <Stack direction="column" spacing={1}>
+                            <Typography sx={{ fontSize: 16 }} color="primary.main">
+                              Olakunle Babatunde
+                            </Typography>
+                            <Typography sx={{ fontSize: 14, color: "#667085" }}>Olakunle Babatunde</Typography>
+                            <Stack direction="row" spacing={1}>
+                              <Chip label="Tailor" />
+                              <Chip label="Embroidery" />
+                              <Chip label="Monogram" />
+                            </Stack>
+                          </Stack>
+                          <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                            <IconButton aria-label="options">
+                              <MoreHorizIcon />
+                            </IconButton>
+                            <Button variant="contained">Message</Button>
+                          </Stack>
+                        </Stack>
                       </Stack>
-                      <Typography sx={{ fontSize: 14, color: "#667085" }}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                        neque molestie et. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales
-                        tempus diam vel, neque molestie et.
-                      </Typography>
-                      <Stack direction="row" spacing={1}>
-                        <Chip label="Tailor" />
-                        <Chip label="Embroidery" />
-                        <Chip label="Monogram" />
+                    </Paper>
+                  ))}
+                </Stack>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                <Stack direction="column" spacing={1}>
+                  {[1, 2, 3, 4, 5].map((item) => (
+                    <Paper
+                      key={item}
+                      elevation={1}
+                      sx={{
+                        p: 2,
+                        boxShadow:
+                          " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                        borderRadius: "8px",
+                        width: "100%",
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={3}>
+                        <Avatar
+                          alt="Remy Sharp"
+                          src="/static/images/avatar/1.jpg"
+                          sx={{ width: "100px", height: "100px" }}
+                        />
+                        <Stack
+                          sx={{ flexGrow: 1 }}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          spacing={1}
+                        >
+                          <Stack direction="column" spacing={1}>
+                            <Typography sx={{ fontSize: 16 }} color="primary.main">
+                              Olakunle Babatunde
+                            </Typography>
+                            <Typography sx={{ fontSize: 14, color: "#667085" }}>Olakunle Babatunde</Typography>
+                            <Stack direction="row" spacing={1}>
+                              <Chip label="Tailor" />
+                              <Chip label="Embroidery" />
+                              <Chip label="Monogram" />
+                            </Stack>
+                          </Stack>
+                          <Stack direction="row" justifyItems={"center"} alignItems={"flex-end"} spacing={1}>
+                            <Button color="error" variant="outlined">
+                              Reject
+                            </Button>
+                            <Button variant="contained">Accept</Button>
+                          </Stack>
+                        </Stack>
                       </Stack>
-                      <Stack direction="row" spacing={2}>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Location: Lagos
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Job Duration: 6 Months
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Gender Required: Male
-                        </Typography>
-                        <Typography sx={{ fontSize: 14 }} color="primary.main">
-                          Closing Date:30/12/2022
-                        </Typography>
-                      </Stack>
-                      <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
-                        <Button variant="contained">Apply</Button>
-                        <Typography sx={{ fontSize: 12 }} color="primary.main">
-                          Posted 2 days ago
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  </Paper>
-                ))}
-              </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              </TabPanel>
             </Container>
           </Grid>
           <Grid item xs={3}>
@@ -251,7 +297,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <NavLayout>{page}</NavLayout>
+  return <EmployerNavLayout>{page}</EmployerNavLayout>
 }
 
 export default Page

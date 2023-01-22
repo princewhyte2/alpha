@@ -2,7 +2,7 @@ import { ReactElement, useState, useRef, useCallback, FormEvent } from "react"
 import useSWR, { useSWRConfig } from "swr"
 import { AlertColor } from "@mui/material"
 import Box from "@mui/material/Box"
-import ProfileLayout from "../../../components/layouts/profile"
+import ProfileLayout from "../../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
@@ -17,8 +17,9 @@ import IconButton from "@mui/material/IconButton"
 import FormControl from "@mui/material/FormControl"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import { useRouter } from "next/router"
-import securityService from "../../../services/security"
-import { ErrorComponent } from "../../../components/alert"
+import securityService from "../../../../services/security"
+import { ErrorComponent } from "../../../../components/alert"
+import NavLayout from "../../../../components/layouts/nav"
 
 function Page() {
   const router = useRouter()
@@ -221,7 +222,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <NavLayout>{page}</NavLayout>
 }
 
 export default Page

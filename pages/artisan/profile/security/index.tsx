@@ -1,6 +1,6 @@
 import type { ReactElement } from "react"
 import Box from "@mui/material/Box"
-import ProfileLayout from "../../../components/layouts/profile"
+import ProfileLayout from "../../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
@@ -12,6 +12,7 @@ import SecurityIcon from "@mui/icons-material/Security"
 import PhoneIcon from "@mui/icons-material/Phone"
 import MailIcon from "@mui/icons-material/Mail"
 import { useRouter } from "next/router"
+import NavLayout from "../../../../components/layouts/nav"
 
 const navItems = [
   { icon: <LockOpenIcon color="primary" />, name: "Change Password", route: "/profile/security/change-password" },
@@ -46,7 +47,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <NavLayout>{page}</NavLayout>
 }
 
 export default Page

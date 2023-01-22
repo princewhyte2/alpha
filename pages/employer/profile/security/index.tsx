@@ -12,6 +12,8 @@ import PhoneIcon from "@mui/icons-material/Phone"
 import MailIcon from "@mui/icons-material/Mail"
 import { useRouter } from "next/router"
 import ProfileLayout from "../../../../components/layouts/profile"
+import EmployerProfileLayout from "../../../../components/layouts/employerProfile"
+import EmployerNavLayout from "../../../../components/layouts/employernav"
 
 const navItems = [
   {
@@ -58,7 +60,7 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <ProfileLayout>{page}</ProfileLayout>
+  return <EmployerNavLayout>{page}</EmployerNavLayout>
 }
 
 export default Page

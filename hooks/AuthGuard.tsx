@@ -1,9 +1,12 @@
 import { useRouter } from "next/router"
+import useSWR from "swr"
 import { useLayoutEffect } from "react"
 import { useAuth } from "../store"
+import profileServices from "../services/profile"
 
 export function AuthGuard({ children }: { children: JSX.Element }) {
-  const user = useAuth((state: any): any => state.user)
+  // const user = useAuth((state: any): any => state.user)
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const initializing = useAuth((state: any): any => state.initializing)
   const router = useRouter()
 
@@ -14,6 +17,9 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
         // remember the page that user tried to access
         // setRedirect(router.route)
         router.push(`/auth/login?redirect=${router.route}`)
+      }
+      if (user && !user?.has_verified_email) {
+        router.push(`/auth/verification`)
       }
     }
   }, [initializing, router, user])

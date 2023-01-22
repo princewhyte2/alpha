@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react"
+import { FormEvent, ReactElement, useCallback, useRef, useState } from "react"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import FormControl from "@mui/material/FormControl"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
@@ -20,6 +20,7 @@ import CardContent from "@mui/material/CardContent"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
+import useSWR from "swr"
 import IconButton, { IconButtonProps } from "@mui/material/IconButton"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
 import Tabs from "@mui/material/Tabs"
@@ -45,6 +46,9 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder"
 import EmployerNavLayout from "../../components/layouts/employernav"
 import { hobbiesList } from "../../utils"
 import { useRouter } from "next/router"
+import { ErrorComponent } from "../../components/alert"
+import jobService from "../../services/job"
+import profileServices from "../../services/profile"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -106,10 +110,80 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 function Page() {
   const [value, setValue] = useState(0)
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  const [skills, setSkills] = useState<string[]>([])
+
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<"error" | "success">("error")
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
+
+  console.log("user", user)
+
+  //references
+  const jobTitleRef = useRef<HTMLInputElement>()
+  const jobDescriptionRef = useRef<HTMLInputElement>()
+  const jobLocationRef = useRef<HTMLInputElement>()
+  const jobDurationRef = useRef<HTMLInputElement>()
+  const genderRef = useRef<HTMLInputElement>()
+  const closingDateRef = useRef<HTMLInputElement>()
+
+  const handlePostJob = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const data = {
+        company_id: user?.relationships.company.id,
+        user_id: user?.id,
+        title: jobTitleRef.current?.value,
+        description: jobDescriptionRef.current?.value,
+        location: jobLocationRef.current?.value,
+        duration: jobDurationRef.current?.value,
+        preferred_gender: genderRef.current?.value,
+        closing_at: closingDateRef.current?.value,
+        skills,
+      }
+      setIsLoading(true)
+      try {
+        if (false) {
+          // const response = await profileServices.updateUserQualification(
+          //   String(educationId.detail.id),
+          //   data as QualificationsPostData,
+          // )
+          // setMessage(response?.message)
+          setType("success")
+          setIsError(true)
+          // mutate("userProfile")
+        } else {
+          const response = await jobService.postJob(data)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
+          router.back()
+          // mutate("userProfile")
+        }
+        // onCloseEducationBootstrapDialog()
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [user, skills],
+  )
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container maxWidth="xl">
@@ -121,6 +195,7 @@ function Page() {
               </Button>
               <Box
                 component="form"
+                onSubmit={handlePostJob}
                 sx={{
                   width: "100%",
                   px: { xs: "1rem", md: "3rem" },
@@ -135,6 +210,8 @@ function Page() {
                       placeholder="Job  Title"
                       label="Job  Title"
                       variant="outlined"
+                      inputRef={jobTitleRef}
+                      required
                     />
                   </Grid>
                   <Grid item xs={12} md={12}>
@@ -146,6 +223,8 @@ function Page() {
                       variant="outlined"
                       multiline
                       minRows={4}
+                      inputRef={jobDescriptionRef}
+                      required
                     />
                   </Grid>
                   <Grid item xs={12} md={8}>
@@ -153,6 +232,8 @@ function Page() {
                       multiple
                       fullWidth
                       //   value={hobbies}
+                      value={skills}
+                      onChange={(_ev, val) => setSkills(val)}
                       options={hobbiesList}
                       renderInput={(params) => (
                         <TextField {...params} label="Skills Needed" variant="outlined" placeholder="Skills Needed" />
@@ -163,36 +244,49 @@ function Page() {
                     <TextField
                       fullWidth
                       id="profile-title"
-                      placeholder="Location"
+                      placeholder="eg 234, Odogbolu street, surulere, lagos"
                       label="Job Location"
                       variant="outlined"
+                      required
+                      inputRef={jobLocationRef}
                     />
                   </Grid>
                   <Grid item xs={12} md={8}>
                     <TextField
                       fullWidth
                       id="profile-title"
-                      placeholder="Duration"
+                      placeholder="eg 8 months"
                       label="Job Duration"
                       variant="outlined"
+                      required
+                      inputRef={jobDurationRef}
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}></Grid>
-                  <Grid item xs={12} md={4}>
+                  {/* <Grid item xs={12} md={4}></Grid> */}
+                  <Grid item xs={12} md={6}>
                     <FormControl fullWidth>
                       <InputLabel id="demo-simple-select-label">Gender Required</InputLabel>
-                      <Select labelId="gender-select-label" id="gender-select" placeholder="Gender" label="Gender">
+                      <Select
+                        labelId="gender-select-label"
+                        id="gender-select"
+                        placeholder="Gender"
+                        label="Gender Required"
+                        required
+                        defaultValue={""}
+                        inputRef={genderRef}
+                      >
                         <MenuItem value={"male"}>Male</MenuItem>
                         <MenuItem value={"female"}>Female</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={6}>
                     <TextField
                       id="date"
                       label="Closing Date"
                       type="date"
                       fullWidth
+                      inputRef={closingDateRef}
                       required
                       InputLabelProps={{
                         shrink: true,
@@ -200,7 +294,13 @@ function Page() {
                     />
                   </Grid>
                   <Grid item xs={12} md={8}>
-                    <LoadingButton fullWidth variant="contained">
+                    <LoadingButton
+                      disabled={!(skills.length > 0)}
+                      type="submit"
+                      loading={isLoading}
+                      fullWidth
+                      variant="contained"
+                    >
                       Creae Job
                     </LoadingButton>
                   </Grid>
@@ -269,6 +369,7 @@ function Page() {
           </Grid>
         </Grid>
       </Container>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

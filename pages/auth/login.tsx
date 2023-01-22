@@ -71,14 +71,24 @@ const Login = () => {
         res = await authService.phoneLogin(emailPhoneRef.current.value, passwordRef.current.value)
       }
 
-      setUser(res.result.user)
+      // console.log("profile", res.result.user)
+      // return
+
+      const user = res.result.user
+
+      setUser(user)
       localStorage.setItem("access_token", res.result.token)
       setMessage("login successful")
       setType("success")
       setIsError(true)
+
+      if (!user?.user_type) {
+        router.push("/join-as")
+        return
+      }
       // const { redirect = "/profile/information" } = router.query
-      const redirect = "/join-as"
-      router.push(redirect as string)
+      const redirect = `/${user?.user_type}/feed`
+      router.push(redirect)
     } catch (error: any) {
       setType("error")
       if (error.response) {
