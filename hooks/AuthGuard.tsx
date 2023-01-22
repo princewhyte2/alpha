@@ -21,6 +21,10 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
       if (user && !user?.has_verified_email) {
         router.push(`/auth/verification`)
       }
+      if (user && !user?.user_type) {
+        router.push("/join-as")
+        return
+      }
     }
   }, [initializing, router, user])
 
