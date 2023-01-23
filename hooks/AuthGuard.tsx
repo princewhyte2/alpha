@@ -18,12 +18,15 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
         // remember the page that user tried to access
         // setRedirect(router.route)
         router.push(`/auth/login?redirect=${router.route}`)
+        return
       }
       if (user && Cookies.get("access_token") && !user?.has_verified_email) {
         router.push(`/auth/verification`)
+        return
       }
       if (user && Cookies.get("access_token") && !user?.user_type) {
         router.push("/join-as")
+        return
       }
     }
   }, [initializing, router, user])

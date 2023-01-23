@@ -178,7 +178,7 @@ export default function NavLayout(props: Props) {
   }
 
   const goToProfile = React.useCallback(() => {
-    router.push("/artisan/profile/information")
+    router.push(`/${user.user_type}/profile/information`)
   }, [])
 
   //error handler
@@ -196,7 +196,6 @@ export default function NavLayout(props: Props) {
   const onLogout = () => {
     Cookies.remove("access_token")
     if ("serviceWorker" in navigator) {
-      console.log("serve")
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         for (let registration of registrations) {
           registration.unregister()
@@ -204,9 +203,6 @@ export default function NavLayout(props: Props) {
       })
     }
     router.reload()
-    // mutate("userProfile")
-
-    console.log("called")
   }
 
   const drawer = (
@@ -419,7 +415,7 @@ export default function NavLayout(props: Props) {
           </Link>
 
           {user &&
-            (user?.type === "artisan" ? (
+            (user?.user_typ === "artisan" ? (
               <Box sx={{ display: { xs: "none", md: "block" } }}>
                 {mainNav.map((item) => (
                   <Button key={item.name} onClick={() => router.push(item.route)} variant="text">

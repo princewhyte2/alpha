@@ -141,7 +141,7 @@ const Verification = () => {
 
 export default Verification
 
-Verification.requireAuth = true
+// Verification.requireAuth = true
 
 const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
   event.preventDefault()
