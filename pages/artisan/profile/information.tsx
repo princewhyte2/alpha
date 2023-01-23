@@ -422,7 +422,7 @@ function Page() {
         {!matches && (
           <IconButton
             aria-label="close"
-            onClick={() => router.back()}
+            onClick={() => router.push("/artisan/feed")}
             sx={{
               color: (theme) => theme.palette.primary.main,
             }}
@@ -614,7 +614,7 @@ function Page() {
                           Phone Number
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_number}
+                          {user?.phone_number}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
@@ -622,7 +622,7 @@ function Page() {
                           Other Phone
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.other_phone_number}
+                          {user?.other_phone_number}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -759,7 +759,7 @@ function Page() {
                       <TextField
                         label="Phone Number"
                         id="phone-number-start-adornment"
-                        defaultValue={user?.relationships?.phone_number || ""}
+                        defaultValue={user?.phone_number || ""}
                         disabled
                         fullWidth
                         InputProps={{
@@ -776,7 +776,7 @@ function Page() {
                         label="Other Number "
                         id="phone-number-start-adornment"
                         inputRef={otherNumberRef}
-                        defaultValue={user?.relationships?.other_phone_number || ""}
+                        defaultValue={user?.other_phone_number || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (

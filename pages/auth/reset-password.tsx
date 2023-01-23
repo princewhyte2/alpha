@@ -52,7 +52,7 @@ const ResetPassword = () => {
       setMessage("reset password successfull")
       setType("success")
       setIsError(true)
-      router.push("/auth/login")
+      router.replace("/auth/login")
     } catch (error: any) {
       if (error.response) {
         setMessage(error.response.data.message)

@@ -30,7 +30,7 @@ const JoinAs = () => {
       setMessage(response?.message)
       setType("success")
       setIsError(true)
-      router.push("/artisan/profile/information")
+      router.replace("/artisan/profile/information")
     } catch (error: any) {
       setType("error")
       if (error.response) {
@@ -54,7 +54,7 @@ const JoinAs = () => {
       setMessage(response?.message)
       setType("success")
       setIsError(true)
-      router.push("/employer/profile/information")
+      router.replace("/employer/profile/information")
     } catch (error: any) {
       setType("error")
       if (error.response) {

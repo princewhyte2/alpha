@@ -33,7 +33,7 @@ const Verification = () => {
       setMessage("Verification successfull")
       setType("success")
       setIsError(true)
-      router.push("/join-as")
+      router.replace("/join-as")
     } catch (error: any) {
       if (error.response) {
         setMessage(error.response.data.message)

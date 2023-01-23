@@ -354,7 +354,7 @@ function Page() {
                           Business Name
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          Tommy Fashion Company
+                          {user?.relationships.company.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -362,7 +362,7 @@ function Page() {
                           Company Website
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          www.companywebsite.com
+                          {user?.relationships.company.website}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -381,7 +381,7 @@ function Page() {
                           Business/Office Address
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          35, Wole Oladele street, Ilupeju, Lagos.
+                          {user?.relationships.company.address}
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
@@ -408,7 +408,7 @@ function Page() {
                           Company Email Address
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          babakunle@gmail.com
+                          {user?.relationships.company.email}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -450,8 +450,7 @@ function Page() {
                           Services Provided
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          Fermentum lorem quis consequat donec scelerisque diam id. Facilisi libero quis magna nisl
-                          donec adipiscing.
+                          {user?.relationships.company.service_provided}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -474,7 +473,7 @@ function Page() {
                         fullWidth
                         id="business-profile-title"
                         inputRef={titleRef}
-                        defaultValue={'user?.title || ""'}
+                        // defaultValue={user?.relationships.company.service_provided} || ""'}
                         placeholder="Business Name"
                         label="Business Name"
                         variant="outlined"
@@ -706,7 +705,7 @@ function Page() {
                           Phone Number
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.phone_number}
+                          {user?.phone_number}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
@@ -714,7 +713,7 @@ function Page() {
                           Other Phone
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships?.other_phone_number || null}
+                          {user?.other_phone_number || null}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -851,7 +850,7 @@ function Page() {
                       <TextField
                         label="Phone Number"
                         id="phone-number-start-adornment"
-                        defaultValue={user?.relationships?.phone_number || ""}
+                        defaultValue={user?.phone_number || ""}
                         disabled
                         fullWidth
                         InputProps={{
@@ -873,7 +872,7 @@ function Page() {
                         label="Other Number "
                         id="phone-number-start-adornment"
                         inputRef={otherNumberRef}
-                        defaultValue={user?.relationships?.other_phone_number || ""}
+                        defaultValue={user?.other_phone_number || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (

@@ -60,7 +60,7 @@ const ForgotPassword = () => {
           if (!emailOtpRef.current) return
           //handle the otp here
           setReset({ token: emailOtpRef.current.value, email: receipient })
-          router.push(`/auth/reset-password`)
+          router.replace(`/auth/reset-password`)
         }
       } else if (tabValue) {
         if (!showOtp) {
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
         } else {
           if (!phoneNumOtpRef.current) return
           setReset({ token: phoneNumOtpRef.current.value, email: receipient })
-          router.push(`/auth/reset-password`)
+          router.replace(`/auth/reset-password`)
           //handle the otp here
         }
       }
