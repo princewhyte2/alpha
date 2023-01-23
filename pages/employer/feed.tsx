@@ -549,8 +549,10 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerNavLayout>{page}</EmployerNavLayout>
+  return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page
 function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) {

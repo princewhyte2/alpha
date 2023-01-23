@@ -43,6 +43,7 @@ import EmployerProfileLayout from "../../../components/layouts/employerProfile"
 import profileServices from "../../../services/profile"
 import locationService from "../../../services/location"
 import EmployerNavLayout from "../../../components/layouts/employernav"
+import NavLayout from "../../../components/layouts/nav"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -950,7 +951,9 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerNavLayout>{page}</EmployerNavLayout>
+  return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page

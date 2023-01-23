@@ -9,6 +9,7 @@ import GoogleIcon from "../../components/icons/Google"
 import FacebookIcon from "../../components/icons/Facebook"
 import InputAdornment from "@mui/material/InputAdornment"
 import Divider from "@mui/material/Divider"
+import Cookies from "js-cookie"
 import TextField from "@mui/material/TextField"
 import InputLabel from "@mui/material/InputLabel"
 import IconButton from "@mui/material/IconButton"
@@ -100,7 +101,10 @@ const SignUp = () => {
       setMessage("registration successful")
       setType("success")
       setIsError(true)
-      localStorage.setItem("access_token", res.result.token)
+      // localStorage.setItem("access_token", res.result.token)
+      Cookies.set("access_token", res.result.token, {
+        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      })
       router.push("/auth/verification")
     } catch (error: any) {
       setType("error")
@@ -143,7 +147,7 @@ const SignUp = () => {
         }}
         elevation={matches ? 2 : 0}
       >
-        <Link href="/auth/login" underline="none">
+        <Link href="/" underline="none">
           <Box sx={{ height: "4rem", width: "4rem" }}>
             <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
           </Box>

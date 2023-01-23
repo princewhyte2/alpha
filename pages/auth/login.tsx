@@ -3,6 +3,7 @@ import { styled, useTheme } from "@mui/material/styles"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
+import Cookies from "js-cookie"
 import LoadingButton from "@mui/lab/LoadingButton"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import GoogleIcon from "../../components/icons/Google"
@@ -77,7 +78,10 @@ const Login = () => {
       const user = res.result.user
 
       setUser(user)
-      localStorage.setItem("access_token", res.result.token)
+      // localStorage.setItem("access_token", res.result.token)
+      Cookies.set("access_token", res.result.token, {
+        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      })
       setMessage("login successful")
       setType("success")
       setIsError(true)
@@ -147,7 +151,7 @@ const Login = () => {
         }}
         elevation={matches ? 2 : 0}
       >
-        <Link href="/auth/login" underline="none">
+        <Link href="/" underline="none">
           <Box>
             <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
           </Box>

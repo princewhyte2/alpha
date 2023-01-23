@@ -225,6 +225,8 @@ Page.getLayout = function getLayout(page: ReactElement) {
   return <NavLayout>{page}</NavLayout>
 }
 
+Page.requireAuth = true
+
 export default Page
 
 const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {

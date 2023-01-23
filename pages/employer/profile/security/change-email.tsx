@@ -22,6 +22,7 @@ import { validateEmail } from "../../../../utils"
 import profileServices from "../../../../services/profile"
 import EmployerProfileLayout from "../../../../components/layouts/employerProfile"
 import EmployerNavLayout from "../../../../components/layouts/employernav"
+import NavLayout from "../../../../components/layouts/nav"
 
 function Page() {
   const router = useRouter()
@@ -190,8 +191,10 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerNavLayout>{page}</EmployerNavLayout>
+  return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page
 

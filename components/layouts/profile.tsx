@@ -123,7 +123,7 @@ export default function ProfileLayout(props: Props) {
           >
             <MenuLine />
           </IconButton>
-          <Link href="/feed" underline="none">
+          <Link href="/" underline="none">
             <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
               <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
             </Box>

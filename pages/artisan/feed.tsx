@@ -584,6 +584,8 @@ Page.getLayout = function getLayout(page: ReactElement) {
   return <NavLayout>{page}</NavLayout>
 }
 
+Page.requireAuth = true
+
 export default Page
 function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)

@@ -297,7 +297,9 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerNavLayout>{page}</EmployerNavLayout>
+  return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page

@@ -97,7 +97,7 @@ const JoinAs = () => {
         }}
         elevation={0}
       >
-        <Link href="/auth/login" underline="none">
+        <Link href="/" underline="none">
           <Box>
             <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
           </Box>
@@ -162,5 +162,7 @@ const JoinAs = () => {
     </Box>
   )
 }
+
+JoinAs.requireAuth = true
 
 export default JoinAs

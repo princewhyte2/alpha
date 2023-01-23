@@ -122,7 +122,7 @@ const ForgotPassword = () => {
         }}
         elevation={matches ? 2 : 0}
       >
-        <Link href="/auth/login" underline="none">
+        <Link href="/" underline="none">
           <Box sx={{ height: "4rem", width: "4rem" }}>
             <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
           </Box>

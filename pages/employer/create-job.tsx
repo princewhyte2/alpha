@@ -49,6 +49,7 @@ import { useRouter } from "next/router"
 import { ErrorComponent } from "../../components/alert"
 import jobService from "../../services/job"
 import profileServices from "../../services/profile"
+import NavLayout from "../../components/layouts/nav"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -375,7 +376,9 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerNavLayout>{page}</EmployerNavLayout>
+  return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page

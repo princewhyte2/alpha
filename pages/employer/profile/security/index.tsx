@@ -14,6 +14,7 @@ import { useRouter } from "next/router"
 import ProfileLayout from "../../../../components/layouts/profile"
 import EmployerProfileLayout from "../../../../components/layouts/employerProfile"
 import EmployerNavLayout from "../../../../components/layouts/employernav"
+import NavLayout from "../../../../components/layouts/nav"
 
 const navItems = [
   {
@@ -60,7 +61,9 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerNavLayout>{page}</EmployerNavLayout>
+  return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page

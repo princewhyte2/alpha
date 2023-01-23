@@ -61,18 +61,11 @@ const profileNav = [
     name: "Profile Information",
     route: "/employer/profile/information",
   },
-  // {
-  //   name: "My Work",
-  //   route: "/employer/profile/mywork",
-  // },
+
   {
     name: "Password & Security",
     route: "/employer/profile/security",
   },
-  // {
-  //   name: "Referral",
-  //   route: "/employer/profile/referral",
-  // },
 ]
 
 const mainNav = [
@@ -137,7 +130,6 @@ export default function EmployerNavLayout(props: Props) {
   const [isError, setIsError] = React.useState(false)
   const [type, setType] = React.useState<"error" | "success">("error")
 
-  // console.log("business", businessSectors)
   const [open, setOpen] = React.useState(true)
 
   const handleClick = React.useCallback(() => {
@@ -280,7 +272,7 @@ export default function EmployerNavLayout(props: Props) {
           >
             <MenuLine />
           </IconButton>
-          <Link href="/employer/feed" underline="none">
+          <Link href="/" underline="none">
             <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
               <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
             </Box>

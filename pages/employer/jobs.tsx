@@ -57,6 +57,7 @@ import jobService from "../../services/job"
 import NoPostIllustration from "../../components/icons/NoPostIllustration"
 import { ErrorComponent } from "../../components/alert"
 import profileServices from "../../services/profile"
+import NavLayout from "../../components/layouts/nav"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -533,8 +534,10 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <EmployerNavLayout>{page}</EmployerNavLayout>
+  return <NavLayout>{page}</NavLayout>
 }
+
+Page.requireAuth = true
 
 export default Page
 
