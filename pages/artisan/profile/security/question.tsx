@@ -26,7 +26,11 @@ import NavLayout from "../../../../components/layouts/nav"
 function Page() {
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  const { data: securityQuestions } = useSWR("securityQuestions", securityService.getSecurityQuestionsFetcher)
+  const { data: securityQuestions } = useSWR("securityQuestions", securityService.getSecurityQuestionsFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   const { data: userSecurityQuestion } = useSWR(
     "userSecurityQuestions",
     securityService.getUserSecurityQuestionsFetcher,

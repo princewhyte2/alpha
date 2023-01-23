@@ -153,7 +153,7 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 }
 
 export default function NavLayout(props: Props) {
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  const { data: user } = useSWR(Cookies.get("access_token") ? "userProfile" : null, profileServices.profileFetcher)
   const { window, children } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const router = useRouter()
@@ -163,7 +163,15 @@ export default function NavLayout(props: Props) {
   const [isImageLoading, setIsImageLoading] = React.useState(false)
   const [logo, setLogo] = React.useState<any>()
   // const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  const { data: businessSectors } = useSWR("businessSectors", utilsService.getBusinessSectors)
+  const { data: businessSectors } = useSWR(
+    user?.user_type === "employer" ? "businessSectors" : null,
+    utilsService.getBusinessSectors,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  )
   // const [countryId, setCountryId] = React.useState("160")
   const { mutate } = useSWRConfig()
   // const { data: countryList } = useSWR("countries", locationService.countriesFetcher)
@@ -178,7 +186,7 @@ export default function NavLayout(props: Props) {
   }
 
   const goToProfile = React.useCallback(() => {
-    router.push(`/${user.user_type}/profile/information`)
+    router.push(`/${user?.user_type}/profile/information`)
   }, [])
 
   //error handler
@@ -196,13 +204,14 @@ export default function NavLayout(props: Props) {
   const onLogout = () => {
     Cookies.remove("access_token")
     if ("serviceWorker" in navigator) {
+      console.log("service")
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         for (let registration of registrations) {
           registration.unregister()
         }
       })
     }
-    router.reload()
+    router.replace("/")
   }
 
   const drawer = (
@@ -415,7 +424,7 @@ export default function NavLayout(props: Props) {
           </Link>
 
           {user &&
-            (user?.user_typ === "artisan" ? (
+            (user?.user_type === "artisan" ? (
               <Box sx={{ display: { xs: "none", md: "block" } }}>
                 {mainNav.map((item) => (
                   <Button key={item.name} onClick={() => router.push(item.route)} variant="text">
@@ -427,7 +436,6 @@ export default function NavLayout(props: Props) {
                   onClick={() => {
                     onLogout()
                   }}
-                  sx={{ width: "100%" }}
                   color="error"
                   variant="outlined"
                 >
@@ -454,15 +462,38 @@ export default function NavLayout(props: Props) {
               </Box>
             ))}
 
-          <Box sx={{ display: { xs: "block", sm: "block" } }}>
+          <Box sx={{ display: { xs: "block", md: "block" } }}>
             {!user ? (
               <>
-                <Button onClick={() => router.push("/auth/login")} variant="text">
+                <Button
+                  sx={{ display: { xs: "none", md: "inline-block" } }}
+                  onClick={() => router.push("/auth/login")}
+                  variant="text"
+                >
                   Login
                 </Button>
-                <Button onClick={() => router.push(`/auth/signup`)} variant="contained">
+                <Button
+                  sx={{ display: { xs: "none", md: "inline-block" } }}
+                  onClick={() => router.push(`/auth/signup`)}
+                  variant="contained"
+                >
                   Sign up
                 </Button>
+              </>
+            ) : user?.user_type === "artisan" ? (
+              <>
+                <IconButton
+                  size="large"
+                  sx={{ color: "primary.main" }}
+                  aria-label="show 17 new notifications"
+                  color="inherit"
+                >
+                  <NotificationsIcon />
+                  {/* <Badge badgeContent={17} color="error"></Badge> */}
+                </IconButton>
+                <IconButton onClick={goToProfile}>
+                  <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
+                </IconButton>
               </>
             ) : (
               <>
@@ -477,9 +508,8 @@ export default function NavLayout(props: Props) {
                 </IconButton>
                 <IconButton onClick={goToProfile}>
                   <Avatar
-                    sx={{ bgcolor: "primary.main" }}
-                    alt={`${user?.first_name} ${user?.last_name}`}
-                    src={user?.relationships.profile_image?.url}
+                    alt={`${user?.relationships.company?.name}`}
+                    src={user?.relationships.company?.logo_image?.url}
                   />
                 </IconButton>
               </>

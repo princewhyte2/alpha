@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useRef, useState, FormEvent, useCallback, MutableRefObject } from "react"
+import { ChangeEvent, ReactElement, useRef, useState, FormEvent, useCallback, useEffect } from "react"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import Checkbox from "@mui/material/Checkbox"
 import Typography from "@mui/material/Typography"
@@ -44,6 +44,8 @@ import profileServices from "../../../services/profile"
 import locationService from "../../../services/location"
 import EmployerNavLayout from "../../../components/layouts/employernav"
 import NavLayout from "../../../components/layouts/nav"
+import utilsService from "../../../services/utils"
+import uploadService from "../../../services/upload"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -115,8 +117,21 @@ function Page() {
   const [countryId, setCountryId] = useState("160")
   const { mutate } = useSWRConfig()
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  const { data: countryList } = useSWR("countries", locationService.countriesFetcher)
-  const { data: statesList } = useSWR(`country_id=${countryId}`, locationService.statesFetcher)
+  const { data: countryList } = useSWR("countries", locationService.countriesFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: statesList } = useSWR(`country_id=${countryId}`, locationService.statesFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: businessSectors } = useSWR("businessSectors", utilsService.getBusinessSectors, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   //   const { data: qualificationsList } = useSWR(`qualificationsList`, profileServices.qualifcationsFetcher)
   const [logo, setLogo] = useState<any>()
   const [isEditPersonalInfo, setIsEditPersonalInfo] = useState(false)
@@ -144,6 +159,7 @@ function Page() {
   const businessEmailRef = useRef<HTMLInputElement>()
   const businessAddressRef = useRef<HTMLInputElement>()
   const industryRef = useRef<HTMLInputElement>()
+  const serviceProvidedRef = useRef<HTMLInputElement>()
 
   //loading states
   const [isOnBoardingLoading, setIsOnBoardingLoading] = useState(false)
@@ -157,11 +173,12 @@ function Page() {
 
       const formData = new FormData()
       formData.append("file", file)
-      //   const res = await uploadService.uploadFile(formData)
-      //   const item = res.result.file.id
+      const res = await uploadService.uploadFile(formData)
+      const item = res.result.file
+      setLogo(item)
       //   const resp = await profileServices.updateUserProfile({ profile_image_id: item })
       //   console.log(resp)
-      mutate("userProfile")
+      // mutate("userProfile")
     } catch (error: any) {
       setType("error")
       if (error.response) {
@@ -217,9 +234,15 @@ function Page() {
     }
   }
 
+  useEffect(() => {
+    if (user.relationships.company) {
+      setLogo(user?.relationships.company?.logo_image)
+    }
+  }, [user])
+
   console.log("user", user)
 
-  const handleCreateCompany = useCallback(
+  const handleupdateCompany = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       setLoading(true)
@@ -232,12 +255,14 @@ function Page() {
           email: businessEmailRef.current?.value,
           logo_image_id: logo?.id,
           industry_id: industryRef.current?.value,
+          service_provided: serviceProvidedRef.current?.value,
         }
-        const response = await profileServices.createCompany(data)
+        const response = await profileServices.updateCompany(user?.relationships.company?.id, data)
         mutate("userProfile")
         setType("success")
         setMessage(response.message)
         setIsError(true)
+        setisEditBusinessInfo(false)
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -295,6 +320,7 @@ function Page() {
                       <CircularProgress />
                     ) : (
                       <IconButton
+                        disabled={!isEditBusinessInfo}
                         size="small"
                         sx={{ bgcolor: "primary.main" }}
                         aria-label="upload picture"
@@ -308,8 +334,8 @@ function Page() {
                 >
                   <Avatar
                     sx={{ width: "64px", height: "64px" }}
-                    alt={"richard "}
-                    src={"user?.relationships.profile_image?.url"}
+                    alt={user?.relationships.company?.name}
+                    src={logo?.url}
                   />
                 </Badge>
               )}
@@ -354,7 +380,7 @@ function Page() {
                           Business Name
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships.company.name}
+                          {user?.relationships.company?.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -362,7 +388,7 @@ function Page() {
                           Company Website
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships.company.website}
+                          {user?.relationships.company?.website}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -381,7 +407,7 @@ function Page() {
                           Business/Office Address
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships.company.address}
+                          {user?.relationships.company?.address}
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
@@ -408,7 +434,7 @@ function Page() {
                           Company Email Address
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships.company.email}
+                          {user?.relationships.company?.email}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -430,7 +456,7 @@ function Page() {
                           {"user?.relationships?.phone_numbers[0]?.phone_number"}
                         </Typography> */}
                         <Stack sx={{ mt: "1rem" }} direction="row" spacing={1}>
-                          <Chip label="Fashion" />
+                          <Chip label={user?.relationships.company?.business_sector?.name} />
                         </Stack>
                       </Grid>
                     </Grid>
@@ -450,7 +476,7 @@ function Page() {
                           Services Provided
                         </Typography>
                         <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                          {user?.relationships.company.service_provided}
+                          {user?.relationships.company?.service_provided}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -458,6 +484,8 @@ function Page() {
                 </>
               ) : (
                 <Box
+                  onSubmit={handleupdateCompany}
+                  component={"form"}
                   sx={{
                     width: "100%",
                     px: { xs: "1rem", md: "3rem" },
@@ -473,7 +501,7 @@ function Page() {
                         fullWidth
                         id="business-profile-title"
                         inputRef={titleRef}
-                        // defaultValue={user?.relationships.company.service_provided} || ""'}
+                        defaultValue={user?.relationships.company?.name || ""}
                         placeholder="Business Name"
                         label="Business Name"
                         variant="outlined"
@@ -484,14 +512,14 @@ function Page() {
                         fullWidth
                         id="business-profile-address"
                         inputRef={titleRef}
-                        defaultValue={'user?.title || ""'}
+                        defaultValue={user?.relationships.company?.address || ""}
                         placeholder="Address"
                         label="Business/Office Address"
                         variant="outlined"
                       />
                     </Grid>
                     <Grid item xs={4}></Grid>
-                    <Grid item xs={12} md={4}>
+                    {/* <Grid item xs={12} md={4}>
                       <FormControl fullWidth>
                         <InputLabel id="city-simple-select-label">Country</InputLabel>
                         <Select
@@ -526,14 +554,14 @@ function Page() {
                           ))}
                         </Select>
                       </FormControl>
-                    </Grid>
+                    </Grid> */}
 
                     <Grid item xs={12} md={8}>
                       <TextField
                         label="Company Email Address"
                         id="email-start-business"
                         placeholder="Email Address"
-                        defaultValue={'user?.email || ""'}
+                        defaultValue={user?.relationships.company.email || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (
@@ -544,18 +572,22 @@ function Page() {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} md={12}>
+                    <Grid item xs={12} md={8}>
                       <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Business Sector</InputLabel>
+                        <InputLabel id="sector-select-label">Business Sector</InputLabel>
                         <Select
-                          labelId="gender-select-label"
-                          id="gender-select"
-                          defaultValue={"Fashion"}
-                          placeholder="Gender"
-                          label="Gender"
+                          labelId="sector-select-label"
+                          id="sector-select"
+                          defaultValue={user?.relationships.company?.business_sector?.id || ""}
+                          placeholder="Business Sector"
+                          label="Business Sector"
                           inputRef={genderRef}
                         >
-                          <MenuItem value={"Fashion"}>Fashion</MenuItem>
+                          {businessSectors?.map((item: any) => (
+                            <MenuItem key={item.id} value={item.id}>
+                              {item.name}
+                            </MenuItem>
+                          ))}
                           {/* <MenuItem value={"female"}>Female</MenuItem> */}
                         </Select>
                       </FormControl>
@@ -563,12 +595,12 @@ function Page() {
 
                     <Grid item xs={12} md={8}>
                       <TextField
-                        defaultValue={'user?.last_name || ""'}
+                        defaultValue={user?.relationships.company?.service_provided || ""}
                         fullWidth
                         multiline
                         rows={4}
                         placeholder="Description"
-                        inputRef={lastNameRef}
+                        inputRef={serviceProvidedRef}
                         id="profile-lastName"
                         label="Services Provided"
                         variant="outlined"
@@ -580,12 +612,7 @@ function Page() {
                         <Button onClick={() => setisEditBusinessInfo(false)} fullWidth color="error" variant="outlined">
                           Cancel
                         </Button>
-                        <LoadingButton
-                          loading={isOnBoardingLoading}
-                          onClick={handleOnBoarding}
-                          fullWidth
-                          variant="contained"
-                        >
+                        <LoadingButton loading={loading} type="submit" fullWidth variant="contained">
                           Save
                         </LoadingButton>
                       </Stack>

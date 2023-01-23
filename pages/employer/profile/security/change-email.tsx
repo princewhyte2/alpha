@@ -43,6 +43,11 @@ function Page() {
   const { data: userSecurityQuestion } = useSWR(
     "userSecurityQuestions",
     securityService.getUserSecurityQuestionsFetcher,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   )
 
   const handleUpdateEmail = useCallback(async (e: FormEvent<HTMLFormElement>) => {

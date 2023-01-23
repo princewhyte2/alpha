@@ -7,7 +7,7 @@ import profileServices from "../services/profile"
 
 export function AuthGuard({ children }: { children: JSX.Element }) {
   // const user = useAuth((state: any): any => state.user)
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  const { data: user } = useSWR(Cookies.get("access_token") ? "userProfile" : null, profileServices.profileFetcher)
   const initializing = useAuth((state: any): any => state.initializing)
   const router = useRouter()
 

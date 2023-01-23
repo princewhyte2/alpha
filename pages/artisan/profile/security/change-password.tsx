@@ -34,6 +34,11 @@ function Page() {
   const { data: userSecurityQuestion } = useSWR(
     "userSecurityQuestions",
     securityService.getUserSecurityQuestionsFetcher,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   )
 
   //input refs

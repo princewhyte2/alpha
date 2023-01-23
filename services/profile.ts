@@ -10,6 +10,11 @@ const createCompany = async(data:any) => {
   return response.data
 }
 
+const updateCompany = async (companyId: string, data:any) => {
+  const response = await axiosInstance.patch(`/companies/${companyId}`, data)
+  return response.data
+}
+
 const joinAsEmployer = async () => {
   const response = await axiosInstance.get('/join/as/employer')
   return response.data
@@ -93,7 +98,7 @@ const profileServices = {
   updateUserQualification,
   deleteUserQualification,
   updateUserWorkHistory,
-  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber,createCompany
+  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber,createCompany,updateCompany
 }
 
 export default profileServices

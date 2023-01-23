@@ -118,9 +118,21 @@ function Page() {
   const [countryId, setCountryId] = useState("160")
   const { mutate } = useSWRConfig()
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  const { data: countryList } = useSWR("countries", locationService.countriesFetcher)
-  const { data: statesList } = useSWR(`country_id=${countryId}`, locationService.statesFetcher)
-  const { data: qualificationsList } = useSWR(`qualificationsList`, profileServices.qualifcationsFetcher)
+  const { data: countryList } = useSWR("countries", locationService.countriesFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: statesList } = useSWR(`country_id=${countryId}`, locationService.statesFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: qualificationsList } = useSWR(`qualificationsList`, profileServices.qualifcationsFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   const [isEditPersonalInfo, setIsEditPersonalInfo] = useState(false)
   const [isEditOccupation, setIsEditOccupation] = useState(false)
   const [isEditEducation, setIsEditEducation] = useState(false)
