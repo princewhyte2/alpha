@@ -1,4 +1,5 @@
 import * as React from "react"
+
 import Link from "@mui/material/Link"
 import AppBar from "@mui/material/AppBar"
 import Box from "@mui/material/Box"
@@ -153,7 +154,13 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 }
 
 export default function NavLayout(props: Props) {
-  const { data: user } = useSWR(Cookies.get("access_token") ? "userProfile" : null, profileServices.profileFetcher)
+  const { data: user, error } = useSWR(
+    Cookies.get("access_token") ? "userProfile" : null,
+    profileServices.profileFetcher,
+    {
+      dedupingInterval: 10000,
+    },
+  )
   const { window, children } = props
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const router = useRouter()
@@ -172,6 +179,12 @@ export default function NavLayout(props: Props) {
       revalidateOnReconnect: false,
     },
   )
+
+  React.useEffect(() => {
+    if (error) {
+      router.replace(router.asPath)
+    }
+  }, [error])
   // const [countryId, setCountryId] = React.useState("160")
   const { mutate } = useSWRConfig()
   // const { data: countryList } = useSWR("countries", locationService.countriesFetcher)

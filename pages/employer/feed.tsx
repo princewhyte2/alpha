@@ -318,28 +318,25 @@ function Page() {
     },
     [],
   )
-  const handleComment = useCallback(
-    (postId: number, comment: string) => async () => {
-      try {
-        const response = await postService.addComment(String(postId), { body: comment })
-        mutate(`/posts/${postId}/comments`)
-        setMessage(response?.message)
-        setType("success")
-        setIsError(true)
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
+  const handleComment = useCallback(async (postId: number, comment: string) => {
+    try {
+      const response = await postService.addComment(String(postId), { body: comment })
+      mutate(`/posts/${postId}/comments`)
+      setMessage(response?.message)
+      setType("success")
+      setIsError(true)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
       }
-    },
-    [],
-  )
+      setIsError(true)
+    }
+  }, [])
 
   const handleEdit = useCallback(
     (postItem: any) => () => {
@@ -560,6 +557,7 @@ Page.requireAuth = true
 export default Page
 function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [expanded, setExpanded] = useState(false)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -568,10 +566,18 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
     setAnchorEl(null)
   }
   // const {mutate} = useSWRConfig()
-  const { data: appUser } = useSWR("userProfile", profileServices.profileFetcher)
+  const { data: appUser } = useSWR("userProfile", profileServices.profileFetcher, {
+    dedupingInterval: 10000,
+  })
   const [isShowMore, setIsShowMore] = useState(false)
   const [userComment, setUserComment] = useState("")
-  const { data: postComments } = useSWR(`/posts/${item.id}/comments`, postService.getAllPostComments)
+  const { data: postComments } = useSWR(
+    expanded ? `/posts/${item.id}/comments` : null,
+    postService.getAllPostComments,
+    {
+      dedupingInterval: 10000,
+    },
+  )
   const content = useMemo(() => {
     try {
       return generateHTML(JSON.parse(item.body), [
@@ -604,8 +610,6 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
   const isPostCreator = useMemo(() => {
     return item.relationships.created_by.id === appUser?.id
   }, [item])
-
-  const [expanded, setExpanded] = useState(false)
 
   const handleExpandClick = useCallback(() => {
     setExpanded(!expanded)
