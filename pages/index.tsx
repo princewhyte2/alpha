@@ -45,6 +45,7 @@ import NavLayout from "../components/layouts/nav"
 import SkillIcon from "../components/icons/SkillIcon"
 import FacebookIcon from "../components/icons/Facebook"
 import GoogleIcon from "../components/icons/Google"
+import { useRouter } from "next/router"
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
@@ -81,6 +82,7 @@ const images = [
 ]
 function Page() {
   const theme = useTheme()
+  const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [activeStep, setActiveStep] = useState(0)
   const maxSteps = images.length
@@ -114,7 +116,7 @@ function Page() {
                 <Button variant="contained">Get Started</Button>
                 <Typography sx={{ m: 0, fontSize: 16, fontWeight: 500 }} color="primary.dark">
                   Already using Workfynder?{" "}
-                  <Link href="#" underline="always">
+                  <Link href="/auth/login" underline="always">
                     Login
                   </Link>
                 </Typography>
@@ -393,7 +395,7 @@ function Page() {
               <Button fullWidth={!matches} variant="contained">
                 Sign up
               </Button>
-              <Button fullWidth={!matches} variant="text">
+              <Button onClick={() => router.push("/auth/login")} fullWidth={!matches} variant="text">
                 Login
               </Button>
             </Stack>

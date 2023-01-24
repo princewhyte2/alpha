@@ -207,17 +207,19 @@ function Page() {
     }
   }
 
-  const handleOnBoarding = async () => {
+  const handleOnBoarding = async (e: any) => {
+    e.preventDefault()
     const data = {
       title: titleRef.current?.value,
       first_name: firstNameRef.current?.value,
       last_name: lastNameRef.current?.value,
-      middle_name: middleNameRef.current?.value,
+      middle_name: middleNameRef.current?.value || "",
       date_of_birth: dobRef.current?.value,
       gender: genderRef.current?.value,
       country_id: countryId,
       state_id: stateRef.current?.value,
       other_phone_number: otherNumberRef.current?.value,
+      // phone_number: user?.phone_number,
     }
     setIsOnBoardingLoading(true)
     try {
@@ -670,6 +672,8 @@ function Page() {
                 </>
               ) : (
                 <Box
+                  component={"form"}
+                  onSubmit={handleOnBoarding}
                   sx={{
                     width: "100%",
                     px: { xs: "1rem", md: "3rem" },
@@ -683,6 +687,7 @@ function Page() {
                     <Grid item xs={12} md={8}>
                       <TextField
                         fullWidth
+                        required
                         id="profile-title"
                         inputRef={titleRef}
                         defaultValue={user?.title || ""}
@@ -731,6 +736,7 @@ function Page() {
                           defaultValue={user?.gender || ""}
                           placeholder="Gender"
                           label="Gender"
+                          required
                           inputRef={genderRef}
                         >
                           <MenuItem value={"male"}>Male</MenuItem>
@@ -743,6 +749,7 @@ function Page() {
                         id="date"
                         label="Date of Birth"
                         type="date"
+                        required
                         inputRef={dobRef}
                         defaultValue={user?.date_of_birth}
                         fullWidth
@@ -756,6 +763,7 @@ function Page() {
                         label="Email"
                         id="email-start-adornment"
                         disabled
+                        required
                         defaultValue={user?.email || ""}
                         fullWidth
                         InputProps={{
@@ -842,12 +850,7 @@ function Page() {
                         <Button onClick={() => setIsEditPersonalInfo(false)} fullWidth color="error" variant="outlined">
                           Cancel
                         </Button>
-                        <LoadingButton
-                          loading={isOnBoardingLoading}
-                          onClick={handleOnBoarding}
-                          fullWidth
-                          variant="contained"
-                        >
+                        <LoadingButton loading={isOnBoardingLoading} type="submit" fullWidth variant="contained">
                           Save
                         </LoadingButton>
                       </Stack>

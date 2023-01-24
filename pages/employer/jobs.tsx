@@ -4,6 +4,7 @@ import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
 import Avatar from "@mui/material/Avatar"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
+import Collapse from "@mui/material/Collapse"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
@@ -41,7 +42,6 @@ import Select, { SelectChangeEvent } from "@mui/material/Select"
 import CardHeader from "@mui/material/CardHeader"
 import CardMedia from "@mui/material/CardMedia"
 import CardActions from "@mui/material/CardActions"
-import Collapse from "@mui/material/Collapse"
 import { red } from "@mui/material/colors"
 import ChatIcon from "@mui/icons-material/Chat"
 import FavoriteIcon from "@mui/icons-material/Favorite"
@@ -169,7 +169,9 @@ function Page() {
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs)
+  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs, {
+    keepPreviousData: true,
+  })
   const [isLoading, setIsLoading] = useState(false)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const [skills, setSkills] = useState<string[]>([])
@@ -553,6 +555,12 @@ function JobCard({ item, onEdit, onDelete }: any) {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  const [expanded, setExpanded] = useState(false)
+
+  const handleExpandClick = useCallback(() => {
+    setExpanded(!expanded)
+  }, [expanded])
   return (
     <Paper
       key={item.id}
@@ -576,12 +584,12 @@ function JobCard({ item, onEdit, onDelete }: any) {
             <IconButton
               aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
               aria-haspopup="true"
-              size="small"
+              sx={{ mt: -2 }}
               aria-expanded={Boolean(anchorEl) ? "true" : undefined}
               onClick={handleClick}
               aria-label="settings"
             >
-              <MoreHorizIcon fontSize="inherit" />
+              <MoreHorizIcon />
             </IconButton>
             <Menu
               id="basic-menu"
@@ -618,12 +626,66 @@ function JobCard({ item, onEdit, onDelete }: any) {
           </Typography>
         </Stack>
         <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
-          <Button variant="text">View applications</Button>
+          <Button onClick={handleExpandClick} variant="text">
+            {expanded ? "Hide" : "View"} applications
+          </Button>
           <Typography sx={{ fontSize: 12 }} color="primary.main">
             Posted {dayjs(item.created_at).fromNow()}
           </Typography>
         </Stack>
       </Stack>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Stack direction="column" spacing={1}>
+          {jobApplicantsList?.map((applicant: any) => (
+            <Paper
+              key={applicant.applicant?.id}
+              elevation={1}
+              sx={{
+                p: 2,
+                boxShadow:
+                  " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                borderRadius: "8px",
+                width: "100%",
+              }}
+            >
+              <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
+                <Avatar
+                  alt={applicant.applicant?.first_name}
+                  src={applicant.applicant?.profile_image?.url}
+                  sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
+                />
+                <Stack
+                  sx={{ flexGrow: 1 }}
+                  direction="row"
+                  justifyContent="space-between"
+                  // alignItems="center"
+                  spacing={1}
+                >
+                  <Stack direction="column" spacing={1}>
+                    <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                      {applicant.applicant?.first_name} {applicant.applicant?.middle_name}{" "}
+                      {applicant.applicant?.last_name}
+                    </Typography>
+                    <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                      {applicant.applicant?.title}
+                    </Typography>
+                    <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                      {applicant.applicant?.hobbies?.map((item: string) => (
+                        <Chip key={item} label={item} />
+                      ))}
+                    </Stack>
+                  </Stack>
+                  <Stack direction="column" alignItems={"flex-end"}>
+                    <IconButton sx={{ mt: -2 }} aria-label="options">
+                      <MoreHorizIcon />
+                    </IconButton>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Paper>
+          ))}
+        </Stack>
+      </Collapse>
     </Paper>
   )
 }

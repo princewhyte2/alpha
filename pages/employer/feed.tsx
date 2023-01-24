@@ -70,6 +70,7 @@ import htmlTruncate from "../../lib/htmlTruncate"
 import { useAuth } from "../../store"
 import profileServices from "../../services/profile"
 import EmployerNavLayout from "../../components/layouts/employernav"
+import { useRouter } from "next/router"
 
 dayjs.extend(relativeTime)
 type BreakpointOrNull = Breakpoint | null
@@ -149,7 +150,9 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 function Page() {
   const theme = useTheme()
   const { mutate } = useSWRConfig()
+  const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  // console.log("path", router?.pathname)
   const { data: posts } = useSWR("posts", postService.postFetcher)
 
   const [expanded, setExpanded] = useState(false)

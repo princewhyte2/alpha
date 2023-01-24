@@ -203,14 +203,15 @@ export default function NavLayout(props: Props) {
 
   const onLogout = () => {
     Cookies.remove("access_token")
-    if ("serviceWorker" in navigator) {
-      console.log("service")
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        for (let registration of registrations) {
-          registration.unregister()
-        }
-      })
-    }
+
+    // if ("serviceWorker" in navigator) {
+    //   console.log("service")
+    //   navigator.serviceWorker.getRegistrations().then((registrations) => {
+    //     for (let registration of registrations) {
+    //       registration.unregister()
+    //     }
+    //   })
+    // }
     router.replace("/")
   }
 
@@ -576,7 +577,7 @@ export default function NavLayout(props: Props) {
       </Box>
       <BootstrapDialog
         PaperProps={{ style: { margin: 8 } }}
-        open={user && user?.user_type === "employer" && !user?.has_created_company}
+        open={Boolean(user && user?.user_type === "employer" && !user?.has_created_company)}
         fullWidth
         aria-labelledby="workhistory-modal-title"
         aria-describedby="workhistory-modal-description"

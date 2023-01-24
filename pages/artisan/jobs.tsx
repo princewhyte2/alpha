@@ -121,7 +121,9 @@ function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [searchTerm, setSearchTerm] = useState("")
-  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs)
+  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs, {
+    keepPreviousData: true,
+  })
   const optimizedFn = useCallback(debounce(setSearchTerm), [])
 
   //error handler
@@ -293,7 +295,7 @@ const JobCard = ({ item, onJobApplication }: any) => {
             {item.title}
           </Typography>
           <Typography sx={{ fontSize: 14 }} color="primary.dark">
-            Name of Company/Author
+            {item.company?.name}
           </Typography>
         </Stack>
         <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography>

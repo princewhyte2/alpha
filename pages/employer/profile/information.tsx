@@ -194,7 +194,8 @@ function Page() {
     }
   }
 
-  const handleOnBoarding = async () => {
+  const handleOnBoarding = async (e: any) => {
+    e.preventDefault()
     const data = {
       title: titleRef.current?.value,
       first_name: firstNameRef.current?.value,
@@ -206,6 +207,7 @@ function Page() {
       state_id: stateRef.current?.value,
       other_phone_number: otherNumberRef.current?.value,
     }
+    // console.log("what", data)
     setIsOnBoardingLoading(true)
     try {
       //   if (otherNumberRef.current?.value !== user?.relationships?.phone_numbers[1]?.phone_number) {
@@ -239,8 +241,6 @@ function Page() {
       setLogo(user?.relationships.company?.logo_image)
     }
   }, [user])
-
-  console.log("user", user)
 
   const handleupdateCompany = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -578,10 +578,11 @@ function Page() {
                         <Select
                           labelId="sector-select-label"
                           id="sector-select"
+                          required
                           defaultValue={user?.relationships.company?.business_sector?.id || ""}
                           placeholder="Business Sector"
                           label="Business Sector"
-                          inputRef={genderRef}
+                          inputRef={industryRef}
                         >
                           {businessSectors?.map((item: any) => (
                             <MenuItem key={item.id} value={item.id}>
@@ -776,6 +777,8 @@ function Page() {
                 </>
               ) : (
                 <Box
+                  component={"form"}
+                  onSubmit={handleOnBoarding}
                   sx={{
                     width: "100%",
                     px: { xs: "1rem", md: "3rem" },
@@ -791,6 +794,7 @@ function Page() {
                         fullWidth
                         id="profile-title"
                         inputRef={titleRef}
+                        required
                         defaultValue={user?.title || ""}
                         placeholder="e.g Fashion Designer, Plumber e.t.c"
                         label="Title"
@@ -837,6 +841,7 @@ function Page() {
                           defaultValue={user?.gender || ""}
                           placeholder="Gender"
                           label="Gender"
+                          required
                           inputRef={genderRef}
                         >
                           <MenuItem value={"male"}>Male</MenuItem>
@@ -850,6 +855,7 @@ function Page() {
                         label="Date of Birth"
                         type="date"
                         inputRef={dobRef}
+                        required
                         defaultValue={user?.date_of_birth}
                         fullWidth
                         InputLabelProps={{
@@ -954,8 +960,9 @@ function Page() {
                           Cancel
                         </Button>
                         <LoadingButton
+                          type="submit"
                           loading={isOnBoardingLoading}
-                          onClick={handleOnBoarding}
+                          // onClick={handleOnBoarding}
                           fullWidth
                           variant="contained"
                         >
