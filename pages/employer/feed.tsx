@@ -573,25 +573,28 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
   const [userComment, setUserComment] = useState("")
   const { data: postComments } = useSWR(`/posts/${item.id}/comments`, postService.getAllPostComments)
   const content = useMemo(() => {
-    if (!item?.body) return ""
-    return generateHTML(JSON.parse(item.body), [
-      Document,
-      Paragraph,
-      TestTipTap,
-      Italic,
-      HardBreak,
-      Code,
-      CodeBlock,
-      ListItem,
-      BulletList,
-      OrderedList,
-      BlockQuote,
-      Heading,
-      HorizontalRule,
-      Bold,
-      Link,
-      // other extensions …
-    ])
+    try {
+      return generateHTML(JSON.parse(item.body), [
+        Document,
+        Paragraph,
+        TestTipTap,
+        Italic,
+        HardBreak,
+        Code,
+        CodeBlock,
+        ListItem,
+        BulletList,
+        OrderedList,
+        BlockQuote,
+        Heading,
+        HorizontalRule,
+        Bold,
+        Link,
+        // other extensions …
+      ])
+    } catch (error) {
+      return item?.body
+    }
   }, [])
 
   const isLiked = useMemo(() => {
@@ -662,7 +665,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
         }
         title={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
         // subheader={dayjs(item.created_at).fromNow()}
-        subheader={`${item.relationships.created_by.title}`}
+        subheader={item.relationships.created_by.title}
       />
       <CardContent>
         {
