@@ -41,6 +41,7 @@ import Container from "@mui/material/Container"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
+import { TypeAnimation } from "react-type-animation"
 import NavLayout from "../components/layouts/nav"
 import SkillIcon from "../components/icons/SkillIcon"
 import FacebookIcon from "../components/icons/Facebook"
@@ -106,7 +107,39 @@ function Page() {
           <Grid item xs={12} md={6}>
             <Stack direction="column" sx={{ pt: 2 }} spacing={3}>
               <Typography sx={{ m: 0, fontSize: { xs: 38, md: 56 }, fontWeight: 500, color: "#000000" }}>
-                The <span className="bold-text">Marketplace</span> <br /> for Artisans
+                The {/* <span className="bold-text"> */}
+                <TypeAnimation
+                  // Same String at the start will only be typed once, initially
+                  sequence={[
+                    "M",
+                    500,
+                    "Ma",
+                    500,
+                    "Mar",
+                    500,
+                    "Mark",
+                    500,
+                    "Marke",
+                    500,
+                    "Market",
+                    500,
+                    "Marketp",
+                    500,
+                    "Marketpl",
+                    500,
+                    "Marketpla",
+                    500,
+                    "Marketplac",
+                    500,
+                    "Marketplace",
+                    500,
+                  ]}
+                  speed={70} // Custom Speed from 1-99 - Default Speed: 40
+                  className="bold-text"
+                  wrapper="span" // Animation will be rendered as a <span>
+                  repeat={Infinity} // Repeat this Animation Sequence infinitely
+                />
+                {/* </span> */} <br /> for Artisans
               </Typography>
               <Typography sx={{ m: 0, fontSize: { xs: 16, md: 20 }, fontWeight: 450, color: "#475467" }}>
                 Ipsum eget rhoncus integer varius quam dignissim sit. Fusce sed erat gravida dui eget id faucibus

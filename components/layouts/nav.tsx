@@ -59,7 +59,7 @@ interface Props {
 const drawerWidth = 240
 const profileNav = [
   {
-    name: "Profile Information",
+    name: "Information",
     route: "/artisan/profile/information",
   },
   {
@@ -78,7 +78,7 @@ const profileNav = [
 
 const employerProfileNav = [
   {
-    name: "Profile Information",
+    name: "Information",
     route: "/employer/profile/information",
   },
 
@@ -268,7 +268,7 @@ export default function NavLayout(props: Props) {
                 sx={{ textAlign: "left", color: "primary.dark" }}
               >
                 <ListItemText
-                  sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
+                  sx={{ color: router.pathname !== item.route ? "#344054" : "#3E4095" }}
                   primary={item.name}
                 />
                 {item.name !== "Profile" ? null : open ? <ExpandLess /> : <ExpandMore />}
@@ -280,7 +280,7 @@ export default function NavLayout(props: Props) {
               <List key={item.name} component="div" disablePadding>
                 <ListItemButton onClick={() => router.push(item.route)} sx={{ pl: 4 }}>
                   <ListItemText
-                    sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
+                    sx={{ color: router.pathname !== item.route ? "#344054" : "#3E4095" }}
                     primary={item.name}
                   />
                 </ListItemButton>
@@ -304,7 +304,7 @@ export default function NavLayout(props: Props) {
                 sx={{ textAlign: "left", color: "primary.dark" }}
               >
                 <ListItemText
-                  sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
+                  sx={{ color: router.pathname !== item.route ? "#344054" : "#3E4095" }}
                   primary={item.name}
                 />
                 {item.name !== "Profile" ? null : open ? <ExpandLess /> : <ExpandMore />}
@@ -316,7 +316,7 @@ export default function NavLayout(props: Props) {
               <List key={item.name} component="div" disablePadding>
                 <ListItemButton onClick={() => router.push(item.route)} sx={{ pl: 4 }}>
                   <ListItemText
-                    sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
+                    sx={{ color: router.pathname !== item.route ? "#344054" : "#3E4095" }}
                     primary={item.name}
                   />
                 </ListItemButton>
@@ -441,38 +441,26 @@ export default function NavLayout(props: Props) {
             (user?.user_type === "artisan" ? (
               <Box sx={{ display: { xs: "none", md: "block" } }}>
                 {mainNav.map((item) => (
-                  <Button key={item.name} onClick={() => router.push(item.route)} variant="text">
+                  <Button
+                    key={item.name}
+                    onClick={() => router.push(item.route)}
+                    variant={router.pathname !== item.route ? "text" : "contained"}
+                  >
                     {item.name}
                   </Button>
                 ))}
-                <Button
-                  startIcon={<LogoutIcon />}
-                  onClick={() => {
-                    onLogout()
-                  }}
-                  color="error"
-                  variant="outlined"
-                >
-                  Logout
-                </Button>
               </Box>
             ) : (
               <Box sx={{ display: { xs: "none", md: "block" } }}>
                 {employerMainNav.map((item) => (
-                  <Button key={item.name} onClick={() => router.push(item.route)} variant="text">
+                  <Button
+                    key={item.name}
+                    onClick={() => router.push(item.route)}
+                    variant={router.pathname !== item.route ? "text" : "contained"}
+                  >
                     {item.name}
                   </Button>
                 ))}
-                <Button
-                  startIcon={<LogoutIcon />}
-                  onClick={() => {
-                    onLogout()
-                  }}
-                  color="error"
-                  variant="outlined"
-                >
-                  Logout
-                </Button>
               </Box>
             ))}
 
@@ -527,6 +515,19 @@ export default function NavLayout(props: Props) {
                   />
                 </IconButton>
               </>
+            )}
+            {user && (
+              <Button
+                sx={{ display: { xs: "none", md: "inline-flex" } }}
+                startIcon={<LogoutIcon />}
+                onClick={() => {
+                  onLogout()
+                }}
+                color="error"
+                variant="outlined"
+              >
+                Logout
+              </Button>
             )}
           </Box>
         </Toolbar>
