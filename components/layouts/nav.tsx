@@ -200,7 +200,7 @@ export default function NavLayout(props: Props) {
 
   const goToProfile = React.useCallback(() => {
     router.push(`/${user?.user_type}/profile/information`)
-  }, [])
+  }, [user])
 
   //error handler
   const [message, setMessage] = React.useState("An error occured")

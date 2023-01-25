@@ -189,16 +189,14 @@ function Page() {
   const { mutate } = useSWRConfig()
   const [editor, setEditor] = useState<any>()
   const [initContent, setInitContent] = useState("")
-  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs, {
-    keepPreviousData: true,
-  })
+  const { data: jobsList } = useSWR(router?.query?.id ? `/jobs/${router?.query?.id}` : null, jobService.getJobById)
   const [isLoading, setIsLoading] = useState(false)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const [skills, setSkills] = useState<string[]>([])
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
 
-  console.log("id", router?.query?.id)
+  console.log("job", jobsList)
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -345,7 +343,7 @@ function Page() {
                   Create Job
                 </Button>
               </Stack>
-              <Stack direction="column" spacing={2}>
+              {/* <Stack direction="column" spacing={2}>
                 {!jobsList || jobsList.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
@@ -358,7 +356,7 @@ function Page() {
                     <JobCard key={item.id} item={item} onEdit={handleEdit} onDelete={handleDelete} />
                   ))
                 )}
-              </Stack>
+              </Stack> */}
             </Container>
           </Grid>
           {matches && (
