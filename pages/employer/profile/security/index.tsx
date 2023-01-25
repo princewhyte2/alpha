@@ -61,7 +61,11 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <NavLayout>{page}</NavLayout>
+  return (
+    <NavLayout>
+      <EmployerProfileLayout>{page}</EmployerProfileLayout>
+    </NavLayout>
+  )
 }
 
 Page.requireAuth = true

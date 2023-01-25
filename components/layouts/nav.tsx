@@ -420,140 +420,144 @@ export default function NavLayout(props: Props) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBar sx={{ bgcolor: "white" }} color="transparent" component="nav">
-        <Toolbar sx={{ display: { xs: "flex" }, justifyContent: "space-between" }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuLine />
-          </IconButton>
-          <Link href="/" underline="none">
-            <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
-              <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
-            </Box>
-          </Link>
-
-          {user &&
-            (user?.user_type === "artisan" ? (
-              <Box sx={{ display: { xs: "none", md: "block" } }}>
-                {mainNav.map((item) => (
-                  <Button
-                    key={item.name}
-                    onClick={() => router.push(item.route)}
-                    variant={router.pathname !== item.route ? "text" : "contained"}
-                  >
-                    {item.name}
-                  </Button>
-                ))}
-              </Box>
-            ) : (
-              <Box sx={{ display: { xs: "none", md: "block" } }}>
-                {employerMainNav.map((item) => (
-                  <Button
-                    key={item.name}
-                    onClick={() => router.push(item.route)}
-                    variant={router.pathname !== item.route ? "text" : "contained"}
-                  >
-                    {item.name}
-                  </Button>
-                ))}
-              </Box>
-            ))}
-
-          <Box sx={{ display: { xs: "block", md: "block" } }}>
-            {!user ? (
-              <>
-                <Button
-                  sx={{ display: { xs: "none", md: "inline-block" } }}
-                  onClick={() => router.push("/auth/login")}
-                  variant="text"
-                >
-                  Login
-                </Button>
-                <Button
-                  sx={{ display: { xs: "none", md: "inline-block" } }}
-                  onClick={() => router.push(`/auth/signup`)}
-                  variant="contained"
-                >
-                  Sign up
-                </Button>
-              </>
-            ) : user?.user_type === "artisan" ? (
-              <>
-                <IconButton
-                  size="large"
-                  sx={{ color: "primary.main" }}
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <NotificationsIcon />
-                  {/* <Badge badgeContent={17} color="error"></Badge> */}
-                </IconButton>
-                <IconButton onClick={goToProfile}>
-                  <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
-                </IconButton>
-              </>
-            ) : (
-              <>
-                <IconButton
-                  size="large"
-                  sx={{ color: "primary.main" }}
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <NotificationsIcon />
-                  {/* <Badge badgeContent={17} color="error"></Badge> */}
-                </IconButton>
-                <IconButton onClick={goToProfile}>
-                  <Avatar
-                    alt={`${user?.relationships.company?.name}`}
-                    src={user?.relationships.company?.logo_image?.url}
-                  />
-                </IconButton>
-              </>
-            )}
-            {user && (
-              <Button
-                sx={{ display: { xs: "none", md: "inline-flex" } }}
-                startIcon={<LogoutIcon />}
-                onClick={() => {
-                  onLogout()
-                }}
-                color="error"
-                variant="outlined"
+      <Container disableGutters maxWidth="xl">
+        <AppBar sx={{ bgcolor: "white" }} color="transparent" component="nav">
+          <Container disableGutters maxWidth="xl">
+            <Toolbar sx={{ display: { xs: "flex" }, justifyContent: "space-between" }}>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, display: { sm: "none" } }}
               >
-                Logout
-              </Button>
-            )}
-          </Box>
-        </Toolbar>
-        <Box component="nav">
-          <Drawer
-            container={container}
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-            }}
-          >
-            {drawer}
-          </Drawer>
-        </Box>
-      </AppBar>
+                <MenuLine />
+              </IconButton>
+              <Link href="/" underline="none">
+                <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
+                  <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
+                </Box>
+              </Link>
 
-      <Box component="main" sx={{ p: { xs: 0, md: 0 }, width: "100%" }}>
-        <Toolbar />
-        <Grid container spacing={2}>
-          {/* <Grid sx={{ display: { xs: "none", md: "grid" } }} item sm={2}>
+              {user &&
+                (user?.user_type === "artisan" ? (
+                  <Box sx={{ display: { xs: "none", md: "block" } }}>
+                    {mainNav.map((item) => (
+                      <Button
+                        key={item.name}
+                        onClick={() => router.push(item.route)}
+                        variant={router.pathname !== item.route ? "text" : "outlined"}
+                      >
+                        {item.name}
+                      </Button>
+                    ))}
+                  </Box>
+                ) : (
+                  <Box sx={{ display: { xs: "none", md: "block" } }}>
+                    {employerMainNav.map((item) => (
+                      <Button
+                        key={item.name}
+                        onClick={() => router.push(item.route)}
+                        variant={router.pathname !== item.route ? "text" : "outlined"}
+                      >
+                        {item.name}
+                      </Button>
+                    ))}
+                  </Box>
+                ))}
+
+              <Box sx={{ display: { xs: "block", md: "block" } }}>
+                {!user ? (
+                  <>
+                    <Button
+                      sx={{ display: { xs: "none", md: "inline-block" } }}
+                      onClick={() => router.push("/auth/login")}
+                      variant="text"
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      sx={{ display: { xs: "none", md: "inline-block" } }}
+                      onClick={() => router.push(`/auth/signup`)}
+                      variant="contained"
+                    >
+                      Sign up
+                    </Button>
+                  </>
+                ) : user?.user_type === "artisan" ? (
+                  <>
+                    <IconButton
+                      size="large"
+                      sx={{ color: "primary.main" }}
+                      aria-label="show 17 new notifications"
+                      color="inherit"
+                    >
+                      <NotificationsIcon />
+                      {/* <Badge badgeContent={17} color="error"></Badge> */}
+                    </IconButton>
+                    <IconButton onClick={goToProfile}>
+                      <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
+                    </IconButton>
+                  </>
+                ) : (
+                  <>
+                    <IconButton
+                      size="large"
+                      sx={{ color: "primary.main" }}
+                      aria-label="show 17 new notifications"
+                      color="inherit"
+                    >
+                      <NotificationsIcon />
+                      {/* <Badge badgeContent={17} color="error"></Badge> */}
+                    </IconButton>
+                    <IconButton onClick={goToProfile}>
+                      <Avatar
+                        alt={`${user?.relationships.company?.name}`}
+                        src={user?.relationships.company?.logo_image?.url}
+                      />
+                    </IconButton>
+                  </>
+                )}
+                {user && (
+                  <Button
+                    sx={{ display: { xs: "none", md: "inline-flex" } }}
+                    startIcon={<LogoutIcon />}
+                    onClick={() => {
+                      onLogout()
+                    }}
+                    color="error"
+                    variant="outlined"
+                  >
+                    Logout
+                  </Button>
+                )}
+              </Box>
+            </Toolbar>
+          </Container>
+
+          <Box component="nav">
+            <Drawer
+              container={container}
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}
+              sx={{
+                display: { xs: "block", sm: "none" },
+                "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+              }}
+            >
+              {drawer}
+            </Drawer>
+          </Box>
+        </AppBar>
+
+        <Box component="main" sx={{ p: { xs: 0, md: 0 }, width: "100%" }}>
+          <Toolbar />
+          <Grid container spacing={2}>
+            {/* <Grid sx={{ display: { xs: "none", md: "grid" } }} item sm={2}>
             <Box
               sx={{
                 width: "100%",
@@ -584,69 +588,69 @@ export default function NavLayout(props: Props) {
               </List>
             </Box>
           </Grid> */}
-          <Grid item xs={12}>
-            {children}
+            <Grid item xs={12}>
+              {children}
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
-      <BootstrapDialog
-        PaperProps={{ style: { margin: 8 } }}
-        open={Boolean(user && user?.user_type === "employer" && !user?.has_created_company)}
-        fullWidth
-        aria-labelledby="workhistory-modal-title"
-        aria-describedby="workhistory-modal-description"
-      >
-        <BootstrapDialogTitle id="title-work-history">Create Company</BootstrapDialogTitle>
-        <DialogContent>
-          <Box onSubmit={handleCreateCompany} sx={{ width: "100%", mt: 2 }} component={"form"}>
-            <Stack alignItems={"center"} sx={{ width: "100%", mb: 2 }} justifyContent="center">
-              <Badge
-                overlap="circular"
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                badgeContent={
-                  isImageLoading ? (
-                    <CircularProgress />
-                  ) : (
-                    <IconButton
-                      size="small"
-                      sx={{ bgcolor: "primary.main" }}
-                      aria-label="upload picture"
-                      component="label"
-                    >
-                      <input onChange={handleFileChange} hidden accept="image/*" type="file" />
-                      <PhotoCameraIcon fontSize="inherit" sx={{ color: "white" }} />
-                    </IconButton>
-                  )
-                }
-              >
-                <Avatar sx={{ width: "84px", height: "84px" }} src={logo?.url} />
-              </Badge>
-            </Stack>
+        </Box>
+        <BootstrapDialog
+          PaperProps={{ style: { margin: 8 } }}
+          open={Boolean(user && user?.user_type === "employer" && !user?.has_created_company)}
+          fullWidth
+          aria-labelledby="workhistory-modal-title"
+          aria-describedby="workhistory-modal-description"
+        >
+          <BootstrapDialogTitle id="title-work-history">Create Company</BootstrapDialogTitle>
+          <DialogContent>
+            <Box onSubmit={handleCreateCompany} sx={{ width: "100%", mt: 2 }} component={"form"}>
+              <Stack alignItems={"center"} sx={{ width: "100%", mb: 2 }} justifyContent="center">
+                <Badge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  badgeContent={
+                    isImageLoading ? (
+                      <CircularProgress />
+                    ) : (
+                      <IconButton
+                        size="small"
+                        sx={{ bgcolor: "primary.main" }}
+                        aria-label="upload picture"
+                        component="label"
+                      >
+                        <input onChange={handleFileChange} hidden accept="image/*" type="file" />
+                        <PhotoCameraIcon fontSize="inherit" sx={{ color: "white" }} />
+                      </IconButton>
+                    )
+                  }
+                >
+                  <Avatar sx={{ width: "84px", height: "84px" }} src={logo?.url} />
+                </Badge>
+              </Stack>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={12}>
-                <TextField
-                  fullWidth
-                  required
-                  id="business-profile-title"
-                  inputRef={businessNameRef}
-                  placeholder="Business Name"
-                  label="Business Name"
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} md={12}>
-                <TextField
-                  fullWidth
-                  id="business-profile-address"
-                  inputRef={businessAddressRef}
-                  required
-                  placeholder="Address"
-                  label="Business/Office Address"
-                  variant="outlined"
-                />
-              </Grid>
-              {/* <Grid item xs={12} md={6}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={12}>
+                  <TextField
+                    fullWidth
+                    required
+                    id="business-profile-title"
+                    inputRef={businessNameRef}
+                    placeholder="Business Name"
+                    label="Business Name"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12} md={12}>
+                  <TextField
+                    fullWidth
+                    id="business-profile-address"
+                    inputRef={businessAddressRef}
+                    required
+                    placeholder="Address"
+                    label="Business/Office Address"
+                    variant="outlined"
+                  />
+                </Grid>
+                {/* <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
                   <InputLabel id="city-simple-select-label">Country</InputLabel>
                   <Select
@@ -682,57 +686,57 @@ export default function NavLayout(props: Props) {
                   </Select>
                 </FormControl>
               </Grid> */}
-              <Grid item xs={12} md={12}>
-                <TextField
-                  fullWidth
-                  placeholder="website"
-                  inputRef={websiteRef}
-                  id="profile-lastName"
-                  label="Company website"
-                  variant="outlined"
-                  required
-                />
-              </Grid>
+                <Grid item xs={12} md={12}>
+                  <TextField
+                    fullWidth
+                    placeholder="website"
+                    inputRef={websiteRef}
+                    id="profile-lastName"
+                    label="Company website"
+                    variant="outlined"
+                    required
+                  />
+                </Grid>
 
-              <Grid item xs={12} md={12}>
-                <TextField
-                  label="Company Email Address"
-                  id="email-start-business"
-                  placeholder="Email Address"
-                  inputRef={businessEmailRef}
-                  required
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <EmailIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} md={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="industries-select-label">Business Sector</InputLabel>
-                  <Select
-                    labelId="industries-select-label"
-                    id="industries-select"
-                    placeholder="Business sector"
-                    label="Business Sector"
-                    defaultValue={""}
-                    inputRef={industryRef}
-                  >
-                    {businessSectors?.map((item: any) => (
-                      <MenuItem key={item.id} value={item.id}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                    {/* <MenuItem value={"female"}>Female</MenuItem> */}
-                  </Select>
-                </FormControl>
-              </Grid>
+                <Grid item xs={12} md={12}>
+                  <TextField
+                    label="Company Email Address"
+                    id="email-start-business"
+                    placeholder="Email Address"
+                    inputRef={businessEmailRef}
+                    required
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <EmailIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="industries-select-label">Business Sector</InputLabel>
+                    <Select
+                      labelId="industries-select-label"
+                      id="industries-select"
+                      placeholder="Business sector"
+                      label="Business Sector"
+                      defaultValue={""}
+                      inputRef={industryRef}
+                    >
+                      {businessSectors?.map((item: any) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                      {/* <MenuItem value={"female"}>Female</MenuItem> */}
+                    </Select>
+                  </FormControl>
+                </Grid>
 
-              {/* <Grid item xs={12} md={12}>
+                {/* <Grid item xs={12} md={12}>
                 <TextField
                   defaultValue={'user?.last_name || ""'}
                   fullWidth
@@ -746,29 +750,30 @@ export default function NavLayout(props: Props) {
                 />
               </Grid> */}
 
-              <Grid item xs={12}>
-                <LoadingButton
-                  disabled={Boolean(!logo)}
-                  loading={loading}
-                  type="submit"
-                  fullWidth
-                  sx={{ px: 6 }}
-                  variant="contained"
-                >
-                  Create
-                </LoadingButton>
+                <Grid item xs={12}>
+                  <LoadingButton
+                    disabled={Boolean(!logo)}
+                    loading={loading}
+                    type="submit"
+                    fullWidth
+                    sx={{ px: 6 }}
+                    variant="contained"
+                  >
+                    Create
+                  </LoadingButton>
+                </Grid>
               </Grid>
-            </Grid>
 
-            {/* <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
+              {/* <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
               <LoadingButton loading={false} type="submit" fullWidth sx={{ px: 6 }} variant="contained">
                 'create business'
               </LoadingButton>
             </Stack> */}
-          </Box>
-        </DialogContent>
-      </BootstrapDialog>
-      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
+            </Box>
+          </DialogContent>
+        </BootstrapDialog>
+        <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
+      </Container>
     </Box>
   )
 }

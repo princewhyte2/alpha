@@ -46,6 +46,7 @@ import { hobbiesList } from "../../../utils"
 import { ErrorComponent } from "../../../components/alert"
 import { Router, useRouter } from "next/router"
 import NavLayout from "../../../components/layouts/nav"
+import EmployerProfileLayout from "../../../components/layouts/employerProfile"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -1372,7 +1373,11 @@ function Page() {
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
-  return <NavLayout>{page}</NavLayout>
+  return (
+    <NavLayout>
+      <ProfileLayout>{page}</ProfileLayout>
+    </NavLayout>
+  )
 }
 
 Page.requireAuth = true

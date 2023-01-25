@@ -31,7 +31,6 @@ interface Props {
   window?: () => Window
 }
 
-const drawerWidth = 240
 const navItems = [
   {
     name: "Business Information",
@@ -43,167 +42,46 @@ const navItems = [
   },
 ]
 
-const mainNav = [
-  {
-    name: "Your Feed",
-    route: "/employer/feed",
-  },
-  {
-    name: "Connection",
-    route: "/employer/connection",
-  },
-  {
-    name: "My Jobs",
-    route: "/employer/jobs",
-  },
-  {
-    name: "Messaging",
-    route: "/employer/messaging",
-  },
-  {
-    name: "Profile",
-    route: "/employer/profile/information",
-  },
-]
-
 export default function EmployerProfileLayout(props: Props) {
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  const { window, children } = props
-  const [mobileOpen, setMobileOpen] = React.useState(false)
+  const { children } = props
   const router = useRouter()
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
-
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "left", color: "primary.dark" }}>
-      <Typography variant="h6" sx={{ mx: 1, my: 1 }}>
-        Profile
-      </Typography>
-      <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item.name} disablePadding>
-            <ListItemButton onClick={() => router.push(item.route)} sx={{ textAlign: "left", color: "primary.dark" }}>
-              <ListItemText
-                sx={{ borderBottom: router.pathname !== item.route ? "none" : "4px solid #3E4095" }}
-                primary={item.name}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  )
-
-  const container = window !== undefined ? () => window().document.body : undefined
-
   return (
-    <Box sx={{ display: "flex" }}>
-      <AppBar sx={{ bgcolor: "white" }} color="transparent" component="nav">
-        <Toolbar sx={{ display: { xs: "flex" }, justifyContent: "space-between" }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuLine />
-          </IconButton>
-          <Link href="/" underline="none">
-            <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
-              <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
-            </Box>
-          </Link>
-
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
-            {mainNav.map((item) => (
-              <Button key={item.name} onClick={() => router.push(item.route)} variant="text">
-                {item.name}
-              </Button>
+    <Grid container sx={{ pt: 2 }} spacing={2}>
+      <Grid sx={{ display: { xs: "none", md: "grid" } }} item sm={2}>
+        <Box
+          sx={{
+            width: "100%",
+            height: "fit-content",
+            borderRight: "1px solid #3E4095",
+            color: "primary.dark",
+            px: 1,
+          }}
+        >
+          <Typography variant="h5" sx={{ my: 1 }}>
+            Profile
+          </Typography>
+          <List>
+            {navItems.map((item) => (
+              <ListItem key={item.name} disablePadding>
+                <ListItemButton
+                  sx={{
+                    textAlign: "left",
+                    color: "primary.dark",
+                    borderLeft: router.pathname !== item.route ? "none" : "4px solid #3E4095",
+                  }}
+                  onClick={() => router.push(item.route)}
+                >
+                  <ListItemText primary={item.name} />
+                </ListItemButton>
+              </ListItem>
             ))}
-          </Box>
-
-          <Box sx={{ display: { xs: "block", sm: "block" } }}>
-            <IconButton
-              size="large"
-              sx={{ color: "primary.main" }}
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
-              <NotificationsIcon />
-              {/* <Badge badgeContent={17} color="error">
-              </Badge> */}
-            </IconButton>
-            <IconButton>
-              <Avatar
-                sx={{ bgcolor: "primary.main" }}
-                alt={`${user?.first_name} ${user?.last_name}`}
-                src={user?.relationships.profile_image?.url}
-              />
-            </IconButton>
-          </Box>
-        </Toolbar>
-        <Box component="nav">
-          <Drawer
-            container={container}
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-            }}
-          >
-            {drawer}
-          </Drawer>
+          </List>
         </Box>
-      </AppBar>
-
-      <Box component="main" sx={{ p: { xs: 0, md: 3 }, width: "100%" }}>
-        <Toolbar />
-        <Grid container spacing={2}>
-          <Grid sx={{ display: { xs: "none", md: "grid" } }} item sm={2}>
-            <Box
-              sx={{
-                width: "100%",
-                height: "fit-content",
-                borderRight: "1px solid #3E4095",
-                color: "primary.dark",
-                px: 1,
-              }}
-            >
-              <Typography variant="h5" sx={{ my: 1 }}>
-                Profile
-              </Typography>
-              <List>
-                {navItems.map((item) => (
-                  <ListItem key={item.name} disablePadding>
-                    <ListItemButton
-                      sx={{
-                        textAlign: "left",
-                        color: "primary.dark",
-                        borderLeft: router.pathname !== item.route ? "none" : "4px solid #3E4095",
-                      }}
-                      onClick={() => router.push(item.route)}
-                    >
-                      <ListItemText primary={item.name} />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={10}>
-            {children}
-          </Grid>
-        </Grid>
-      </Box>
-    </Box>
+      </Grid>
+      <Grid item xs={12} md={10}>
+        {children}
+      </Grid>
+    </Grid>
   )
 }

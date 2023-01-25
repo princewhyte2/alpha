@@ -111,30 +111,22 @@ function Page() {
                 <TypeAnimation
                   // Same String at the start will only be typed once, initially
                   sequence={[
-                    "M",
-                    500,
-                    "Ma",
-                    500,
-                    "Mar",
-                    500,
-                    "Mark",
-                    500,
-                    "Marke",
-                    500,
-                    "Market",
-                    500,
-                    "Marketp",
-                    500,
-                    "Marketpl",
-                    500,
-                    "Marketpla",
-                    500,
-                    "Marketplac",
-                    500,
                     "Marketplace",
-                    500,
+                    1000,
+                    "Bazaar",
+                    1000,
+                    "Emporium",
+                    1000,
+                    "Mart",
+                    1000,
+                    "Fair",
+                    1000,
+                    "Exchange",
+                    1000,
+                    "Bourse",
+                    1000,
                   ]}
-                  speed={70} // Custom Speed from 1-99 - Default Speed: 40
+                  speed={40} // Custom Speed from 1-99 - Default Speed: 40
                   className="bold-text"
                   wrapper="span" // Animation will be rendered as a <span>
                   repeat={Infinity} // Repeat this Animation Sequence infinitely
