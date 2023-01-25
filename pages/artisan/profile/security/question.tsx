@@ -37,9 +37,10 @@ function Page() {
   )
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [questionId, setQuestionId] = useState(() => "")
+  const [questionId, setQuestionId] = useState("")
 
   const handleChange = (event: SelectChangeEvent) => {
+    console.log(event.target.value)
     setQuestionId(event.target.value)
   }
 
@@ -57,33 +58,36 @@ function Page() {
   const answerRef = useRef<HTMLInputElement>()
   // const questionRef = useRef<HTMLInputElement>()
 
-  const handleSaveSecurityQuestion = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const data = {
-      answer: answerRef.current?.value,
-      question_id: questionId,
-    }
-    setIsLoading(true)
-    try {
-      const response = await securityService.saveUserSecurityQuestion(data as SecurityQuestionPostData)
-      setMessage(response?.message)
-      setType("success")
-      setIsError(true)
-      mutate("userSecurityQuestions")
-    } catch (error: any) {
-      setType("error")
-      if (error.response) {
-        setMessage(error.response.data.message)
-      } else if (error.request) {
-        console.log(error.request)
-      } else {
-        console.log("Error", error.message)
+  const handleSaveSecurityQuestion = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const data = {
+        answer: answerRef.current?.value,
+        question_id: questionId,
       }
-      setIsError(true)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+      setIsLoading(true)
+      try {
+        const response = await securityService.saveUserSecurityQuestion(data as SecurityQuestionPostData)
+        setMessage(response?.message)
+        setType("success")
+        setIsError(true)
+        mutate("userSecurityQuestions")
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [questionId],
+  )
 
   return (
     <Box sx={{ p: 2 }}>

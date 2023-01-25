@@ -1,4 +1,4 @@
-import { ReactElement, useState, useCallback } from "react"
+import { ReactElement, useState, useCallback, useMemo } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
@@ -12,7 +12,23 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
+import { generateHTML } from "@tiptap/core"
+import { Text as TestTipTap } from "@tiptap/extension-text"
 import InputAdornment from "@mui/material/InputAdornment"
+import BlockQuote from "@tiptap/extension-blockquote"
+import BulletList from "@tiptap/extension-bullet-list"
+import Bold from "@tiptap/extension-bold"
+import ListItem from "@tiptap/extension-list-item"
+import Code from "@tiptap/extension-code"
+import CodeBlock from "@tiptap/extension-code-block"
+import Document from "@tiptap/extension-document"
+import HardBreak from "@tiptap/extension-hard-break"
+import Heading from "@tiptap/extension-heading"
+import HorizontalRule from "@tiptap/extension-horizontal-rule"
+import Italic from "@tiptap/extension-italic"
+import Link from "@tiptap/extension-link"
+import OrderedList from "@tiptap/extension-ordered-list"
+import Paragraph from "@tiptap/extension-paragraph"
 import CardContent from "@mui/material/CardContent"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
@@ -43,6 +59,7 @@ import NavLayout from "../../components/layouts/nav"
 import jobService from "../../services/job"
 import NoPostIllustration from "../../components/icons/NoPostIllustration"
 import { ErrorComponent } from "../../components/alert"
+import htmlTruncate from "../../lib/htmlTruncate"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -278,6 +295,31 @@ Page.requireAuth = true
 export default Page
 
 const JobCard = ({ item, onJobApplication }: any) => {
+  const [isShowMore, setIsShowMore] = useState(false)
+  const content = useMemo(() => {
+    try {
+      return generateHTML(JSON.parse(item.description), [
+        Document,
+        Paragraph,
+        TestTipTap,
+        Italic,
+        HardBreak,
+        Code,
+        CodeBlock,
+        ListItem,
+        BulletList,
+        OrderedList,
+        BlockQuote,
+        Heading,
+        HorizontalRule,
+        Bold,
+        Link,
+        // other extensions …
+      ])
+    } catch (error) {
+      return item?.description
+    }
+  }, [])
   return (
     <Paper
       key={item.id}
@@ -298,7 +340,14 @@ const JobCard = ({ item, onJobApplication }: any) => {
             {item.company?.name}
           </Typography>
         </Stack>
-        <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography>
+        {/* <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography> */}
+        <div
+          onClick={() => setIsShowMore(true)}
+          className="ProseMirror"
+          dangerouslySetInnerHTML={{
+            __html: isShowMore ? content : htmlTruncate(content, 200, { ellipsis: "... see more" }),
+          }}
+        />
         <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
           {item.skills.map((skill: string) => (
             <Chip key={skill} label={skill} />

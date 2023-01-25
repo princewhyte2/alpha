@@ -198,6 +198,8 @@ function Page() {
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
 
+  console.log("id", router?.query?.id)
+
   //error handler
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)

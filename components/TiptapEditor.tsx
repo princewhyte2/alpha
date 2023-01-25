@@ -4,12 +4,18 @@ import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
 interface Props {
-  setEditorContent: (content: any) => void
+  setEditorContent?: (content: any) => void
   setTextEditor: (editor: any) => void
   initContent: any
+  placeholder?: string
 }
 
-const TiptapEditor = ({ setEditorContent, setTextEditor, initContent }: Props) => {
+const TiptapEditor = ({
+  setEditorContent,
+  setTextEditor,
+  initContent,
+  placeholder = "Share something with your network",
+}: Props) => {
   const editorTiptap = useEditor({
     editorProps: {
       attributes: {
@@ -27,13 +33,13 @@ const TiptapEditor = ({ setEditorContent, setTextEditor, initContent }: Props) =
             return "What’s the title?"
           }
 
-          return "Share something with your network"
+          return placeholder
         },
       }),
     ],
     content: initContent,
     onUpdate: ({ editor }) => {
-      setEditorContent(editor.getJSON())
+      setEditorContent ? setEditorContent(editor.getJSON()) : null
     },
     onCreate: ({ editor }) => {
       setTextEditor(editor)
