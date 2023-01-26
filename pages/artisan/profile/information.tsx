@@ -435,12 +435,15 @@ function Page() {
     [],
   )
 
-  const [userOccupation, setUserOccupation] = useState<{
-    id: number
-    name: string
-    active: number
-    industry_id: number
-  }>({ id: 0, name: "", active: 0, industry_id: 0 })
+  const [userOccupation, setUserOccupation] = useState<
+    | {
+        id: number
+        name: string
+        active: number
+        industry_id: number
+      }
+    | any
+  >({ id: 0, name: "", active: 0, industry_id: 0 })
   const [isOccupationLoading, setIsOccupationLoading] = useState(false)
   const [occupationId, setOccupationId] = useState(undefined)
 
@@ -541,7 +544,7 @@ function Page() {
 
   const handleEditOccupation = useCallback(
     (item: any) => () => {
-      setOccupationId(item.id)
+      setOccupationId(item.occupations.id)
       setUserSkills(item.user_skills)
       setUserOccupation(item)
       setIsEditOccupation(true)
@@ -1058,7 +1061,7 @@ function Page() {
                               <BorderColorIcon fontSize="inherit" />
                             </IconButton>
                             <IconButton
-                              onClick={handleDeleteOccupation(item.id)}
+                              onClick={handleDeleteOccupation(item.occupations.id)}
                               size="small"
                               color="secondary"
                               aria-label="add an alarm"
@@ -1315,7 +1318,6 @@ function Page() {
                   <Autocomplete
                     fullWidth
                     value={userOccupation}
-                    // options={hobbiesList}
                     {...defaultProps}
                     onChange={(_ev, val) => setUserOccupation(val)}
                     renderInput={(params) => (
