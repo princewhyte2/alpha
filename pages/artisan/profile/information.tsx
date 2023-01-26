@@ -47,6 +47,7 @@ import { ErrorComponent } from "../../../components/alert"
 import { Router, useRouter } from "next/router"
 import NavLayout from "../../../components/layouts/nav"
 import EmployerProfileLayout from "../../../components/layouts/employerProfile"
+import utilsService from "../../../services/utils"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -130,6 +131,12 @@ function Page() {
     revalidateOnReconnect: false,
   })
   const { data: qualificationsList } = useSWR(`qualificationsList`, profileServices.qualifcationsFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+
+  const { data: occupations } = useSWR(`/occupations`, utilsService.getOccupations, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
@@ -424,6 +431,120 @@ function Page() {
         }
         setIsError(true)
       }
+    },
+    [],
+  )
+
+  const [userOccupation, setUserOccupation] = useState<{
+    id: number
+    name: string
+    active: number
+    industry_id: number
+  }>({ id: 0, name: "", active: 0, industry_id: 0 })
+  const [isOccupationLoading, setIsOccupationLoading] = useState(false)
+  const [occupationId, setOccupationId] = useState(undefined)
+
+  const [userSkills, setUserSkills] = useState<
+    {
+      id: number
+      name: string
+      active: number
+      industry_id: number
+    }[]
+  >([])
+
+  const { data: skills } = useSWR(
+    userOccupation.id ? `/occupations/${userOccupation?.id}/skills` : null,
+    utilsService.getOccupationsSkill,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  )
+
+  const defaultProps = {
+    options: occupations,
+    getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
+  }
+
+  const handleCreateOccupation = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const data = {
+        occupation_id: userOccupation.id,
+        skills: userSkills.map((item) => item.id),
+      }
+
+      setIsOccupationLoading(true)
+      try {
+        if (occupationId) {
+          const response = await profileServices.updateOccupation(occupationId, data as CreateOccupationData)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
+          mutate("userProfile")
+        } else {
+          const response = await profileServices.createOccupation(data as CreateOccupationData)
+          setMessage(response?.message)
+          setType("success")
+          setIsError(true)
+          mutate("userProfile")
+        }
+        onCloseOccupationModal()
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      } finally {
+        setIsOccupationLoading(false)
+      }
+    },
+    [userSkills, occupationId],
+  )
+
+  const onCloseOccupationModal = useCallback(() => {
+    setIsEditOccupation(false)
+    setOccupationId(undefined)
+    setUserSkills([])
+    setUserOccupation({ id: 0, name: "", active: 0, industry_id: 0 })
+  }, [])
+
+  const handleDeleteOccupation = useCallback(
+    (id: string) => async (e: any) => {
+      try {
+        const response = await profileServices.deleteUserOccupation(id)
+        setMessage(response?.message)
+        setType("success")
+        setIsError(true)
+        mutate("userProfile")
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
+  const handleEditOccupation = useCallback(
+    (item: any) => () => {
+      setOccupationId(item.id)
+      setUserSkills(item.user_skills)
+      setUserOccupation(item)
+      setIsEditOccupation(true)
     },
     [],
   )
@@ -886,9 +1007,9 @@ function Page() {
                     )}
                   </Grid>
                 </Grid>
-                {[1, 2].map((item) => (
+                {user?.relationships.occupations?.map((item: any) => (
                   <Box
-                    key={item}
+                    key={item.id}
                     sx={{
                       width: "100%",
                       borderBottom: { xs: "1px dashed #3E4095", md: "none" },
@@ -910,28 +1031,38 @@ function Page() {
                           Occupation
                         </Typography>
                         <Stack alignItems="flex-end" direction="row" spacing={1}>
-                          <Chip label="Fashion" />
+                          <Chip label={item.name} />
                         </Stack>
                       </Grid>
                       <Grid item xs={12} md={8}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", mb: 1 }} variant="body1">
                           Skills
                         </Typography>
                         <Stack alignItems="flex-end" direction="row" spacing={1}>
                           <Stack direction="row" spacing={1}>
-                            <Chip label="Tailor" />
-                            <Chip label="Embroidery" />
-                            <Chip label="Monogram" />
+                            {item.user_skills.map((item: any) => (
+                              <Chip key={item.id} label={item.name} />
+                            ))}
                           </Stack>
                           <Stack
                             direction="row"
                             spacing={1}
                             sx={{ position: { xs: "absolute", md: "relative" }, top: 0, bottom: 0, right: 0 }}
                           >
-                            <IconButton size="small" color="secondary" aria-label="add an alarm">
+                            <IconButton
+                              onClick={handleEditOccupation(item)}
+                              size="small"
+                              color="secondary"
+                              aria-label="add an alarm"
+                            >
                               <BorderColorIcon fontSize="inherit" />
                             </IconButton>
-                            <IconButton size="small" color="secondary" aria-label="add an alarm">
+                            <IconButton
+                              onClick={handleDeleteOccupation(item.id)}
+                              size="small"
+                              color="secondary"
+                              aria-label="add an alarm"
+                            >
                               <DeleteIcon fontSize="inherit" />
                             </IconButton>
                           </Stack>
@@ -1159,35 +1290,76 @@ function Page() {
       </Box>
       <BootstrapDialog
         PaperProps={{ style: { margin: 8 } }}
+        fullWidth
         open={isEditOccupation}
-        onClose={() => setIsEditOccupation(false)}
+        onClose={onCloseOccupationModal}
         aria-labelledby="occupation-modal-title"
         aria-describedby="occupation-modal-description"
       >
-        <BootstrapDialogTitle id="occupation-dialog-title" onClose={() => setIsEditOccupation(false)}>
-          Add Occupation and Skills
+        <BootstrapDialogTitle id="occupation-dialog-title" onClose={onCloseOccupationModal}>
+          {occupationId ? "Update" : "Add"} Occupation and Skills
         </BootstrapDialogTitle>
         <DialogContent>
-          <TextField
+          {/* <TextField
             fullWidth
             id="profile-Ocupation"
             label="Ocupation"
             placeholder="Choose a sector"
             variant="outlined"
             sx={{ my: "1rem" }}
-          />
-          <TextField
-            fullWidth
-            id="profile-SKills"
-            label="Skills (Select/add as many skills as you have)"
-            placeholder="Your skills"
-            variant="outlined"
-          />
-          <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
-            <Button fullWidth={!matches} sx={{ px: 6 }} variant="contained">
-              Save
-            </Button>
-          </Stack>
+          /> */}
+          <Box onSubmit={handleCreateOccupation} component="form">
+            <Grid sx={{ pt: 2 }} container spacing={2}>
+              {occupations && (
+                <Grid item xs={12}>
+                  <Autocomplete
+                    fullWidth
+                    value={userOccupation}
+                    // options={hobbiesList}
+                    {...defaultProps}
+                    onChange={(_ev, val) => setUserOccupation(val)}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Ocupation" variant="outlined" placeholder="Select occupation" />
+                    )}
+                  />
+                </Grid>
+              )}
+              {skills && (
+                <Grid item xs={12}>
+                  <Autocomplete
+                    multiple
+                    fullWidth
+                    value={userSkills}
+                    options={skills}
+                    onChange={(_ev, val) => setUserSkills(val)}
+                    getOptionLabel={(option: { id: number; name: string; active: number; industry_id: number }) =>
+                      option.name
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Skills (Select/add as many skills as you have)"
+                        variant="outlined"
+                        placeholder="Your skills"
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
+            </Grid>
+            <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
+              <LoadingButton
+                disabled={userSkills.length < 1}
+                type="submit"
+                fullWidth={!matches}
+                loading={isOccupationLoading}
+                sx={{ px: 6 }}
+                variant="contained"
+              >
+                Save
+              </LoadingButton>
+            </Stack>
+          </Box>
         </DialogContent>
       </BootstrapDialog>
       <BootstrapDialog

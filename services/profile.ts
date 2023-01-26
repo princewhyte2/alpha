@@ -70,6 +70,21 @@ const deleteUserWorkHistory = async (id: string) => {
   return response.data
 }
 
+const createOccupation = async (data:CreateOccupationData) => {
+  const response = await axiosInstance.post(`/user/occupations`,data)
+  return response.data
+}
+
+const updateOccupation = async (occupationId:string,data:CreateOccupationData) => {
+  const response = await axiosInstance.patch(`/user/occupations/${occupationId}`, data)
+  return response.data
+}
+
+const deleteUserOccupation = async (occupationId: string) => {
+  const response = await axiosInstance.delete(`/user/occupations/${occupationId}`)
+  return response.data
+}
+
 const updateHobbies = async (hobbies: string[]) => {
   const response = await axiosInstance.patch("/update/hobbies", { hobbies })
   return response.data
@@ -98,7 +113,7 @@ const profileServices = {
   updateUserQualification,
   deleteUserQualification,
   updateUserWorkHistory,
-  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber,createCompany,updateCompany
+  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber,createCompany,updateCompany,createOccupation,updateOccupation,deleteUserOccupation
 }
 
 export default profileServices

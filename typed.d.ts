@@ -110,6 +110,11 @@ interface CreatePostData {
     file_type: 'video' | 'image';
     images:any[]
 }
+
+interface CreateOccupationData {
+    occupation_id: number;
+    skills:number[]
+}
     
 declare module 'react-swipeable-views'
 declare module 'react-swipeable-views-utils'
