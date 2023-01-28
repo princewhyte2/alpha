@@ -457,7 +457,7 @@ function Page() {
   >([])
 
   const { data: skills } = useSWR(
-    userOccupation.id ? `/occupations/${userOccupation?.id}/skills` : null,
+    userOccupation?.id ? `/occupations/${userOccupation?.id}/skills` : null,
     utilsService.getOccupationsSkill,
     {
       revalidateIfStale: false,

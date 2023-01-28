@@ -74,6 +74,7 @@ function Page() {
       setMessage(response?.message)
       setType("success")
       setIsError(true)
+      router.replace("/auth/verification")
     } catch (error: any) {
       setType("error")
       if (error.response) {
