@@ -197,8 +197,10 @@ function Page() {
     setIsLoading(true)
     const data = {
       body: JSON.stringify(editorContent),
-      file_type: mediaType,
-      images: files.map((i) => i.id),
+      ...(files.length > 0 && { file_type: mediaType }),
+      ...(files.length > 0 && { images: files.map((i) => i.id) }),
+      // file_type: mediaType,
+      // images: files.map((i) => i.id),
     }
 
     try {
