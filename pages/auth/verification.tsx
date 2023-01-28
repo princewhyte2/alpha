@@ -7,15 +7,18 @@ import Button from "@mui/material/Button"
 import { useTheme } from "@mui/material/styles"
 import Link from "@mui/material/Link"
 import useMediaQuery from "@mui/material/useMediaQuery"
+import useSWR from "swr"
 import TextField from "@mui/material/TextField"
 import authService from "../../services/authentication"
 import { ErrorComponent } from "../../components/alert"
 import { useRouter } from "next/router"
 import { AlertColor } from "@mui/lab/Alert"
+import profileServices from "../../services/profile"
 
 const Verification = () => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isLoading, setIsLoading] = useState(false)
@@ -33,7 +36,13 @@ const Verification = () => {
       setMessage("Verification successfull")
       setType("success")
       setIsError(true)
-      router.replace("/join-as")
+      if (!user?.user_type) {
+        router.replace("/join-as")
+        return
+      }
+      // const { redirect = "/profile/information" } = router.query
+      const redirect = `/${user?.user_type}/feed`
+      router.push(redirect)
     } catch (error: any) {
       if (error.response) {
         setMessage(error.response.data.message)
