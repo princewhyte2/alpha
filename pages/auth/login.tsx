@@ -86,6 +86,10 @@ const Login = () => {
       setType("success")
       setIsError(true)
 
+      if (!user?.has_verified_email) {
+        router.push("/auth/verification")
+        return
+      }
       if (!user?.user_type) {
         router.push("/join-as")
         return
