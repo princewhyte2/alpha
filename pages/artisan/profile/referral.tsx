@@ -21,9 +21,11 @@ function Page() {
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
 
+  const origin = typeof window !== "undefined" && window.location.origin ? window.location.origin : ""
+
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const handleCopyClick = useCallback(() => {
-    navigator.clipboard.writeText(`https://alpha-fynder.vercel.app/auth/signup?ref=${user?.referrer_code}`)
+    navigator.clipboard.writeText(`${origin}/auth/signup?ref=${user?.referrer_code}`)
     setIsError(true)
   }, [user])
 
@@ -90,7 +92,7 @@ function Page() {
                   spacing={2}
                 >
                   <Typography variant="body2" sx={{ my: 1, color: "white" }}>
-                    https://alpha-fynder.vercel.app/auth/signup?ref={user?.referrer_code}
+                    {origin}/auth/signup?ref={user?.referrer_code}
                   </Typography>
                   <Button
                     onClick={handleCopyClick}

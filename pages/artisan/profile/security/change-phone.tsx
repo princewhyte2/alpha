@@ -102,38 +102,38 @@ function Page() {
       <Typography variant="body2" sx={{ my: 1, color: "primary.dark" }}>
         To change your phone number, a token will be sent to your registered phone number
       </Typography>
-      <Box
-        component="form"
-        autoComplete="off"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          maxWidth: "29.68rem",
-          width: "100%",
-        }}
-        onSubmit={handleUpdatePhone}
-      >
-        <TextField
-          id="change-phone"
-          margin="dense"
-          fullWidth
-          required
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton aria-label="Phone Number" edge="end">
-                  <PhoneIcon sx={{ color: "primary.dark" }} />
-                </IconButton>
-              </InputAdornment>
-            ),
+      {userSecurityQuestion?.question ? (
+        <Box
+          component="form"
+          autoComplete="off"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            maxWidth: "29.68rem",
+            width: "100%",
           }}
-          label="Phone Number"
-          variant="outlined"
-          inputRef={phoneNumberRef}
-        />
+          onSubmit={handleUpdatePhone}
+        >
+          <TextField
+            id="change-phone"
+            margin="dense"
+            fullWidth
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton aria-label="Phone Number" edge="end">
+                    <PhoneIcon sx={{ color: "primary.dark" }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            label="Phone Number"
+            variant="outlined"
+            inputRef={phoneNumberRef}
+          />
 
-        {userSecurityQuestion?.question ? (
           <TextField
             fullWidth
             id="security-title-question"
@@ -144,21 +144,21 @@ function Page() {
             inputRef={answerRef}
             sx={{ my: "1rem" }}
           />
-        ) : (
-          <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
-            Please set your security question and return.
-          </Typography>
-        )}
 
-        <LoadingButton
-          loading={isLoading}
-          type="submit"
-          sx={{ maxWidth: "25rem", my: 4, width: { xs: "100%", md: "229px" }, alignSelf: "flex-end" }}
-          variant="contained"
-        >
-          Send Token
-        </LoadingButton>
-      </Box>
+          <LoadingButton
+            loading={isLoading}
+            type="submit"
+            sx={{ maxWidth: "25rem", my: 4, width: { xs: "100%", md: "229px" }, alignSelf: "flex-end" }}
+            variant="contained"
+          >
+            Send Token
+          </LoadingButton>
+        </Box>
+      ) : (
+        <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
+          Please set your security question and return.
+        </Typography>
+      )}
       {/* <Box
         component="form"
         noValidate

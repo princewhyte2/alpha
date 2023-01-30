@@ -1,10 +1,11 @@
 import { useCallback, useState } from "react"
 import Box from "@mui/material/Box"
 import useMediaQuery from "@mui/material/useMediaQuery"
+import CardMedia from "@mui/material/CardMedia"
 import { styled, useTheme } from "@mui/material/styles"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
-// import Grid from "@mui/material/Grid"
+import Grid from "@mui/material/Grid"
 import Stack from "@mui/material/Stack"
 import { AlertColor } from "@mui/material"
 import Link from "@mui/material/Link"
@@ -12,6 +13,24 @@ import profileServices from "../services/profile"
 import { useRouter } from "next/router"
 import { ErrorComponent } from "../components/alert"
 
+const images = [
+  {
+    label: "Mechanic",
+    imgPath: "/mechanic.webp",
+  },
+  {
+    label: "Hair stylist",
+    imgPath: "/hairstylelistone.webp",
+  },
+  {
+    label: "hair Stylist 2",
+    imgPath: "/hairstylelisttwo.webp",
+  },
+  {
+    label: "Two tailors",
+    imgPath: "/twotailors.webp",
+  },
+]
 const JoinAs = () => {
   const router = useRouter()
   const theme = useTheme()
@@ -107,35 +126,43 @@ const JoinAs = () => {
             <Paper
               onClick={onJoinAsArtisan}
               sx={{
-                height: "297px",
+                // height: "297px",
                 width: "100%",
                 borderRadius: "8px",
                 cursor: "pointer",
-                p: 4,
+                p: { xs: 2, md: 4 },
                 boxShadow:
                   "0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
               }}
             >
               <Stack
-                sx={{ height: "100%" }}
+                sx={{ height: "100%", width: { xs: "100%", md: "11.14rem" } }}
                 direction="column"
                 justifyContent="space-between"
                 alignItems="center"
                 spacing={2}
               >
-                <Box sx={{ width: "11.14rem", height: "12.496rem" }}>
+                {/* <Box sx={{ width: "11.14rem", height: "12.496rem" }}>
                   <img className="img" src="/artisan.webp" alt="finder" width="auto" height={"100%"} />
-                </Box>
+                </Box> */}
+
+                <Grid container sx={{ width: "100%", flexGrow: 1 }} spacing={1}>
+                  {images.map((item) => (
+                    <Grid key={item.label} item xs={6}>
+                      <CardMedia component="img" height="100%" image={item.imgPath} alt={item.label} />
+                    </Grid>
+                  ))}
+                </Grid>
                 <Typography sx={{ color: "primary.main", fontSize: 16 }}>Join as an Artisan</Typography>
               </Stack>
             </Paper>
             <Paper
               onClick={onJoinAsEmployer}
               sx={{
-                height: "297px",
+                // height: "297px",
                 width: "100%",
                 borderRadius: "8px",
-                p: 4,
+                p: { xs: 2, md: 4 },
                 cursor: "pointer",
                 boxShadow:
                   "0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
@@ -148,9 +175,13 @@ const JoinAs = () => {
                 alignItems="center"
                 spacing={2}
               >
-                <Box sx={{ width: "11.14rem", height: "12.496rem", mt: 4 }}>
-                  <img className="img" src="/employer.webp" alt="finder" height={"auto"} width={"100%"} />
-                </Box>
+                <Grid container sx={{ width: "100%", flexGrow: 1 }} spacing={1}>
+                  <Grid item xs={12}>
+                    <Box sx={{ width: { xs: "100%", md: "11.14rem", flexGrow: 1 }, height: "12.496rem" }}>
+                      <img className="img" src="/employer.webp" alt="finder" height={"auto"} width={"100%"} />
+                    </Box>
+                  </Grid>
+                </Grid>
 
                 <Typography sx={{ color: "primary.main", fontSize: 16 }}>Join as an Employer</Typography>
               </Stack>
@@ -163,6 +194,6 @@ const JoinAs = () => {
   )
 }
 
-JoinAs.requireAuth = true
+// JoinAs.requireAuth = true
 
 export default JoinAs

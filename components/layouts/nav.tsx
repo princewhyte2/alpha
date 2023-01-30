@@ -429,7 +429,7 @@ export default function NavLayout(props: Props) {
                 aria-label="open drawer"
                 edge="start"
                 onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { sm: "none" } }}
+                sx={{ mr: 2, display: { md: "none" } }}
               >
                 <MenuLine />
               </IconButton>
@@ -545,7 +545,7 @@ export default function NavLayout(props: Props) {
                 keepMounted: true, // Better open performance on mobile.
               }}
               sx={{
-                display: { xs: "block", sm: "none" },
+                display: { xs: "block", md: "none" },
                 "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
               }}
             >

@@ -817,7 +817,7 @@ function Page() {
                         inputRef={titleRef}
                         defaultValue={user?.title || ""}
                         placeholder="e.g Fashion Designer, Plumber e.t.c"
-                        label="Title"
+                        label="Job title"
                         variant="outlined"
                       />
                     </Grid>
@@ -1293,7 +1293,6 @@ function Page() {
       </Box>
       <BootstrapDialog
         PaperProps={{ style: { margin: 8 } }}
-        fullWidth
         open={isEditOccupation}
         onClose={onCloseOccupationModal}
         aria-labelledby="occupation-modal-title"
@@ -1451,7 +1450,7 @@ function Page() {
         <DialogContent>
           <Box onSubmit={handleAddWorkExperience} component={"form"}>
             <Grid sx={{ pt: 2 }} container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
                   id="profile-company"
@@ -1463,7 +1462,7 @@ function Page() {
                   inputRef={companyNameRef}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
                   id="profile-job-title"
@@ -1475,7 +1474,7 @@ function Page() {
                   inputRef={jobTitleRef}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="date"
                   label="Start Date*"
@@ -1489,13 +1488,17 @@ function Page() {
                   }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="date"
                   label="End Date"
                   type="date"
                   disabled={isPresentWork}
                   inputRef={workEndDateRef}
+                  inputProps={{
+                    min: workStartDateRef.current?.value,
+                    // max: "2020-08-20",
+                  }}
                   required
                   defaultValue={workId?.end_date || ""}
                   fullWidth
@@ -1504,6 +1507,7 @@ function Page() {
                   }}
                 />
                 <FormControlLabel
+                  sx={{ mt: 1 }}
                   control={
                     <Checkbox checked={isPresentWork} onChange={handleIsPresentWorkChange} inputRef={presentWorkRef} />
                   }

@@ -22,7 +22,7 @@ import OutlinedInput from "@mui/material/OutlinedInput"
 import Visibility from "@mui/icons-material/Visibility"
 import PhoneIcon from "@mui/icons-material/Phone"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useMemo, useEffect } from "react"
 import LoadingButton from "@mui/lab/LoadingButton"
 import authService from "../../services/authentication"
 import { useRouter } from "next/router"
@@ -67,6 +67,15 @@ const SignUp = () => {
   const confirmPasswordRef = useRef<HTMLInputElement>()
   const termsRef = useRef<HTMLInputElement>()
   const policyRef = useRef<HTMLInputElement>()
+  const referralRef = useRef<HTMLInputElement>()
+
+  const refId = useMemo(() => router.query.ref, [router.query])
+
+  useEffect(() => {
+    if (refId && referralRef?.current) {
+      referralRef.current.value = refId as string
+    }
+  }, [refId, referralRef])
 
   const handleRegisteration = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
@@ -96,6 +105,7 @@ const SignUp = () => {
         email: emailRef.current.value,
         phone_number: phoneNumberRef.current.value,
         password: passwordRef.current.value,
+        referral_code: referralRef.current?.value,
       })
       setUser(res.result.user)
       setMessage("registration successful")
@@ -237,6 +247,21 @@ const SignUp = () => {
             label="Phone Number"
             variant="outlined"
           />
+
+          <TextField
+            margin="dense"
+            inputRef={referralRef}
+            InputProps={{
+              readOnly: Boolean(refId),
+            }}
+            InputLabelProps={{ shrink: true }}
+            sx={{ width: "100%", my: { md: 1 } }}
+            id="refId"
+            label="Referral Code"
+            placeholder="Referral Code"
+            variant="outlined"
+          />
+
           <FormControl required sx={{ m: 1, width: "100%" }} variant="outlined">
             <InputLabel htmlFor="signup-password">Password</InputLabel>
             <OutlinedInput

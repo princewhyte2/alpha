@@ -100,75 +100,81 @@ function Page() {
       <Typography variant="body2" sx={{ my: 1, color: "primary.dark" }}>
         Kindly create your security question(s) to further protect your account
       </Typography>
-      <Box
-        component="form"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          maxWidth: "29.68rem",
-          width: "100%",
-        }}
-        onSubmit={handleSaveSecurityQuestion}
-      >
-        <FormControl required fullWidth margin="dense">
-          <InputLabel id="security-simple-select-label">Security Question</InputLabel>
-          <Select
-            // defaultValue={userSecurityQuestion ? Number(userSecurityQuestion?.question?.id) : ""}
-            // inputRef={questionRef}
-            labelId="security-select-label"
-            id="security-select"
-            label="Security Question"
-            value={questionId}
-            onChange={handleChange}
-          >
-            {securityQuestions?.map((question: SecurityQuestion) => (
-              <MenuItem key={question.id} value={String(question.id)}>
-                {question.question}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <TextField
-          margin="dense"
-          inputRef={answerRef}
-          required
-          fullWidth
-          type={showPassword ? "text" : "password"}
-          id="security-answer"
-          placeholder="Type your answer"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle confirm password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? (
-                    <VisibilityOff sx={{ color: "primary.dark" }} />
-                  ) : (
-                    <Visibility sx={{ color: "primary.dark" }} />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            ),
+      {userSecurityQuestion?.question ? (
+        <Box
+          component="form"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            maxWidth: "29.68rem",
+            width: "100%",
           }}
-          label="Answer"
-          variant="outlined"
-        />
-
-        <LoadingButton
-          loading={isLoading}
-          type="submit"
-          sx={{ maxWidth: "25rem", my: 4, width: { xs: "100%", md: "229px" }, alignSelf: "flex-end" }}
-          variant="contained"
+          onSubmit={handleSaveSecurityQuestion}
         >
-          Save Changes
-        </LoadingButton>
-      </Box>
+          <FormControl required fullWidth margin="dense">
+            <InputLabel id="security-simple-select-label">Security Question</InputLabel>
+            <Select
+              // defaultValue={userSecurityQuestion ? Number(userSecurityQuestion?.question?.id) : ""}
+              // inputRef={questionRef}
+              labelId="security-select-label"
+              id="security-select"
+              label="Security Question"
+              value={questionId}
+              onChange={handleChange}
+            >
+              {securityQuestions?.map((question: SecurityQuestion) => (
+                <MenuItem key={question.id} value={String(question.id)}>
+                  {question.question}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <TextField
+            margin="dense"
+            inputRef={answerRef}
+            required
+            fullWidth
+            type={showPassword ? "text" : "password"}
+            id="security-answer"
+            placeholder="Type your answer"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle confirm password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? (
+                      <VisibilityOff sx={{ color: "primary.dark" }} />
+                    ) : (
+                      <Visibility sx={{ color: "primary.dark" }} />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            label="Answer"
+            variant="outlined"
+          />
+
+          <LoadingButton
+            loading={isLoading}
+            type="submit"
+            sx={{ maxWidth: "25rem", my: 4, width: { xs: "100%", md: "229px" }, alignSelf: "flex-end" }}
+            variant="contained"
+          >
+            Save Changes
+          </LoadingButton>
+        </Box>
+      ) : (
+        <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
+          Please contact support to change your security question.
+        </Typography>
+      )}
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )

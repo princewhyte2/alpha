@@ -100,100 +100,100 @@ function Page() {
       <Typography variant="body2" sx={{ my: 1, color: "primary.dark" }}>
         Please provide your current password and choose a new password.
       </Typography>
-      <Box
-        component="form"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          maxWidth: "29.68rem",
-          width: "100%",
-        }}
-        onSubmit={handleUpdatePassword}
-      >
-        <FormControl required sx={{ m: 1, width: "100%" }} variant="outlined">
-          <InputLabel htmlFor="outlined-security-password">Current Password</InputLabel>
-          <OutlinedInput
-            id="outlined-security-password"
+      {userSecurityQuestion?.question ? (
+        <Box
+          component="form"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            maxWidth: "29.68rem",
+            width: "100%",
+          }}
+          onSubmit={handleUpdatePassword}
+        >
+          <FormControl required sx={{ m: 1, width: "100%" }} variant="outlined">
+            <InputLabel htmlFor="outlined-security-password">Current Password</InputLabel>
+            <OutlinedInput
+              id="outlined-security-password"
+              type={showPassword ? "text" : "password"}
+              inputRef={passwordRef}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? (
+                      <VisibilityOff sx={{ color: "primary.dark" }} />
+                    ) : (
+                      <Visibility sx={{ color: "primary.dark" }} />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Current Password"
+            />
+          </FormControl>
+          <TextField
+            inputRef={newPasswordRef}
+            margin="dense"
+            required
+            fullWidth
             type={showPassword ? "text" : "password"}
-            inputRef={passwordRef}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? (
-                    <VisibilityOff sx={{ color: "primary.dark" }} />
-                  ) : (
-                    <Visibility sx={{ color: "primary.dark" }} />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Current Password"
+            id="confirm-security-password-reset"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle confirm password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? (
+                      <VisibilityOff sx={{ color: "primary.dark" }} />
+                    ) : (
+                      <Visibility sx={{ color: "primary.dark" }} />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            label="New Password"
+            variant="outlined"
           />
-        </FormControl>
-        <TextField
-          inputRef={newPasswordRef}
-          margin="dense"
-          required
-          fullWidth
-          type={showPassword ? "text" : "password"}
-          id="confirm-security-password-reset"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle confirm password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? (
-                    <VisibilityOff sx={{ color: "primary.dark" }} />
-                  ) : (
-                    <Visibility sx={{ color: "primary.dark" }} />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          label="New Password"
-          variant="outlined"
-        />
-        <TextField
-          inputRef={confirmPasswordRef}
-          margin="dense"
-          required
-          fullWidth
-          type={showPassword ? "text" : "password"}
-          id="confirm-password-reset"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle confirm password visibility"
-                  onClick={() => setShowPassword(!showPassword)}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? (
-                    <VisibilityOff sx={{ color: "primary.dark" }} />
-                  ) : (
-                    <Visibility sx={{ color: "primary.dark" }} />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          label="Confirm New Password"
-          variant="outlined"
-        />
+          <TextField
+            inputRef={confirmPasswordRef}
+            margin="dense"
+            required
+            fullWidth
+            type={showPassword ? "text" : "password"}
+            id="confirm-password-reset"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle confirm password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? (
+                      <VisibilityOff sx={{ color: "primary.dark" }} />
+                    ) : (
+                      <Visibility sx={{ color: "primary.dark" }} />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            label="Confirm New Password"
+            variant="outlined"
+          />
 
-        {userSecurityQuestion?.question ? (
           <TextField
             fullWidth
             id="security-title-question"
@@ -205,24 +205,24 @@ function Page() {
             inputRef={answerRef}
             sx={{ my: "1rem" }}
           />
-        ) : (
           <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
-            Please set your security question and return.
+            Can’t remember my password.
           </Typography>
-        )}
-        <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
-          Can’t remember my password.
-        </Typography>
 
-        <LoadingButton
-          loading={isLoading}
-          type="submit"
-          sx={{ maxWidth: "25rem", my: 4, width: { xs: "100%", md: "229px" }, alignSelf: "flex-end" }}
-          variant="contained"
-        >
-          Save Changes
-        </LoadingButton>
-      </Box>
+          <LoadingButton
+            loading={isLoading}
+            type="submit"
+            sx={{ maxWidth: "25rem", my: 4, width: { xs: "100%", md: "229px" }, alignSelf: "flex-end" }}
+            variant="contained"
+          >
+            Save Changes
+          </LoadingButton>
+        </Box>
+      ) : (
+        <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
+          Please set your security question and return.
+        </Typography>
+      )}
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )

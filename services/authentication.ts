@@ -35,6 +35,7 @@ const userRegistration = async (data:{
     first_name: string,
     last_name: string,
     email: string,
+    referral_code?:string,	
     phone_number: string,
     password: string
 }):Promise<any> => {
