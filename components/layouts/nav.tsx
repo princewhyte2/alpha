@@ -390,10 +390,12 @@ export default function NavLayout(props: Props) {
         const data = {
           owned_by: user?.id,
           name: businessNameRef.current?.value,
-          website: websiteRef.current?.value,
+          ...(Boolean(websiteRef.current?.value) && { website: websiteRef.current?.value }),
+          // website: websiteRef.current?.value,
           address: businessAddressRef.current?.value,
           email: businessEmailRef.current?.value,
-          logo_image_id: logo?.id,
+          // logo_image_id: logo?.id,
+          ...(Boolean(logo?.id) && { logo_image_id: logo?.id }),
           industry_id: industryRef.current?.value,
         }
         const response = await profileServices.createCompany(data)
@@ -694,7 +696,6 @@ export default function NavLayout(props: Props) {
                     id="profile-lastName"
                     label="Company website"
                     variant="outlined"
-                    required
                   />
                 </Grid>
 
@@ -751,14 +752,7 @@ export default function NavLayout(props: Props) {
               </Grid> */}
 
                 <Grid item xs={12}>
-                  <LoadingButton
-                    disabled={Boolean(!logo)}
-                    loading={loading}
-                    type="submit"
-                    fullWidth
-                    sx={{ px: 6 }}
-                    variant="contained"
-                  >
+                  <LoadingButton loading={loading} type="submit" fullWidth sx={{ px: 6 }} variant="contained">
                     Create
                   </LoadingButton>
                 </Grid>

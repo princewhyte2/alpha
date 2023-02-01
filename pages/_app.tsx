@@ -1,5 +1,6 @@
 import "../styles/globals.css"
-import { useEffect } from "react"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 import { SWRDevTools } from "swr-devtools"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import { useAuth } from "../store"
@@ -14,6 +15,8 @@ export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
 }
 
 export default function MyApp({ Component, pageProps }: { Component: NextApplicationPage; pageProps: any }) {
+  // const router = useRouter()
+  // const [pageLoading, setPageLoading] = useState(true)
   const setInitializing = useAuth((state: any) => state.setInitializing)
   const theme = createTheme({
     palette: {
@@ -29,9 +32,15 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
       },
     },
   })
-
   useEffect(() => {
     setInitializing(false)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const loader = document.getElementById("splash")
+      if (loader) loader.style.display = "none"
+    }
   }, [])
 
   // useEffect(() => {
@@ -50,6 +59,9 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
   //     })
   //   }
   // }, [])
+  // if (pageLoading) {
+  //   return <div>Loading ...</div>
+  // }
 
   const getLayout = Component.getLayout ?? ((page: any) => page)
 

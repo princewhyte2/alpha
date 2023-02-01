@@ -7,6 +7,7 @@ export default function Document() {
         <link href="https://fonts.cdnfonts.com/css/circular-std" rel="stylesheet"></link>
       </Head>
       <body>
+        <div id="splash">Loading...</div>
         <Main />
         <NextScript />
       </body>

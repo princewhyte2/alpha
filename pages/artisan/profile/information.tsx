@@ -227,7 +227,8 @@ function Page() {
       gender: genderRef.current?.value,
       country_id: countryId,
       state_id: stateRef.current?.value,
-      other_phone_number: otherNumberRef.current?.value,
+      // other_phone_number: otherNumberRef.current?.value,
+      ...(Boolean(otherNumberRef.current?.value) && { other_phone_number: otherNumberRef.current?.value }),
       // phone_number: user?.phone_number,
     }
     setIsOnBoardingLoading(true)
