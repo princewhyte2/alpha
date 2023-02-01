@@ -138,7 +138,11 @@ function Page() {
                 ornare. Adipiscing sed sem pharetra quam
               </Typography>
               <Stack sx={{ flexWrap: "wrap", gap: 2 }} alignItems={"center"} direction="row">
-                <Button variant="contained">Get Started</Button>
+                <Button onClick={() => router.push("/auth/login")} variant="contained">
+                  
+                
+                  Get Started
+                </Button>
                 <Typography sx={{ m: 0, fontSize: 16, fontWeight: 500 }} color="primary.dark">
                   Already using Workfynder?{" "}
                   <Link href="/auth/login" underline="always">
@@ -417,7 +421,7 @@ function Page() {
               nibh luctus non nulla gravida.
             </Typography>
             <Stack direction={"row"} spacing={2}>
-              <Button fullWidth={!matches} variant="contained">
+              <Button onClick={() => router.push("/auth/signup")} fullWidth={!matches} variant="contained">
                 Sign up
               </Button>
               <Button onClick={() => router.push("/auth/login")} fullWidth={!matches} variant="text">

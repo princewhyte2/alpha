@@ -174,7 +174,8 @@ function Page() {
   //work experience refs
   const companyNameRef = useRef<HTMLInputElement>()
   const jobTitleRef = useRef<HTMLInputElement>()
-  const workStartDateRef = useRef<HTMLInputElement>()
+  // const workStartDateRef = useRef<HTMLInputElement>()
+  const [workStartDateRef, setWorkStartDateRef] = useState("")
   const workEndDateRef = useRef<HTMLInputElement>()
   const workSummaryRef = useRef<HTMLInputElement>()
   const presentWorkRef = useRef<HTMLInputElement>(null)
@@ -305,12 +306,14 @@ function Page() {
       const data = {
         company_name: companyNameRef.current?.value,
         job_title: jobTitleRef.current?.value,
-        start_month: new Date(workStartDateRef.current?.value as string).getMonth() + 1,
-        start_year: new Date(workStartDateRef.current?.value as string).getFullYear(),
+        start_month: new Date(workStartDateRef).getMonth() + 1,
+        start_year: new Date(workStartDateRef).getFullYear(),
         ...(!isPresentWork && { end_month: new Date(workEndDateRef.current?.value as string).getMonth() + 1 }),
         ...(!isPresentWork && { end_year: new Date(workEndDateRef.current?.value as string).getFullYear() }),
         summary: workSummaryRef.current?.value,
       }
+
+      // console.log("post", data)
 
       setIsWorkLoading(true)
       try {
@@ -1479,7 +1482,8 @@ function Page() {
                   id="date"
                   label="Start Date*"
                   type="date"
-                  inputRef={workStartDateRef}
+                  // inputRef={workStartDateRef}
+                  onChange={({ target }) => setWorkStartDateRef(target.value)}
                   required
                   defaultValue={workId?.start_date || ""}
                   fullWidth
@@ -1496,7 +1500,7 @@ function Page() {
                   disabled={isPresentWork}
                   inputRef={workEndDateRef}
                   inputProps={{
-                    min: workStartDateRef.current?.value,
+                    min: workStartDateRef,
                     // max: "2020-08-20",
                   }}
                   required
