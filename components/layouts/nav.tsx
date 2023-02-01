@@ -486,30 +486,30 @@ export default function NavLayout(props: Props) {
                   </>
                 ) : user?.user_type === "artisan" ? (
                   <>
-                    <IconButton
+                    {/* <IconButton
                       size="large"
                       sx={{ color: "primary.main" }}
                       aria-label="show 17 new notifications"
                       color="inherit"
                     >
                       <NotificationsIcon />
-                      {/* <Badge badgeContent={17} color="error"></Badge> */}
-                    </IconButton>
+                      <Badge badgeContent={17} color="error"></Badge>
+                    </IconButton> */}
                     <IconButton onClick={goToProfile}>
                       <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
                     </IconButton>
                   </>
                 ) : (
                   <>
-                    <IconButton
+                    {/* <IconButton
                       size="large"
                       sx={{ color: "primary.main" }}
                       aria-label="show 17 new notifications"
                       color="inherit"
                     >
                       <NotificationsIcon />
-                      {/* <Badge badgeContent={17} color="error"></Badge> */}
-                    </IconButton>
+                      <Badge badgeContent={17} color="error"></Badge>
+                    </IconButton> */}
                     <IconButton onClick={goToProfile}>
                       <Avatar
                         alt={`${user?.relationships.company?.name}`}

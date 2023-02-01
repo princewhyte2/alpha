@@ -459,7 +459,7 @@ function Page() {
     }[]
   >([])
 
-  const { data: skills } = useSWR(
+  const { data: skills, error: skillsError } = useSWR(
     userOccupation?.id ? `/occupations/${userOccupation?.id}/skills` : null,
     utilsService.getOccupationsSkill,
     {
@@ -468,6 +468,7 @@ function Page() {
       revalidateOnReconnect: false,
     },
   )
+  console.log("skills", skills)
 
   const defaultProps = {
     options: occupations,
@@ -629,13 +630,13 @@ function Page() {
                   />
                 </Badge>
               )}
-              <Box sx={{ width: "100%" }}>
+              {/* <Box sx={{ width: "100%" }}>
                 <Typography sx={{ color: "#4D5761" }} variant="body1" gutterBottom>
                   Profile Completion
                 </Typography>
 
                 <LinearProgressWithLabel value={80} />
-              </Box>
+              </Box> */}
             </Stack>
 
             <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
@@ -1297,6 +1298,7 @@ function Page() {
       <BootstrapDialog
         PaperProps={{ style: { margin: 8 } }}
         open={isEditOccupation}
+        fullWidth
         onClose={onCloseOccupationModal}
         aria-labelledby="occupation-modal-title"
         aria-describedby="occupation-modal-description"
@@ -1328,6 +1330,11 @@ function Page() {
                   />
                 </Grid>
               )}
+              {userOccupation?.id && !skillsError && !skills ? (
+                <Grid item xs={12}>
+                  <CircularProgress />
+                </Grid>
+              ) : null}
               {skills && (
                 <Grid item xs={12}>
                   <Autocomplete
