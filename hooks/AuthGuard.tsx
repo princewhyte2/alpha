@@ -14,7 +14,7 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
   useEffect(() => {
     if (!initializing) {
       //auth is initialized and there is no user
-      if (!user || !Cookies.get("access_token")) {
+      if (!user && !Cookies.get("access_token")) {
         // remember the page that user tried to access
         // setRedirect(router.route)
         router.push(`/auth/login?redirect=${router.route}`)

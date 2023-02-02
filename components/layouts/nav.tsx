@@ -182,7 +182,7 @@ export default function NavLayout(props: Props) {
 
   React.useEffect(() => {
     if (error) {
-      router.reload()
+      // router.reload()
       // Cookies.remove("access_token")
       onLogout()
     }
@@ -227,7 +227,8 @@ export default function NavLayout(props: Props) {
     //     }
     //   })
     // }
-    router.replace("/")
+    router.reload()
+    // router.replace("/")
   }
 
   const drawer = (
@@ -400,7 +401,6 @@ export default function NavLayout(props: Props) {
           ...(Boolean(logo) && { logo_image_id: logo?.id }),
           industry_id: industryRef.current?.value,
         }
-        console.log("data", data)
         const response = await profileServices.createCompany(data)
         mutate("userProfile")
         setType("success")
