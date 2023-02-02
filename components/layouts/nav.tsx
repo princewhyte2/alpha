@@ -182,7 +182,7 @@ export default function NavLayout(props: Props) {
 
   React.useEffect(() => {
     if (error) {
-      router.replace(router.asPath)
+      router.reload()
     }
   }, [error])
   // const [countryId, setCountryId] = React.useState("160")
@@ -395,9 +395,10 @@ export default function NavLayout(props: Props) {
           address: businessAddressRef.current?.value,
           email: businessEmailRef.current?.value,
           // logo_image_id: logo?.id,
-          ...(Boolean(logo?.id) && { logo_image_id: logo?.id }),
+          ...(Boolean(logo) && { logo_image_id: logo?.id }),
           industry_id: industryRef.current?.value,
         }
+        console.log("data", data)
         const response = await profileServices.createCompany(data)
         mutate("userProfile")
         setType("success")

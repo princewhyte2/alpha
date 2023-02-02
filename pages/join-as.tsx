@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react"
+import { useCallback, useState, useEffect } from "react"
 import Box from "@mui/material/Box"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import CardMedia from "@mui/material/CardMedia"
 import { styled, useTheme } from "@mui/material/styles"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
+import useSWR, { useSWRConfig } from "swr"
 import Grid from "@mui/material/Grid"
 import Stack from "@mui/material/Stack"
 import { AlertColor } from "@mui/material"
@@ -34,18 +35,28 @@ const images = [
 const JoinAs = () => {
   const router = useRouter()
   const theme = useTheme()
+  const { data: user, error } = useSWR("userProfile", profileServices.profileFetcher, {
+    dedupingInterval: 10000,
+  })
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const { mutate } = useSWRConfig()
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
   const [type, setType] = useState<AlertColor>("error")
+
+  useEffect(() => {
+    if (user?.user_type) {
+      router.push(`/${user?.user_type}/profile/information`)
+    }
+  }, [user])
 
   const onJoinAsArtisan = useCallback(async () => {
     if (isLoading) return
     setIsLoading(true)
     try {
       const response = await profileServices.joinAsArtisan()
-
+      mutate("userProfile")
       setMessage(response?.message)
       setType("success")
       setIsError(true)
@@ -70,6 +81,7 @@ const JoinAs = () => {
     setIsLoading(true)
     try {
       const response = await profileServices.joinAsEmployer()
+      mutate("userProfile")
       setMessage(response?.message)
       setType("success")
       setIsError(true)

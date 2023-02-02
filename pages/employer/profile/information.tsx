@@ -205,7 +205,8 @@ function Page() {
       gender: genderRef.current?.value,
       country_id: countryId,
       state_id: stateRef.current?.value,
-      other_phone_number: otherNumberRef.current?.value,
+      // other_phone_number: otherNumberRef.current?.value,
+      ...(Boolean(otherNumberRef.current?.value) && { other_phone_number: otherNumberRef.current?.value }),
     }
     // console.log("what", data)
     setIsOnBoardingLoading(true)
@@ -253,7 +254,8 @@ function Page() {
           website: websiteRef.current?.value,
           address: businessAddressRef.current?.value,
           email: businessEmailRef.current?.value,
-          logo_image_id: logo?.id,
+          ...(Boolean(logo) && { logo_image_id: logo?.id }),
+          // logo_image_id: logo?.id,
           industry_id: industryRef.current?.value,
           service_provided: serviceProvidedRef.current?.value,
         }
