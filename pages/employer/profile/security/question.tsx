@@ -106,7 +106,7 @@ function Page() {
       <Typography variant="body2" sx={{ my: 1, color: "primary.dark" }}>
         Kindly create your security question(s) to further protect your account
       </Typography>
-      {userSecurityQuestion?.question ? (
+      {!userSecurityQuestion?.question ? (
         <Box
           component="form"
           sx={{
