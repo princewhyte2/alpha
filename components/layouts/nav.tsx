@@ -183,6 +183,8 @@ export default function NavLayout(props: Props) {
   React.useEffect(() => {
     if (error) {
       router.reload()
+      // Cookies.remove("access_token")
+      onLogout()
     }
   }, [error])
   // const [countryId, setCountryId] = React.useState("160")

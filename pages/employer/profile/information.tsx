@@ -251,7 +251,8 @@ function Page() {
         const data = {
           owned_by: user?.id,
           name: businessNameRef.current?.value,
-          website: websiteRef.current?.value,
+          // website: websiteRef.current?.value,
+          ...(Boolean(websiteRef.current?.value) && { website: websiteRef.current?.value }),
           address: businessAddressRef.current?.value,
           email: businessEmailRef.current?.value,
           ...(Boolean(logo) && { logo_image_id: logo?.id }),
@@ -300,7 +301,12 @@ function Page() {
                   isImageLoading ? (
                     <CircularProgress />
                   ) : (
-                    <IconButton sx={{ bgcolor: "primary.main" }} aria-label="upload picture" component="label">
+                    <IconButton
+                      disabled={!isEditBusinessInfo}
+                      sx={{ bgcolor: "primary.main" }}
+                      aria-label="upload picture"
+                      component="label"
+                    >
                       <input onChange={handleFileChange} hidden accept="image/*" type="file" />
                       <PhotoCameraIcon sx={{ color: "white" }} />
                     </IconButton>
@@ -560,9 +566,28 @@ function Page() {
 
                     <Grid item xs={12} md={8}>
                       <TextField
+                        label="Company Website"
+                        id="website-start-business"
+                        placeholder="Website"
+                        inputRef={websiteRef}
+                        defaultValue={user?.relationships.company?.website || ""}
+                        fullWidth
+                        // InputProps={{
+                        //   endAdornment: (
+                        //     <InputAdornment position="end">
+                        //       <EmailIcon />
+                        //     </InputAdornment>
+                        //   ),
+                        // }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} md={8}>
+                      <TextField
                         label="Company Email Address"
                         id="email-start-business"
                         placeholder="Email Address"
+                        inputRef={businessEmailRef}
                         defaultValue={user?.relationships.company.email || ""}
                         fullWidth
                         InputProps={{
