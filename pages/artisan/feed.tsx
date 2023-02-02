@@ -215,7 +215,7 @@ function Page() {
       }
       mutate("posts")
       setType("success")
-      setIsError(true)
+      // setIsError(true)
       onCloseModal()
     } catch (error: any) {
       setType("error")
@@ -333,7 +333,7 @@ function Page() {
       mutate(`/posts/${postId}/comments`)
       setMessage(response?.message)
       setType("success")
-      setIsError(true)
+      // setIsError(true)
       console.log("comment", response)
     } catch (error: any) {
       setType("error")
@@ -369,7 +369,7 @@ function Page() {
         mutate("posts")
         setMessage(response?.message)
         setType("success")
-        setIsError(true)
+        // setIsError(true)
       } catch (error: any) {
         setType("error")
         if (error.response) {

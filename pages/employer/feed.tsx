@@ -190,8 +190,8 @@ function Page() {
     setIsLoading(true)
     const data = {
       body: JSON.stringify(editorContent),
-      file_type: mediaType,
-      images: files.map((i) => i.id),
+      ...(files.length > 0 && { file_type: mediaType }),
+      ...(files.length > 0 && { images: files.map((i) => i.id) }),
     }
 
     try {
@@ -206,7 +206,7 @@ function Page() {
       }
       mutate("posts")
       setType("success")
-      setIsError(true)
+      // setIsError(true)
       onCloseModal()
     } catch (error: any) {
       setType("error")
@@ -324,7 +324,7 @@ function Page() {
       mutate(`/posts/${postId}/comments`)
       setMessage(response?.message)
       setType("success")
-      setIsError(true)
+      // setIsError(true)
     } catch (error: any) {
       setType("error")
       if (error.response) {
@@ -359,7 +359,7 @@ function Page() {
         mutate("posts")
         setMessage(response?.message)
         setType("success")
-        setIsError(true)
+        // setIsError(true)
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -799,7 +799,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
                   subheader={item.relationships.created_by.title}
                 />
                 <CardContent>
-                  <Typography sx={{ fontSize: 14, color: "#1D2939" }}>body</Typography>
+                  <Typography sx={{ fontSize: 14, color: "#1D2939" }}>{item.body}</Typography>
                 </CardContent>
               </Card>
             ))}
