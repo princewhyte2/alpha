@@ -5,6 +5,7 @@ import Box from "@mui/material/Box"
 import ProfileLayout from "../../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
+import Link from "@mui/material/Link"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import LoadingButton from "@mui/lab/LoadingButton"
 import Visibility from "@mui/icons-material/Visibility"
@@ -217,9 +218,13 @@ function Page() {
           </LoadingButton>
         </Box>
       ) : (
-        <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
+        <Link
+          href="/artisan/profile/security/question"
+          variant="body2"
+          sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}
+        >
           Please set your security question and return.
-        </Typography>
+        </Link>
       )}
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>

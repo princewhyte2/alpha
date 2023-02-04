@@ -189,7 +189,7 @@ function Page() {
     e.preventDefault()
     setIsLoading(true)
     const data = {
-      body: JSON.stringify(editorContent),
+      ...(!editor?.isEmpty && { body: JSON.stringify(editorContent) }),
       ...(files.length > 0 && { file_type: mediaType }),
       ...(files.length > 0 && { images: files.map((i) => i.id) }),
     }

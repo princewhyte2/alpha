@@ -1,5 +1,6 @@
 import { ReactElement, useState, useRef, useCallback, FormEvent } from "react"
 import Box from "@mui/material/Box"
+import Link from "@mui/material/Link"
 import ProfileLayout from "../../../../components/layouts/profile"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
@@ -157,9 +158,13 @@ function Page() {
           </LoadingButton>
         </Box>
       ) : (
-        <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
+        <Link
+          href="/employer/profile/security/question"
+          variant="body2"
+          sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}
+        >
           Please set your security question and return.
-        </Typography>
+        </Link>
       )}
       {/* <Box
         component="form"

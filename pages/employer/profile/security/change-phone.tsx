@@ -8,6 +8,7 @@ import LoadingButton from "@mui/lab/LoadingButton"
 import { styled, useTheme } from "@mui/material/styles"
 import { AlertColor } from "@mui/material"
 import useSWR, { useSWRConfig } from "swr"
+import Link from "@mui/material/Link"
 import { MuiOtpInput } from "mui-one-time-password-input"
 import PhoneIcon from "@mui/icons-material/Phone"
 import useMediaQuery from "@mui/material/useMediaQuery"
@@ -157,9 +158,13 @@ function Page() {
           </LoadingButton>
         </Box>
       ) : (
-        <Typography variant="body2" sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}>
+        <Link
+          href="/employer/profile/security/question"
+          variant="body2"
+          sx={{ my: 1, color: "primary.main", alignSelf: "flex-start" }}
+        >
           Please set your security question and return.
-        </Typography>
+        </Link>
       )}
       {/* <Box
         component="form"

@@ -24,6 +24,7 @@ import useSWR, { useSWRConfig } from "swr"
 import { styled } from "@mui/material/styles"
 import Badge from "@mui/material/Badge"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
+import useScrollTrigger from "@mui/material/useScrollTrigger"
 // import Badge from "@mui/material/Badge"
 import Cookies from "js-cookie"
 import NotificationsIcon from "@mui/icons-material/Notifications"
@@ -52,7 +53,7 @@ interface Props {
    * Injected by the documentation to work in an iframe.
    * You won't need it on your project.
    */
-  children: React.ReactNode
+  children: React.ReactNode | React.ReactElement
   window?: () => Window
 }
 
@@ -75,6 +76,23 @@ const profileNav = [
     route: "/artisan/profile/referral",
   },
 ]
+
+function ElevationScroll(props: Props) {
+  const { children, window } = props
+  // Note that you normally won't need to set the window ref as useScrollTrigger
+  // will default to window.
+  // This is only being set here because the demo is in an iframe.
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+    target: window ? window() : undefined,
+  })
+
+  //@ts-ignore
+  return React.cloneElement(children, {
+    elevation: trigger ? 4 : 0,
+  })
+}
 
 const employerProfileNav = [
   {
@@ -426,139 +444,140 @@ export default function NavLayout(props: Props) {
   return (
     <Box sx={{ display: "flex" }}>
       <Container disableGutters maxWidth="xl">
-        <AppBar sx={{ bgcolor: "white" }} color="transparent" component="nav">
-          <Container disableGutters maxWidth="xl">
-            <Toolbar sx={{ display: { xs: "flex" }, justifyContent: "space-between" }}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { md: "none" } }}
-              >
-                <MenuLine />
-              </IconButton>
-              <Link href="/" underline="none">
-                <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
-                  <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
+        <ElevationScroll {...props}>
+          <AppBar sx={{ bgcolor: "white" }} color="transparent" component="nav">
+            <Container disableGutters maxWidth="xl">
+              <Toolbar sx={{ display: { xs: "flex" }, justifyContent: "space-between" }}>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{ mr: 2, display: { md: "none" } }}
+                >
+                  <MenuLine />
+                </IconButton>
+                <Link href="/" underline="none">
+                  <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
+                    <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
+                  </Box>
+                </Link>
+
+                {user &&
+                  (user?.user_type === "artisan" ? (
+                    <Box sx={{ display: { xs: "none", md: "block" } }}>
+                      {mainNav.map((item) => (
+                        <Button
+                          key={item.name}
+                          onClick={() => router.push(item.route)}
+                          variant={router.pathname !== item.route ? "text" : "outlined"}
+                        >
+                          {item.name}
+                        </Button>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Box sx={{ display: { xs: "none", md: "block" } }}>
+                      {employerMainNav.map((item) => (
+                        <Button
+                          key={item.name}
+                          onClick={() => router.push(item.route)}
+                          variant={router.pathname !== item.route ? "text" : "outlined"}
+                        >
+                          {item.name}
+                        </Button>
+                      ))}
+                    </Box>
+                  ))}
+
+                <Box sx={{ display: { xs: "block", md: "block" } }}>
+                  {!user ? (
+                    <>
+                      <Button
+                        sx={{ display: { xs: "none", md: "inline-block" } }}
+                        onClick={() => router.push("/auth/login")}
+                        variant="text"
+                      >
+                        Login
+                      </Button>
+                      <Button
+                        sx={{ display: { xs: "none", md: "inline-block" } }}
+                        onClick={() => router.push(`/auth/signup`)}
+                        variant="contained"
+                      >
+                        Sign up
+                      </Button>
+                    </>
+                  ) : user?.user_type === "artisan" ? (
+                    <>
+                      {/* <IconButton
+                      size="large"
+                      sx={{ color: "primary.main" }}
+                      aria-label="show 17 new notifications"
+                      color="inherit"
+                    >
+                      <NotificationsIcon />
+                      <Badge badgeContent={17} color="error"></Badge>
+                    </IconButton> */}
+                      <IconButton onClick={goToProfile}>
+                        <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
+                      </IconButton>
+                    </>
+                  ) : (
+                    <>
+                      {/* <IconButton
+                      size="large"
+                      sx={{ color: "primary.main" }}
+                      aria-label="show 17 new notifications"
+                      color="inherit"
+                    >
+                      <NotificationsIcon />
+                      <Badge badgeContent={17} color="error"></Badge>
+                    </IconButton> */}
+                      <IconButton onClick={goToProfile}>
+                        <Avatar
+                          alt={`${user?.relationships.company?.name}`}
+                          src={user?.relationships.company?.logo_image?.url}
+                        />
+                      </IconButton>
+                    </>
+                  )}
+                  {user && (
+                    <Button
+                      sx={{ display: { xs: "none", md: "inline-flex" } }}
+                      startIcon={<LogoutIcon />}
+                      onClick={() => {
+                        onLogout()
+                      }}
+                      color="error"
+                      variant="outlined"
+                    >
+                      Logout
+                    </Button>
+                  )}
                 </Box>
-              </Link>
+              </Toolbar>
+            </Container>
 
-              {user &&
-                (user?.user_type === "artisan" ? (
-                  <Box sx={{ display: { xs: "none", md: "block" } }}>
-                    {mainNav.map((item) => (
-                      <Button
-                        key={item.name}
-                        onClick={() => router.push(item.route)}
-                        variant={router.pathname !== item.route ? "text" : "outlined"}
-                      >
-                        {item.name}
-                      </Button>
-                    ))}
-                  </Box>
-                ) : (
-                  <Box sx={{ display: { xs: "none", md: "block" } }}>
-                    {employerMainNav.map((item) => (
-                      <Button
-                        key={item.name}
-                        onClick={() => router.push(item.route)}
-                        variant={router.pathname !== item.route ? "text" : "outlined"}
-                      >
-                        {item.name}
-                      </Button>
-                    ))}
-                  </Box>
-                ))}
-
-              <Box sx={{ display: { xs: "block", md: "block" } }}>
-                {!user ? (
-                  <>
-                    <Button
-                      sx={{ display: { xs: "none", md: "inline-block" } }}
-                      onClick={() => router.push("/auth/login")}
-                      variant="text"
-                    >
-                      Login
-                    </Button>
-                    <Button
-                      sx={{ display: { xs: "none", md: "inline-block" } }}
-                      onClick={() => router.push(`/auth/signup`)}
-                      variant="contained"
-                    >
-                      Sign up
-                    </Button>
-                  </>
-                ) : user?.user_type === "artisan" ? (
-                  <>
-                    {/* <IconButton
-                      size="large"
-                      sx={{ color: "primary.main" }}
-                      aria-label="show 17 new notifications"
-                      color="inherit"
-                    >
-                      <NotificationsIcon />
-                      <Badge badgeContent={17} color="error"></Badge>
-                    </IconButton> */}
-                    <IconButton onClick={goToProfile}>
-                      <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
-                    </IconButton>
-                  </>
-                ) : (
-                  <>
-                    {/* <IconButton
-                      size="large"
-                      sx={{ color: "primary.main" }}
-                      aria-label="show 17 new notifications"
-                      color="inherit"
-                    >
-                      <NotificationsIcon />
-                      <Badge badgeContent={17} color="error"></Badge>
-                    </IconButton> */}
-                    <IconButton onClick={goToProfile}>
-                      <Avatar
-                        alt={`${user?.relationships.company?.name}`}
-                        src={user?.relationships.company?.logo_image?.url}
-                      />
-                    </IconButton>
-                  </>
-                )}
-                {user && (
-                  <Button
-                    sx={{ display: { xs: "none", md: "inline-flex" } }}
-                    startIcon={<LogoutIcon />}
-                    onClick={() => {
-                      onLogout()
-                    }}
-                    color="error"
-                    variant="outlined"
-                  >
-                    Logout
-                  </Button>
-                )}
-              </Box>
-            </Toolbar>
-          </Container>
-
-          <Box component="nav">
-            <Drawer
-              container={container}
-              variant="temporary"
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              ModalProps={{
-                keepMounted: true, // Better open performance on mobile.
-              }}
-              sx={{
-                display: { xs: "block", md: "none" },
-                "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-              }}
-            >
-              {drawer}
-            </Drawer>
-          </Box>
-        </AppBar>
-
+            <Box component="nav">
+              <Drawer
+                container={container}
+                variant="temporary"
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                ModalProps={{
+                  keepMounted: true, // Better open performance on mobile.
+                }}
+                sx={{
+                  display: { xs: "block", md: "none" },
+                  "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+                }}
+              >
+                {drawer}
+              </Drawer>
+            </Box>
+          </AppBar>
+        </ElevationScroll>
         <Box component="main" sx={{ p: { xs: 0, md: 0 }, width: "100%" }}>
           <Toolbar />
           <Grid container spacing={2}>
