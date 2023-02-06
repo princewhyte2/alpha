@@ -15,8 +15,13 @@ const getOccupationsSkill = async (url: string) => {
     return response.data.result.skills
 }
 
+const searchUsers = async (url: string) => {
+    const response = await axiosInstance.get(url)
+    return response.data.result.data
+}
+
 const utilsService = {
-getBusinessSectors,getOccupations,getOccupationsSkill
+getBusinessSectors,getOccupations,getOccupationsSkill,searchUsers
 }
 
 export default utilsService

@@ -185,6 +185,25 @@ function Page() {
     setEditId("")
   }
 
+  const handlePostShare = useCallback(
+    (postId: string) => () => {
+      if (navigator.share) {
+        navigator
+          .share({
+            title: "Check out this amazing post on workfynder",
+            url: `${window.location.origin}/employer/feed`,
+          })
+          .then(() => {
+            console.log("Thanks for sharing!", postId)
+          })
+          .catch(console.error)
+      } else {
+        console.log("no active share")
+      }
+    },
+    [],
+  )
+
   const handleSendPost = async (e: any) => {
     e.preventDefault()
     setIsLoading(true)
@@ -434,6 +453,7 @@ function Page() {
                       onComment={handleComment}
                       onEdit={handleEdit}
                       onDelete={handleDelete}
+                      onSharePost={handlePostShare}
                     />
                   ))
                 )}
@@ -555,7 +575,7 @@ Page.getLayout = function getLayout(page: ReactElement) {
 Page.requireAuth = true
 
 export default Page
-function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) {
+function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onSharePost }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [expanded, setExpanded] = useState(false)
 
@@ -701,7 +721,11 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete }: any) 
           <ChatIcon />
           <Typography sx={{ fontSize: 13 }}>{item.total_comments} Comments</Typography>
         </Button>
-        <Button sx={{ marginLeft: "auto", display: "flex", flexDirection: "column" }} aria-label="share">
+        <Button
+          onClick={onSharePost(item.id)}
+          sx={{ marginLeft: "auto", display: "flex", flexDirection: "column" }}
+          aria-label="share"
+        >
           <ShareIcon />
           <Typography sx={{ fontSize: 13 }}>7 Shares</Typography>
         </Button>

@@ -1,13 +1,15 @@
-import { ReactElement, useState } from "react"
+import { ReactElement, useCallback, useState } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
 import Avatar from "@mui/material/Avatar"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
+import useSWR, { useSWRConfig } from "swr"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
 import InputAdornment from "@mui/material/InputAdornment"
+import { AlertColor } from "@mui/material"
 import CardContent from "@mui/material/CardContent"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
@@ -35,6 +37,9 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
 import ProfileLayout from "../../components/layouts/profile"
 import NavLayout from "../../components/layouts/nav"
+import connectionService from "../../services/connection"
+import utilsService from "../../services/utils"
+import { ErrorComponent } from "../../components/alert"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -93,12 +98,124 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   )
 }
 
+const debounce = (func: any) => {
+  let timer: any
+  return function (...args: any) {
+    // @ts-ignore
+    const context = this
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      timer = null
+      func.apply(context, args)
+    }, 500)
+  }
+}
+
 function Page() {
   const [value, setValue] = useState(0)
+  const { mutate } = useSWRConfig()
+  const [searchTerm, setSearchTerm] = useState("")
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
+
+  const { data: unApprovedConnectionList } = useSWR(
+    "unApprovedConnections",
+    connectionService.getUnApprovedUserConnections,
+  )
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+
+  const { data: usersList } = useSWR(
+    searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
+    utilsService.searchUsers,
+    {
+      keepPreviousData: true,
+    },
+  )
+  // console.log("userList", usersList)
+  console.log("approved", approvedConnectionList)
+  console.log("unapproved", unApprovedConnectionList)
+
+  const optimizedFn = useCallback(debounce(setSearchTerm), [])
+
+  const sendConnectionRequest = useCallback(
+    (userId: string) => async () => {
+      try {
+        const response = await connectionService.sendConnectionRequest(userId)
+        mutate("unApprovedConnections")
+        // mutate("approvedConnections")
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
+  const acceptConnectionRequest = useCallback(
+    (userId: string) => async () => {
+      try {
+        const response = await connectionService.acceptConnectionRequest(userId)
+        console.log("accept", response)
+        mutate("unApprovedConnections")
+        mutate("approvedConnections")
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
+  const rejectConnectionRequest = useCallback(
+    (userId: string) => async () => {
+      try {
+        const response = await connectionService.rejectConnectionRequest(userId)
+        mutate("unApprovedConnections")
+        mutate("approvedConnections")
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container maxWidth="xl">
@@ -107,14 +224,26 @@ function Page() {
             <Container maxWidth="md">
               <Stack sx={{ p: 2 }} direction="row" justifyContent="center" alignItems="center" spacing={1}>
                 <Box sx={{ width: "100%" }}>
-                  <Tabs value={value} onChange={handleChange} aria-label="secondary tabs example">
+                  <Tabs
+                    TabIndicatorProps={{
+                      style: { display: `${value === 2 ? "none" : ""}` },
+                    }}
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="secondary tabs example"
+                  >
                     <Tab label="Connections(10)" {...a11yProps(0)} />
                     <Tab label="Invitations(4)" {...a11yProps(1)} />
+                    <Tab sx={{ visibility: "hidden" }} disabled label="Invitations(4)" {...a11yProps(2)} />
                   </Tabs>
                 </Box>
                 <TextField
                   sx={{ width: "100%" }}
                   id="search-connections"
+                  onChange={(e) => {
+                    optimizedFn(e.target.value)
+                    setValue(2)
+                  }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -130,7 +259,7 @@ function Page() {
               </Stack>
               <TabPanel value={value} index={0}>
                 <Stack direction="column" spacing={1}>
-                  {[1, 2, 3, 4, 5].map((item) => (
+                  {approvedConnectionList?.map((item: any) => (
                     <Paper
                       key={item}
                       elevation={1}
@@ -157,9 +286,9 @@ function Page() {
                         >
                           <Stack direction="column" spacing={1}>
                             <Typography sx={{ fontSize: 16 }} color="primary.main">
-                              Olakunle Babatunde
+                              {item.first_name} {item.middle_name} {item.last_name}
                             </Typography>
-                            <Typography sx={{ fontSize: 14, color: "#667085" }}>Olakunle Babatunde</Typography>
+                            <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.title}</Typography>
                             <Stack direction="row" spacing={1}>
                               <Chip label="Tailor" />
                               <Chip label="Embroidery" />
@@ -180,9 +309,9 @@ function Page() {
               </TabPanel>
               <TabPanel value={value} index={1}>
                 <Stack direction="column" spacing={1}>
-                  {[1, 2, 3, 4, 5].map((item) => (
+                  {unApprovedConnectionList?.map((item: any) => (
                     <Paper
-                      key={item}
+                      key={item.id}
                       elevation={1}
                       sx={{
                         p: 2,
@@ -207,9 +336,9 @@ function Page() {
                         >
                           <Stack direction="column" spacing={1}>
                             <Typography sx={{ fontSize: 16 }} color="primary.main">
-                              Olakunle Babatunde
+                              {item.first_name} {item.middle_name} {item.last_name}
                             </Typography>
-                            <Typography sx={{ fontSize: 14, color: "#667085" }}>Olakunle Babatunde</Typography>
+                            <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.title}</Typography>
                             <Stack direction="row" spacing={1}>
                               <Chip label="Tailor" />
                               <Chip label="Embroidery" />
@@ -217,10 +346,65 @@ function Page() {
                             </Stack>
                           </Stack>
                           <Stack direction="row" justifyItems={"center"} alignItems={"flex-end"} spacing={1}>
-                            <Button color="error" variant="outlined">
+                            <Button onClick={rejectConnectionRequest(item.id)} color="error" variant="outlined">
                               Reject
                             </Button>
-                            <Button variant="contained">Accept</Button>
+                            <Button onClick={acceptConnectionRequest(item.id)} variant="contained">
+                              Accept
+                            </Button>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              </TabPanel>
+              <TabPanel value={value} index={2}>
+                <Typography sx={{ fontSize: 16, color: "#1F204A", mb: 2 }}>Search result for “{searchTerm}”</Typography>
+                <Stack direction="column" spacing={1}>
+                  {usersList?.map((item: any) => (
+                    <Paper
+                      key={item.id}
+                      elevation={1}
+                      sx={{
+                        p: 2,
+                        boxShadow:
+                          " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                        borderRadius: "8px",
+                        width: "100%",
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={3}>
+                        <Avatar
+                          alt="Remy Sharp"
+                          src="/static/images/avatar/1.jpg"
+                          sx={{ width: "100px", height: "100px" }}
+                        />
+                        <Stack
+                          sx={{ flexGrow: 1 }}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          spacing={1}
+                        >
+                          <Stack direction="column" spacing={1}>
+                            <Typography sx={{ fontSize: 16 }} color="primary.main">
+                              {item.first_name} {item.middle_name} {item.last_name}
+                            </Typography>
+                            <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.title}</Typography>
+                            <Stack direction="row" spacing={1}>
+                              <Chip label="Tailor" />
+                              <Chip label="Embroidery" />
+                              <Chip label="Monogram" />
+                            </Stack>
+                          </Stack>
+                          <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                            {/* <IconButton aria-label="options">
+                              <MoreHorizIcon />
+                            </IconButton> */}
+                            <Button onClick={sendConnectionRequest(item.id)} variant="contained">
+                              Send Request
+                            </Button>
                           </Stack>
                         </Stack>
                       </Stack>
@@ -291,6 +475,7 @@ function Page() {
           </Grid>
         </Grid>
       </Container>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }
