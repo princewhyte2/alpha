@@ -20,6 +20,11 @@ const getAllPost = async () => {
     return response.data
 }
 
+const getSinglePost = async (url: string) => {
+    const response = await axiosInstance.get(url)
+    return response.data.result
+}
+
 const addComment = async (postId:string,data:{body:string}) => {
     const response = await axiosInstance.post(`/posts/${postId}/comments`,data)
     return response.data
@@ -49,7 +54,7 @@ const postFetcher = () => getAllPost().then(res => res.result.data)
 const postCommentFetcher = (url:string) => getAllPostComments(url).then(res => res.result)
 
 const postService = {
-    createPost,updatePost,deletePost,postFetcher,addComment,replyComment,postCommentFetcher,likePost,unlikePost,getAllPostComments
+    getSinglePost,createPost,updatePost,deletePost,postFetcher,addComment,replyComment,postCommentFetcher,likePost,unlikePost,getAllPostComments
 }
 
 export default postService

@@ -1,4 +1,10 @@
-import { ReactElement, useCallback, useState } from "react"
+import { ReactElement, useCallback, useState, useEffect } from "react"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import MessageIcon from "@mui/icons-material/Message"
+import { useTheme, Theme } from "@mui/material/styles"
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import CancelIcon from "@mui/icons-material/Cancel"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
@@ -62,7 +68,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: { xs: 1, md: 3 } }}>{children}</Box>}
     </div>
   )
 }
@@ -112,6 +118,8 @@ const debounce = (func: any) => {
 }
 
 function Page() {
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [value, setValue] = useState(0)
   const { mutate } = useSWRConfig()
   const [searchTerm, setSearchTerm] = useState("")
@@ -216,13 +224,25 @@ function Page() {
     [],
   )
 
+  useEffect(() => {
+    if (!searchTerm) {
+      setValue(0)
+    }
+  }, [searchTerm])
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Container maxWidth="xl">
+      <Container disableGutters maxWidth="xl">
         <Grid container spacing={2}>
-          <Grid item xs={9}>
-            <Container maxWidth="md">
-              <Stack sx={{ p: 2 }} direction="row" justifyContent="center" alignItems="center" spacing={1}>
+          <Grid item xs={12} md={9}>
+            <Container disableGutters maxWidth="md">
+              <Stack
+                sx={{ p: 2 }}
+                direction={{ xs: "column", md: "row" }}
+                justifyContent="center"
+                alignItems="center"
+                spacing={1}
+              >
                 <Box sx={{ width: "100%" }}>
                   <Tabs
                     TabIndicatorProps={{
@@ -234,7 +254,7 @@ function Page() {
                   >
                     <Tab label="Connections(10)" {...a11yProps(0)} />
                     <Tab label="Invitations(4)" {...a11yProps(1)} />
-                    <Tab sx={{ visibility: "hidden" }} disabled label="Invitations(4)" {...a11yProps(2)} />
+                    <Tab sx={{ visibility: "hidden" }} disabled label="" {...a11yProps(2)} />
                   </Tabs>
                 </Box>
                 <TextField
@@ -261,7 +281,7 @@ function Page() {
                 <Stack direction="column" spacing={1}>
                   {approvedConnectionList?.map((item: any) => (
                     <Paper
-                      key={item}
+                      key={item.id}
                       elevation={1}
                       sx={{
                         p: 2,
@@ -271,35 +291,43 @@ function Page() {
                         width: "100%",
                       }}
                     >
-                      <Stack direction="row" alignItems="center" spacing={3}>
+                      <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                         <Avatar
                           alt="Remy Sharp"
                           src="/static/images/avatar/1.jpg"
-                          sx={{ width: "100px", height: "100px" }}
+                          sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                         />
                         <Stack
                           sx={{ flexGrow: 1 }}
                           direction="row"
                           justifyContent="space-between"
-                          alignItems="center"
+                          alignItems={{ xs: "start" }}
                           spacing={1}
                         >
                           <Stack direction="column" spacing={1}>
-                            <Typography sx={{ fontSize: 16 }} color="primary.main">
+                            <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
                               {item.first_name} {item.middle_name} {item.last_name}
                             </Typography>
-                            <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.title}</Typography>
-                            <Stack direction="row" spacing={1}>
-                              <Chip label="Tailor" />
-                              <Chip label="Embroidery" />
-                              <Chip label="Monogram" />
+                            <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                              {item.title}
+                            </Typography>
+                            <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
+                              <Chip size={matches ? "medium" : "small"} label="Tailor" />
+                              <Chip size={matches ? "medium" : "small"} label="Embroidery" />
+                              <Chip size={matches ? "medium" : "small"} label="Monogram" />
                             </Stack>
                           </Stack>
                           <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                            <IconButton aria-label="options">
-                              <MoreHorizIcon />
+                            <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
+                              <MoreHorizIcon fontSize="inherit" />
                             </IconButton>
-                            <Button variant="contained">Message</Button>
+                            {!matches ? (
+                              <IconButton size="small" color="primary">
+                                <MessageIcon fontSize="inherit" />
+                              </IconButton>
+                            ) : (
+                              <Button variant="contained">Message</Button>
+                            )}
                           </Stack>
                         </Stack>
                       </Stack>
@@ -321,11 +349,11 @@ function Page() {
                         width: "100%",
                       }}
                     >
-                      <Stack direction="row" alignItems="center" spacing={3}>
+                      <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                         <Avatar
                           alt="Remy Sharp"
                           src="/static/images/avatar/1.jpg"
-                          sx={{ width: "100px", height: "100px" }}
+                          sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                         />
                         <Stack
                           sx={{ flexGrow: 1 }}
@@ -334,24 +362,44 @@ function Page() {
                           alignItems="center"
                           spacing={1}
                         >
-                          <Stack direction="column" spacing={1}>
-                            <Typography sx={{ fontSize: 16 }} color="primary.main">
+                          <Stack sx={{ flexGrow: 1 }} direction="column" spacing={1}>
+                            <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
                               {item.first_name} {item.middle_name} {item.last_name}
                             </Typography>
-                            <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.title}</Typography>
-                            <Stack direction="row" spacing={1}>
-                              <Chip label="Tailor" />
-                              <Chip label="Embroidery" />
-                              <Chip label="Monogram" />
+                            <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                              {item.title}
+                            </Typography>
+                            <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                              <Chip size={matches ? "medium" : "small"} label="Tailor" />
+                              <Chip size={matches ? "medium" : "small"} label="Embroidery" />
+                              <Chip size={matches ? "medium" : "small"} label="Monogram" />
                             </Stack>
                           </Stack>
-                          <Stack direction="row" justifyItems={"center"} alignItems={"flex-end"} spacing={1}>
-                            <Button onClick={rejectConnectionRequest(item.id)} color="error" variant="outlined">
-                              Reject
-                            </Button>
-                            <Button onClick={acceptConnectionRequest(item.id)} variant="contained">
-                              Accept
-                            </Button>
+                          <Stack
+                            direction="row"
+                            justifyItems={"center"}
+                            alignItems={"flex-end"}
+                            spacing={{ xs: 0, md: 1 }}
+                          >
+                            {matches ? (
+                              <>
+                                <Button onClick={rejectConnectionRequest(item.id)} color="error" variant="outlined">
+                                  Reject
+                                </Button>
+                                <Button onClick={acceptConnectionRequest(item.id)} variant="contained">
+                                  Accept
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <IconButton onClick={rejectConnectionRequest(item.id)} size="small" color="error">
+                                  <CancelIcon fontSize="inherit" />
+                                </IconButton>
+                                <IconButton onClick={acceptConnectionRequest(item.id)} size="small" color="primary">
+                                  <CheckCircleIcon fontSize="inherit" />
+                                </IconButton>
+                              </>
+                            )}
                           </Stack>
                         </Stack>
                       </Stack>
@@ -360,7 +408,9 @@ function Page() {
                 </Stack>
               </TabPanel>
               <TabPanel value={value} index={2}>
-                <Typography sx={{ fontSize: 16, color: "#1F204A", mb: 2 }}>Search result for “{searchTerm}”</Typography>
+                <Typography sx={{ fontSize: { xs: 14, md: 16 }, color: "#1F204A", mb: 2 }}>
+                  Search result for “{searchTerm}”
+                </Typography>
                 <Stack direction="column" spacing={1}>
                   {usersList?.map((item: any) => (
                     <Paper
@@ -374,11 +424,11 @@ function Page() {
                         width: "100%",
                       }}
                     >
-                      <Stack direction="row" alignItems="center" spacing={3}>
+                      <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                         <Avatar
                           alt="Remy Sharp"
                           src="/static/images/avatar/1.jpg"
-                          sx={{ width: "100px", height: "100px" }}
+                          sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                         />
                         <Stack
                           sx={{ flexGrow: 1 }}
@@ -388,23 +438,32 @@ function Page() {
                           spacing={1}
                         >
                           <Stack direction="column" spacing={1}>
-                            <Typography sx={{ fontSize: 16 }} color="primary.main">
+                            <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
                               {item.first_name} {item.middle_name} {item.last_name}
                             </Typography>
-                            <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.title}</Typography>
-                            <Stack direction="row" spacing={1}>
-                              <Chip label="Tailor" />
-                              <Chip label="Embroidery" />
-                              <Chip label="Monogram" />
+                            <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                              {item.title}
+                            </Typography>
+                            <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                              <Chip size={matches ? "medium" : "small"} label="Tailor" />
+                              <Chip size={matches ? "medium" : "small"} label="Embroidery" />
+                              <Chip size={matches ? "medium" : "small"} label="Monogram" />
                             </Stack>
                           </Stack>
                           <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                            {/* <IconButton aria-label="options">
-                              <MoreHorizIcon />
-                            </IconButton> */}
-                            <Button onClick={sendConnectionRequest(item.id)} variant="contained">
-                              Send Request
-                            </Button>
+                            {!matches ? (
+                              <IconButton onClick={sendConnectionRequest(item.id)} color="primary" aria-label="options">
+                                <PersonAddAlt1Icon fontSize="inherit" />
+                              </IconButton>
+                            ) : (
+                              <Button
+                                size={matches ? "medium" : "small"}
+                                onClick={sendConnectionRequest(item.id)}
+                                variant="contained"
+                              >
+                                Send Request
+                              </Button>
+                            )}
                           </Stack>
                         </Stack>
                       </Stack>
@@ -414,65 +473,67 @@ function Page() {
               </TabPanel>
             </Container>
           </Grid>
-          <Grid item xs={3}>
-            <Stack direction="column" spacing={3} sx={{ p: 2 }}>
-              <Card
-                sx={{
-                  backgroundColor: "#F8F9FC",
-                  boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE",
-                }}
-              >
-                <CardContent>
-                  <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                    <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                    <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      Babatunde Olakunle
-                    </Typography>
-                    <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
-                  </Stack>
-                  <Box sx={{ width: "100%", my: "2rem" }}>
-                    <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
-                    <LinearProgressWithLabel value={80} />
-                  </Box>
-                  <Typography sx={{ fontSize: 16 }} color="primary.main">
-                    40 Connections
-                  </Typography>
-                </CardContent>
-              </Card>
-              <Paper
-                elevation={3}
-                sx={{ p: 2, boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE" }}
-              >
-                <Typography sx={{ fontSize: 16 }} variant="body1" color="primary.main" gutterBottom>
-                  Recent Jobs Fitting your profile
-                </Typography>
-                <Stack spacing={2}>
-                  {[1, 2].map((item) => (
-                    <Box key={item} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
-                      <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
-                        Fashoin Designer
+          {matches && (
+            <Grid item xs={3}>
+              <Stack direction="column" spacing={3} sx={{ p: 2 }}>
+                <Card
+                  sx={{
+                    backgroundColor: "#F8F9FC",
+                    boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE",
+                  }}
+                >
+                  <CardContent>
+                    <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
+                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Typography sx={{ fontSize: 16 }} color="primary.main">
+                        Babatunde Olakunle
                       </Typography>
-                      <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                        neque molestie et.
-                      </Typography>
-                      <Stack
-                        direction="row"
-                        sx={{ mt: 2 }}
-                        justifyContent="space-between"
-                        alignItems="center"
-                        spacing={2}
-                      >
-                        <Button variant="contained">Apply</Button>
-                        <Typography sx={{ fontSize: 12, color: "#475467" }}>Posted 2 days ago</Typography>
-                      </Stack>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                    </Stack>
+                    <Box sx={{ width: "100%", my: "2rem" }}>
+                      <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
+                      <LinearProgressWithLabel value={80} />
                     </Box>
-                  ))}
-                  <Button variant="text">View all</Button>
-                </Stack>
-              </Paper>
-            </Stack>
-          </Grid>
+                    <Typography sx={{ fontSize: 16 }} color="primary.main">
+                      40 Connections
+                    </Typography>
+                  </CardContent>
+                </Card>
+                <Paper
+                  elevation={3}
+                  sx={{ p: 2, boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE" }}
+                >
+                  <Typography sx={{ fontSize: 16 }} variant="body1" color="primary.main" gutterBottom>
+                    Recent Jobs Fitting your profile
+                  </Typography>
+                  <Stack spacing={2}>
+                    {[1, 2].map((item) => (
+                      <Box key={item} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
+                        <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
+                          Fashoin Designer
+                        </Typography>
+                        <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
+                          neque molestie et.
+                        </Typography>
+                        <Stack
+                          direction="row"
+                          sx={{ mt: 2 }}
+                          justifyContent="space-between"
+                          alignItems="center"
+                          spacing={2}
+                        >
+                          <Button variant="contained">Apply</Button>
+                          <Typography sx={{ fontSize: 12, color: "#475467" }}>Posted 2 days ago</Typography>
+                        </Stack>
+                      </Box>
+                    ))}
+                    <Button variant="text">View all</Button>
+                  </Stack>
+                </Paper>
+              </Stack>
+            </Grid>
+          )}
         </Grid>
       </Container>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />

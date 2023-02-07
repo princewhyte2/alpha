@@ -192,6 +192,7 @@ function Page() {
           .share({
             title: "Check out this amazing post on workfynder",
             url: `${window.location.origin}/employer/feed`,
+            text: "Check out this amazing post on workfynder",
           })
           .then(() => {
             console.log("Thanks for sharing!", postId)

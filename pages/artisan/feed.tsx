@@ -188,7 +188,8 @@ function Page() {
         navigator
           .share({
             title: "Check out this amazing post on workfynder",
-            url: `${window.location.origin}/employer/feed`,
+            url: `${window.location.origin}/posts/${postId}`,
+            text: "Check out this amazing post on workfynder",
           })
           .then(() => {
             console.log("Thanks for sharing!", postId)
