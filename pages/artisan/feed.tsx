@@ -770,7 +770,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
           aria-label="share"
         >
           <ShareIcon />
-          <Typography sx={{ fontSize: 13 }}>7 Shares</Typography>
+          <Typography sx={{ fontSize: 13 }}>Share</Typography>
         </Button>
       </CardActions>
       <Collapse in={expanded} timeout="auto">

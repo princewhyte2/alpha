@@ -47,6 +47,8 @@ import EmployerNavLayout from "../../components/layouts/employernav"
 import utilsService from "../../services/utils"
 import connectionService from "../../services/connection"
 import { ErrorComponent } from "../../components/alert"
+import NoConnectionIllustartion from "../../components/icons/NoconnectionIllustration"
+import NoInvitationIllustration from "../../components/icons/NoInvitationIllustration"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -252,8 +254,8 @@ function Page() {
                     onChange={handleChange}
                     aria-label="secondary tabs example"
                   >
-                    <Tab label="Connections(10)" {...a11yProps(0)} />
-                    <Tab label="Invitations(4)" {...a11yProps(1)} />
+                    <Tab label={`Connections(${approvedConnectionList?.length})`} {...a11yProps(0)} />
+                    <Tab label={`Invitations(${unApprovedConnectionList?.length})`} {...a11yProps(1)} />
                     <Tab sx={{ visibility: "hidden" }} disabled label="" {...a11yProps(2)} />
                   </Tabs>
                 </Box>
@@ -278,134 +280,152 @@ function Page() {
                 />
               </Stack>
               <TabPanel value={value} index={0}>
-                <Stack direction="column" spacing={1}>
-                  {approvedConnectionList?.map((item: any) => (
-                    <Paper
-                      key={item.id}
-                      elevation={1}
-                      sx={{
-                        p: 2,
-                        boxShadow:
-                          " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
-                        borderRadius: "8px",
-                        width: "100%",
-                      }}
-                    >
-                      <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
-                        <Avatar
-                          alt="Remy Sharp"
-                          src="/static/images/avatar/1.jpg"
-                          sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
-                        />
-                        <Stack
-                          sx={{ flexGrow: 1 }}
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems={{ xs: "start" }}
-                          spacing={1}
-                        >
-                          <Stack direction="column" spacing={1}>
-                            <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                              {item.first_name} {item.middle_name} {item.last_name}
-                            </Typography>
-                            <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
-                              {item.title}
-                            </Typography>
-                            <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
-                              <Chip size={matches ? "medium" : "small"} label="Tailor" />
-                              <Chip size={matches ? "medium" : "small"} label="Embroidery" />
-                              <Chip size={matches ? "medium" : "small"} label="Monogram" />
+                {approvedConnectionList?.length > 0 ? (
+                  <Stack direction="column" spacing={1}>
+                    {approvedConnectionList?.map((item: any) => (
+                      <Paper
+                        key={item.id}
+                        elevation={1}
+                        sx={{
+                          p: 2,
+                          boxShadow:
+                            " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                          borderRadius: "8px",
+                          width: "100%",
+                        }}
+                      >
+                        <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
+                          <Avatar
+                            alt="Remy Sharp"
+                            src="/static/images/avatar/1.jpg"
+                            sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
+                          />
+                          <Stack
+                            sx={{ flexGrow: 1 }}
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems={{ xs: "start" }}
+                            spacing={1}
+                          >
+                            <Stack direction="column" spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                                {item.first_name} {item.middle_name} {item.last_name}
+                              </Typography>
+                              <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                                {item.title}
+                              </Typography>
+                              <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
+                                <Chip size={matches ? "medium" : "small"} label="Tailor" />
+                                <Chip size={matches ? "medium" : "small"} label="Embroidery" />
+                                <Chip size={matches ? "medium" : "small"} label="Monogram" />
+                              </Stack>
+                            </Stack>
+                            <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                              <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
+                                <MoreHorizIcon fontSize="inherit" />
+                              </IconButton>
+                              {!matches ? (
+                                <IconButton size="small" color="primary">
+                                  <MessageIcon fontSize="inherit" />
+                                </IconButton>
+                              ) : (
+                                <Button variant="contained">Message</Button>
+                              )}
                             </Stack>
                           </Stack>
-                          <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                            <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
-                              <MoreHorizIcon fontSize="inherit" />
-                            </IconButton>
-                            {!matches ? (
-                              <IconButton size="small" color="primary">
-                                <MessageIcon fontSize="inherit" />
-                              </IconButton>
-                            ) : (
-                              <Button variant="contained">Message</Button>
-                            )}
-                          </Stack>
                         </Stack>
-                      </Stack>
-                    </Paper>
-                  ))}
-                </Stack>
+                      </Paper>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Stack sx={{ my: 4 }} alignItems="center" direction="column" spacing={2} justifyContent="center">
+                    <NoConnectionIllustartion />
+                    <Typography sx={{ fontSize: { xs: 14, md: 16 }, color: "#1F204A", mb: 2 }}>
+                      You have no connections.
+                    </Typography>
+                  </Stack>
+                )}
               </TabPanel>
               <TabPanel value={value} index={1}>
-                <Stack direction="column" spacing={1}>
-                  {unApprovedConnectionList?.map((item: any) => (
-                    <Paper
-                      key={item.id}
-                      elevation={1}
-                      sx={{
-                        p: 2,
-                        boxShadow:
-                          " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
-                        borderRadius: "8px",
-                        width: "100%",
-                      }}
-                    >
-                      <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
-                        <Avatar
-                          alt="Remy Sharp"
-                          src="/static/images/avatar/1.jpg"
-                          sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
-                        />
-                        <Stack
-                          sx={{ flexGrow: 1 }}
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                          spacing={1}
-                        >
-                          <Stack sx={{ flexGrow: 1 }} direction="column" spacing={1}>
-                            <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                              {item.first_name} {item.middle_name} {item.last_name}
-                            </Typography>
-                            <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
-                              {item.title}
-                            </Typography>
-                            <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
-                              <Chip size={matches ? "medium" : "small"} label="Tailor" />
-                              <Chip size={matches ? "medium" : "small"} label="Embroidery" />
-                              <Chip size={matches ? "medium" : "small"} label="Monogram" />
+                {unApprovedConnectionList?.length > 0 ? (
+                  <Stack direction="column" spacing={1}>
+                    {unApprovedConnectionList?.map((item: any) => (
+                      <Paper
+                        key={item.id}
+                        elevation={1}
+                        sx={{
+                          p: 2,
+                          boxShadow:
+                            " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                          borderRadius: "8px",
+                          width: "100%",
+                        }}
+                      >
+                        <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
+                          <Avatar
+                            alt="Remy Sharp"
+                            src="/static/images/avatar/1.jpg"
+                            sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
+                          />
+                          <Stack
+                            sx={{ flexGrow: 1 }}
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <Stack sx={{ flexGrow: 1 }} direction="column" spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                                {item.first_name} {item.middle_name} {item.last_name}
+                              </Typography>
+                              <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                                {item.title}
+                              </Typography>
+                              <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                                <Chip size={matches ? "medium" : "small"} label="Tailor" />
+                                <Chip size={matches ? "medium" : "small"} label="Embroidery" />
+                                <Chip size={matches ? "medium" : "small"} label="Monogram" />
+                              </Stack>
+                            </Stack>
+                            <Stack
+                              direction="row"
+                              justifyItems={"center"}
+                              alignItems={"flex-end"}
+                              spacing={{ xs: 0, md: 1 }}
+                            >
+                              {matches ? (
+                                <>
+                                  <Button onClick={rejectConnectionRequest(item.id)} color="error" variant="outlined">
+                                    Reject
+                                  </Button>
+                                  <Button onClick={acceptConnectionRequest(item.id)} variant="contained">
+                                    Accept
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <IconButton onClick={rejectConnectionRequest(item.id)} size="small" color="error">
+                                    <CancelIcon fontSize="inherit" />
+                                  </IconButton>
+                                  <IconButton onClick={acceptConnectionRequest(item.id)} size="small" color="primary">
+                                    <CheckCircleIcon fontSize="inherit" />
+                                  </IconButton>
+                                </>
+                              )}
                             </Stack>
                           </Stack>
-                          <Stack
-                            direction="row"
-                            justifyItems={"center"}
-                            alignItems={"flex-end"}
-                            spacing={{ xs: 0, md: 1 }}
-                          >
-                            {matches ? (
-                              <>
-                                <Button onClick={rejectConnectionRequest(item.id)} color="error" variant="outlined">
-                                  Reject
-                                </Button>
-                                <Button onClick={acceptConnectionRequest(item.id)} variant="contained">
-                                  Accept
-                                </Button>
-                              </>
-                            ) : (
-                              <>
-                                <IconButton onClick={rejectConnectionRequest(item.id)} size="small" color="error">
-                                  <CancelIcon fontSize="inherit" />
-                                </IconButton>
-                                <IconButton onClick={acceptConnectionRequest(item.id)} size="small" color="primary">
-                                  <CheckCircleIcon fontSize="inherit" />
-                                </IconButton>
-                              </>
-                            )}
-                          </Stack>
                         </Stack>
-                      </Stack>
-                    </Paper>
-                  ))}
-                </Stack>
+                      </Paper>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Stack sx={{ my: 4 }} alignItems="center" direction="column" spacing={2} justifyContent="center">
+                    <NoInvitationIllustration />
+                    <Typography sx={{ fontSize: { xs: 14, md: 16 }, color: "#1F204A", mb: 2 }}>
+                      You have no invitations.
+                    </Typography>
+                  </Stack>
+                )}
               </TabPanel>
               <TabPanel value={value} index={2}>
                 <Typography sx={{ fontSize: { xs: 14, md: 16 }, color: "#1F204A", mb: 2 }}>
