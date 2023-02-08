@@ -47,8 +47,8 @@ import EmployerNavLayout from "../../components/layouts/employernav"
 import utilsService from "../../services/utils"
 import connectionService from "../../services/connection"
 import { ErrorComponent } from "../../components/alert"
-import NoConnectionIllustartion from "../../components/icons/NoconnectionIllustration"
 import NoInvitationIllustration from "../../components/icons/NoInvitationIllustration"
+import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustration"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
