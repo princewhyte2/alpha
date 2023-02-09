@@ -578,6 +578,7 @@ function JobCard({ item, onEdit, onDelete }: any) {
   const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
 
   // console.log("applicants", jobApplicantsList)
+  const router = useRouter()
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -589,8 +590,9 @@ function JobCard({ item, onEdit, onDelete }: any) {
   const [expanded, setExpanded] = useState(false)
 
   const handleExpandClick = useCallback(() => {
-    setExpanded(!expanded)
-  }, [expanded])
+    // setExpanded(!expanded)
+    router.push(`/jobs/${item.id}`)
+  }, [])
 
   const content = useMemo(() => {
     try {
@@ -689,14 +691,14 @@ function JobCard({ item, onEdit, onDelete }: any) {
         </Stack>
         <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
           <Button onClick={handleExpandClick} variant="text">
-            {expanded ? "Hide" : "View"} applications
+            View applications
           </Button>
           <Typography sx={{ fontSize: 12 }} color="primary.main">
             Posted {dayjs(item.created_at).fromNow()}
           </Typography>
         </Stack>
       </Stack>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
+      {/* <Collapse in={expanded} timeout="auto" unmountOnExit>
         <Stack direction="column" spacing={1}>
           {jobApplicantsList?.map((applicant: any) => (
             <Paper
@@ -747,7 +749,7 @@ function JobCard({ item, onEdit, onDelete }: any) {
             </Paper>
           ))}
         </Stack>
-      </Collapse>
+      </Collapse> */}
     </Paper>
   )
 }

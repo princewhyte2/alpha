@@ -2,6 +2,7 @@ import { ReactElement, useState, useMemo, useCallback, memo } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
+import CircularProgress from "@mui/material/CircularProgress"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
@@ -72,18 +73,6 @@ import profileServices from "../../services/profile"
 
 dayjs.extend(relativeTime)
 type BreakpointOrNull = Breakpoint | null
-
-function useWidth() {
-  const theme: Theme = useTheme()
-  const keys: readonly Breakpoint[] = [...theme.breakpoints.keys].reverse()
-  return (
-    keys.reduce((output: BreakpointOrNull, key: Breakpoint) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const matches = useMediaQuery(theme.breakpoints.up(key))
-      return !output && matches ? key : output
-    }, null) || "xs"
-  )
-}
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -570,6 +559,11 @@ function Page() {
                     <input onChange={handleVideoFileChange} hidden accept="video/*" multiple type="file" />
                   </Button>
                 </Stack>
+              )}
+              {isImageLoading && (
+                <Box sx={{ display: "flex" }}>
+                  <CircularProgress />
+                </Box>
               )}
               <Grid container sx={{ mt: 1 }} spacing={2}>
                 {files?.map((file) => (

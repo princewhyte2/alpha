@@ -191,12 +191,12 @@ function Page() {
   const [initContent, setInitContent] = useState("")
   const { data: jobsList } = useSWR(router?.query?.id ? `/jobs/${router?.query?.id}` : null, jobService.getJobById)
   const [isLoading, setIsLoading] = useState(false)
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+
   const [skills, setSkills] = useState<string[]>([])
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
 
-  console.log("job", jobsList)
+  // console.log("job", jobsList)
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -216,36 +216,61 @@ function Page() {
   const genderRef = useRef<HTMLInputElement>()
   const closingDateRef = useRef<HTMLInputElement>()
 
-  const handlePostJob = useCallback(
-    async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      const data = {
-        company_id: user?.relationships.company.id,
-        user_id: user?.id,
-        title: jobTitleRef.current?.value,
-        description: JSON.stringify(editor.getJSON()),
-        location: jobLocationRef.current?.value,
-        duration: jobDurationRef.current?.value,
-        preferred_gender: genderRef.current?.value,
-        closing_at: closingDateRef.current?.value,
-        skills,
-      }
-      setIsLoading(true)
+  // const handlePostJob = useCallback(
+  //   async (e: FormEvent<HTMLFormElement>) => {
+  //     e.preventDefault()
+  //     const data = {
+  //       company_id: user?.relationships.company.id,
+  //       user_id: user?.id,
+  //       title: jobTitleRef.current?.value,
+  //       description: JSON.stringify(editor.getJSON()),
+  //       location: jobLocationRef.current?.value,
+  //       duration: jobDurationRef.current?.value,
+  //       preferred_gender: genderRef.current?.value,
+  //       closing_at: closingDateRef.current?.value,
+  //       skills,
+  //     }
+  //     setIsLoading(true)
+  //     try {
+  //       if (jobDetails) {
+  //         const response = await jobService.updateJob(String(jobDetails.id), data)
+  //         mutate(`/jobs?searchTerm=${searchTerm}`)
+  //         setMessage(response?.message)
+  //         setType("success")
+  //         setIsError(true)
+  //       } else {
+  //         const response = await jobService.postJob(data)
+  //         mutate(`/jobs?searchTerm=${searchTerm}`)
+  //         setMessage(response?.message)
+  //         setType("success")
+  //         setIsError(true)
+  //       }
+  //       onCloseJobModal()
+  //     } catch (error: any) {
+  //       setType("error")
+  //       if (error.response) {
+  //         setMessage(error.response.data.message)
+  //       } else if (error.request) {
+  //         console.log(error.request)
+  //       } else {
+  //         console.log("Error", error.message)
+  //       }
+  //       setIsError(true)
+  //     } finally {
+  //       setIsLoading(false)
+  //     }
+  //   },
+  //   [user, skills, editor],
+  // )
+
+  const handleJobApplication = useCallback(
+    (jobId: string) => async () => {
       try {
-        if (jobDetails) {
-          const response = await jobService.updateJob(String(jobDetails.id), data)
-          mutate(`/jobs?searchTerm=${searchTerm}`)
-          setMessage(response?.message)
-          setType("success")
-          setIsError(true)
-        } else {
-          const response = await jobService.postJob(data)
-          mutate(`/jobs?searchTerm=${searchTerm}`)
-          setMessage(response?.message)
-          setType("success")
-          setIsError(true)
-        }
-        onCloseJobModal()
+        const response = await jobService.applyForJob(jobId)
+        mutate(`/jobs/${jobId}`)
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -256,11 +281,9 @@ function Page() {
           console.log("Error", error.message)
         }
         setIsError(true)
-      } finally {
-        setIsLoading(false)
       }
     },
-    [user, skills, editor],
+    [],
   )
 
   const onCloseJobModal = useCallback(() => {
@@ -308,7 +331,7 @@ function Page() {
     <Box sx={{ flexGrow: 1 }}>
       <Container disableGutters maxWidth="xl">
         <Grid container spacing={2}>
-          <Grid item xs={12} md={9}>
+          <Grid item xs={12}>
             <Container maxWidth="md">
               <Stack
                 sx={{ px: { xs: 0, md: 2 }, py: 2 }}
@@ -322,7 +345,7 @@ function Page() {
                     Jobs
                   </Typography>
                 </Box>
-                {matches && (
+                {/* {matches && (
                   <TextField
                     id="search-connections"
                     onChange={(e) => optimizedFn(e.target.value)}
@@ -341,10 +364,10 @@ function Page() {
                 )}
                 <Button onClick={() => setIsPostJob(true)} variant="contained" startIcon={<CreateNewFolderIcon />}>
                   Create Job
-                </Button>
+                </Button> */}
               </Stack>
-              {/* <Stack direction="column" spacing={2}>
-                {!jobsList || jobsList.length < 1 ? (
+              <Stack direction="column" spacing={2}>
+                {!jobsList ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
@@ -352,14 +375,18 @@ function Page() {
                     </Stack>
                   </Stack>
                 ) : (
-                  jobsList?.map((item: any) => (
-                    <JobCard key={item.id} item={item} onEdit={handleEdit} onDelete={handleDelete} />
-                  ))
+                  <JobCard
+                    item={jobsList}
+                    onEdit={handleEdit}
+                    onJobApplication={handleJobApplication}
+                    onDelete={handleDelete}
+                  />
                 )}
-              </Stack> */}
+              </Stack>
             </Container>
           </Grid>
-          {matches && (
+
+          {/* {matches && (
             <Grid item xs={3}>
               <Stack direction="column" spacing={3} sx={{ p: 2 }}>
                 <Card
@@ -384,8 +411,8 @@ function Page() {
                       40 Connections
                     </Typography>
                   </CardContent>
-                </Card>
-                {/* <Paper
+                </Card> */}
+          {/* <Paper
                 elevation={3}
                 sx={{ p: 2, boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE" }}
               >
@@ -417,12 +444,12 @@ function Page() {
                   <Button variant="text">View all</Button>
                 </Stack>
               </Paper> */}
-              </Stack>
+          {/* </Stack>
             </Grid>
-          )}
+          )} */}
         </Grid>
       </Container>
-      <BootstrapDialog
+      {/* <BootstrapDialog
         PaperProps={{ style: { margin: 8 } }}
         open={isPostJob}
         fullScreen={!matches}
@@ -440,7 +467,7 @@ function Page() {
             onSubmit={handlePostJob}
             sx={{
               width: "100%",
-              // px: { xs: "1rem", md: "3rem" },
+              px: { xs: "1rem", md: "3rem" },
               mt: 1,
             }}
           >
@@ -463,7 +490,7 @@ function Page() {
                   setTextEditor={setEditor}
                   initContent={initContent}
                 />
-                {/* <TextField
+                <TextField
                   fullWidth
                   id="profile-title"
                   placeholder="Description"
@@ -474,7 +501,7 @@ function Page() {
                   minRows={4}
                   inputRef={jobDescriptionRef}
                   required
-                /> */}
+                />
               </Grid>
               <Grid item xs={12} md={8}>
                 <Autocomplete
@@ -558,7 +585,7 @@ function Page() {
             </Grid>
           </Box>
         </DialogContent>
-      </BootstrapDialog>
+      </BootstrapDialog> */}
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
@@ -568,16 +595,19 @@ Page.getLayout = function getLayout(page: ReactElement) {
   return <NavLayout>{page}</NavLayout>
 }
 
-Page.requireAuth = true
-
 export default Page
 
-function JobCard({ item, onEdit, onDelete }: any) {
+function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [isShowMore, setIsShowMore] = useState(false)
+
   const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
 
   // console.log("applicants", jobApplicantsList)
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<"error" | "success">("error")
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -616,6 +646,15 @@ function JobCard({ item, onEdit, onDelete }: any) {
       return item?.description
     }
   }, [])
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  // console.log("user", user)
+  const isAppliedFor = useMemo(() => {
+    if (user?.user_type === "employer" || !jobApplicantsList) {
+      return false
+    }
+    return Boolean(jobApplicantsList.find((applicant: any) => applicant.applicant_id === user.id))
+  }, [user, jobApplicantsList])
+
   return (
     <Paper
       key={item.id}
@@ -635,7 +674,7 @@ function JobCard({ item, onEdit, onDelete }: any) {
           {/* <Typography sx={{ fontSize: 14 }} color="primary.dark">
                             Name of Company/Author
                           </Typography> */}
-          <div>
+          {/* <div>
             <IconButton
               aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
               aria-haspopup="true"
@@ -658,7 +697,7 @@ function JobCard({ item, onEdit, onDelete }: any) {
               <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
               <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
             </Menu>
-          </div>
+          </div> */}
         </Stack>
         {/* <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography> */}
         <div
@@ -688,9 +727,15 @@ function JobCard({ item, onEdit, onDelete }: any) {
           </Typography>
         </Stack>
         <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
-          <Button onClick={handleExpandClick} variant="text">
-            {expanded ? "Hide" : "View"} applications
-          </Button>
+          {user?.user_type === "employer" ? (
+            <Button onClick={handleExpandClick} variant="text">
+              {expanded ? "Hide" : "View"} applications
+            </Button>
+          ) : (
+            <Button disabled={isAppliedFor} onClick={onJobApplication(item.id)} variant="contained">
+              {isAppliedFor ? "Applied" : "Apply"}
+            </Button>
+          )}
           <Typography sx={{ fontSize: 12 }} color="primary.main">
             Posted {dayjs(item.created_at).fromNow()}
           </Typography>

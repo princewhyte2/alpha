@@ -2,6 +2,7 @@ import { ReactElement, useState, useMemo, useCallback, useEffect } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
+import CircularProgress from "@mui/material/CircularProgress"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
 import SendIcon from "@mui/icons-material/Send"
@@ -213,6 +214,8 @@ function Page() {
       ...(files.length > 0 && { file_type: mediaType }),
       ...(files.length > 0 && { images: files.map((i) => i.id) }),
     }
+
+    console.log("user data", data)
 
     try {
       if (isEditPost && editId) {
@@ -529,6 +532,12 @@ function Page() {
                   </Button>
                 </Stack>
               )}
+              {isImageLoading && (
+                <Box sx={{ display: "flex" }}>
+                  <CircularProgress />
+                </Box>
+              )}
+
               <Grid container sx={{ mt: 1 }} spacing={2}>
                 {files?.map((file) => (
                   <Grid key={file.id} item xs={12} md={4}>

@@ -469,7 +469,7 @@ function Page() {
       revalidateOnReconnect: false,
     },
   )
-  console.log("skills", skills)
+  // console.log("skills", skills)
 
   const defaultProps = {
     options: occupations,

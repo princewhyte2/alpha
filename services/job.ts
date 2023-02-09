@@ -29,7 +29,7 @@ const applyForJob = async (jobId: string) => {
 
 const getJobById = async (url: string) => {
     const response = await axiosInstance.get(url)
-    return response.data
+    return response.data.result
 }
 
 const getJobApplicants = async (url: string) => {

@@ -60,6 +60,7 @@ import jobService from "../../services/job"
 import NoPostIllustration from "../../components/icons/NoPostIllustration"
 import { ErrorComponent } from "../../components/alert"
 import htmlTruncate from "../../lib/htmlTruncate"
+import Router, { useRouter } from "next/router"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -135,6 +136,7 @@ const debounce = (func: any) => {
 function Page() {
   const [value, setValue] = useState(0)
   const { mutate } = useSWRConfig()
+  const router = useRouter()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [searchTerm, setSearchTerm] = useState("")
@@ -154,11 +156,12 @@ function Page() {
   const handleJobApplication = useCallback(
     (jobId: string) => async () => {
       try {
-        const response = await jobService.applyForJob(jobId)
-        mutate(`/jobs?searchTerm=${searchTerm}`)
-        setType("success")
-        setMessage(response.message)
-        setIsError(true)
+        router.push(`/jobs/${jobId}`)
+        // const response = await jobService.applyForJob(jobId)
+        // mutate(`/jobs?searchTerm=${searchTerm}`)
+        // setType("success")
+        // setMessage(response.message)
+        // setIsError(true)
       } catch (error: any) {
         setType("error")
         if (error.response) {
@@ -369,7 +372,7 @@ const JobCard = ({ item, onJobApplication }: any) => {
         </Stack>
         <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
           <Button onClick={onJobApplication(item.id)} variant="contained">
-            Apply
+            View
           </Button>
           <Typography sx={{ fontSize: 12 }} color="primary.main">
             Posted {dayjs(item.created_at).fromNow()}
