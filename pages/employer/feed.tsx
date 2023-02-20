@@ -212,7 +212,8 @@ function Page() {
     const data = {
       ...(!editor?.isEmpty && { body: JSON.stringify(editorContent) }),
       ...(files.length > 0 && { file_type: mediaType }),
-      ...(files.length > 0 && { images: files.map((i) => i.id) }),
+      ...(mediaType === 'image' && { images: files.map((i) => i.id) }),
+      ...(mediaType === 'video' && { video: files.map((i) => i.id) }),
     }
 
     console.log("user data", data)

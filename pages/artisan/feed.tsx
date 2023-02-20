@@ -207,9 +207,8 @@ function Page() {
     const data = {
       body: JSON.stringify(editorContent),
       ...(files.length > 0 && { file_type: mediaType }),
-      ...(files.length > 0 && { images: files.map((i) => i.id) }),
-      // file_type: mediaType,
-      // images: files.map((i) => i.id),
+     ...(mediaType === 'image' && { images: files.map((i) => i.id) }),
+      ...(mediaType === 'video' && { video: files.map((i) => i.id) }),
     }
 
     try {
