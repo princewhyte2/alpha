@@ -42,6 +42,7 @@ import ProfileLayout from "../../components/layouts/profile"
 import NavLayout from "../../components/layouts/nav"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import updateLocale from "dayjs/plugin/updateLocale"
 import TiptapEditor from "../../components/TiptapEditor"
 import BlockQuote from "@tiptap/extension-blockquote"
 import BulletList from "@tiptap/extension-bullet-list"
@@ -71,7 +72,27 @@ import htmlTruncate from "../../lib/htmlTruncate"
 import { useAuth } from "../../store"
 import profileServices from "../../services/profile"
 
+dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
+
+dayjs.updateLocale("en", {
+  relativeTime: {
+    future: "in %s",
+    past: "%s ago",
+    s: "a sec",
+    m: "a min",
+    mm: "%d mins",
+    h: "an hr",
+    hh: "%d hrs",
+    d: "a d",
+    dd: "%d d",
+    M: "a mon",
+    MM: "%d mons",
+    y: "a yr",
+    yy: "%d yrs",
+  },
+})
+
 type BreakpointOrNull = Breakpoint | null
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -172,13 +193,13 @@ function Page() {
   }
 
   const handlePostShare = useCallback(
-    (postId: string) => () => {
+    (postId: string, content: string) => () => {
       if (navigator.share) {
         navigator
           .share({
-            title: "Check out this amazing post on workfynder",
+            title: "WorkFynder Post",
             url: `${window.location.origin}/posts/${postId}`,
-            text: "Check out this amazing post on workfynder",
+            text: `Check out this amazing post on workfynder ${content}`,
           })
           .then(() => {
             console.log("Thanks for sharing!", postId)
@@ -207,8 +228,8 @@ function Page() {
     const data = {
       body: JSON.stringify(editorContent),
       ...(files.length > 0 && { file_type: mediaType }),
-     ...(mediaType === 'image' && { images: files.map((i) => i.id) }),
-      ...(mediaType === 'video' && { video: files.map((i) => i.id) }),
+      ...(mediaType === "image" && { images: files.map((i) => i.id) }),
+      ...(mediaType === "video" && { video: files.map((i) => i.id) }),
     }
 
     try {
@@ -615,6 +636,9 @@ export default Page
 function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onSharePost }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [expanded, setExpanded] = useState(false)
+  const theme = useTheme()
+  // const { mutate } = useSWRConfig()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -684,15 +708,15 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
       <CardHeader
         avatar={
           <Avatar
-            sx={{ bgcolor: red[500] }}
+            sx={{ bgcolor: red[500], height: { xs: 40, md: 52 } }}
             alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
             src={item?.relationships.created_by.relationships.profile_image?.url}
             aria-label="recipe"
           />
         }
         action={
-          isPostCreator && (
-            <Stack sx={{ pr: 1 }} direction={"column"} alignItems="flex-end" justifyContent="flex-end">
+          <Stack sx={{ pr: 1 }} direction={"column"} alignItems="flex-end" justifyContent="flex-end">
+            {isPostCreator && (
               <div>
                 <IconButton
                   aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
@@ -717,11 +741,15 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                   <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
                 </Menu>
               </div>
-              <Box sx={{ display: "flex", alignContent: "flex-start" }}>
+            )}
+            <Box sx={{ display: "flex", alignContent: "flex-start" }}>
+              {matches ? (
                 <Typography sx={{ fontSize: 13, color: "#475467" }}>{dayjs(item.created_at).fromNow()}</Typography>
-              </Box>
-            </Stack>
-          )
+              ) : (
+                <Typography sx={{ fontSize: 13, color: "#475467" }}>{dayjs(item.created_at).fromNow(true)}</Typography>
+              )}
+            </Box>
+          </Stack>
         }
         title={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
         // subheader={dayjs(item.created_at).fromNow()}
@@ -758,7 +786,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
           <Typography sx={{ fontSize: 13 }}>{item.total_comments} Comments</Typography>
         </Button>
         <Button
-          onClick={onSharePost(item.id)}
+          onClick={onSharePost(item.id, htmlTruncate(content, 200, { ellipsis: "... read more" }))}
           sx={{ marginLeft: "auto", display: "flex", flexDirection: "column" }}
           aria-label="share"
         >
@@ -848,9 +876,15 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                         </Menu>
                       </div> */}
                       <Box sx={{ display: "flex", alignContent: "flex-start" }}>
-                        <Typography sx={{ fontSize: 13, color: "#475467" }}>
-                          {dayjs(item.created_at).fromNow()}
-                        </Typography>
+                        {matches ? (
+                          <Typography sx={{ fontSize: 13, color: "#475467" }}>
+                            {dayjs(item.created_at).fromNow()}
+                          </Typography>
+                        ) : (
+                          <Typography sx={{ fontSize: 13, color: "#475467" }}>
+                            {dayjs(item.created_at).fromNow(true)}
+                          </Typography>
+                        )}
                       </Box>
                     </Stack>
                     // )
