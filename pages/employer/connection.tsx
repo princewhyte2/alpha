@@ -322,11 +322,11 @@ function Page() {
                             </Stack>
                             <Stack direction="column" alignItems={"flex-end"} spacing={1}>
                               <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
-                                <MoreHorizIcon fontSize="inherit" />
+                                <MoreHorizIcon />
                               </IconButton>
                               {!matches ? (
                                 <IconButton size="small" color="primary">
-                                  <MessageIcon fontSize="inherit" />
+                                  <MessageIcon />
                                 </IconButton>
                               ) : (
                                 <Button variant="contained">Message</Button>
@@ -405,10 +405,10 @@ function Page() {
                               ) : (
                                 <>
                                   <IconButton onClick={rejectConnectionRequest(item.id)} size="small" color="error">
-                                    <CancelIcon fontSize="inherit" />
+                                    <CancelIcon />
                                   </IconButton>
                                   <IconButton onClick={acceptConnectionRequest(item.id)} size="small" color="primary">
-                                    <CheckCircleIcon fontSize="inherit" />
+                                    <CheckCircleIcon />
                                   </IconButton>
                                 </>
                               )}
@@ -473,7 +473,7 @@ function Page() {
                           <Stack direction="column" alignItems={"flex-end"} spacing={1}>
                             {!matches ? (
                               <IconButton onClick={sendConnectionRequest(item.id)} color="primary" aria-label="options">
-                                <PersonAddAlt1Icon fontSize="inherit" />
+                                <PersonAddAlt1Icon />
                               </IconButton>
                             ) : (
                               <Button

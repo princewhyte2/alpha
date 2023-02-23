@@ -682,7 +682,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
       <CardHeader
         avatar={
           <Avatar
-            sx={{ bgcolor: red[500], height: { xs: 40, md: 52 } }}
+            sx={{ bgcolor: red[500], height: { xs: 40, md: 52 }, width: { xs: 40, md: 52 } }}
             alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
             src={item?.relationships.created_by.relationships.profile_image?.url}
             aria-label="recipe"
