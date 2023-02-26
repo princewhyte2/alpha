@@ -742,7 +742,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
       </CardContent>
       <CardContent>
         {item.relationships?.medias.length > 0 && (
-          <CardMedia component="img" height="231" src={item.relationships.medias[0].url} alt="Paella dish" />
+          <CardMedia component="img" height="100%" src={item.relationships.medias[0].url} alt="Paella dish" />
         )}
       </CardContent>
 
