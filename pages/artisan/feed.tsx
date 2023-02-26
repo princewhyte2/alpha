@@ -71,6 +71,7 @@ import NoPostIllustration from "../../components/icons/NoPostIllustration"
 import htmlTruncate from "../../lib/htmlTruncate"
 import { useAuth } from "../../store"
 import profileServices from "../../services/profile"
+import { stripHtml } from "../../utils"
 
 dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
@@ -199,7 +200,7 @@ function Page() {
           .share({
             title: "WorkFynder Post",
             url: `${window.location.origin}/posts/${postId}`,
-            text: `Check out this amazing post on workfynder ${content}`,
+            text: `Check out this amazing post on workfynder ${stripHtml(content)}`,
           })
           .then(() => {
             console.log("Thanks for sharing!", postId)
@@ -297,6 +298,7 @@ function Page() {
       const formData = new FormData()
       formData.append("file", file)
       const res = await uploadService.uploadFile(formData)
+      console.log("res")
       const item = res.result.file
       setMediaType("video")
       setFiles([item])

@@ -73,6 +73,7 @@ import { useAuth } from "../../store"
 import profileServices from "../../services/profile"
 import EmployerNavLayout from "../../components/layouts/employernav"
 import { useRouter } from "next/router"
+import { stripHtml } from "../../utils"
 dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
 
@@ -213,7 +214,7 @@ function Page() {
           .share({
             title: "WorkFynder Post",
             url: `${window.location.origin}/posts/${postId}`,
-            text: `Check out this amazing post on workfynder ${content}`,
+            text: `Check out this amazing post on workfynder ${stripHtml(content)}`,
           })
           .then(() => {
             console.log("Thanks for sharing!", postId)
