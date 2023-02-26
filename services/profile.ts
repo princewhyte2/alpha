@@ -100,6 +100,11 @@ const updateMainNumber = async (data: { answer: string, phone_number: string }) 
   return response.data
 }
 
+const getProfileById = async (url: string) => {
+  const response = await axiosInstance.get(`${url}`)
+  return response.data.result
+}
+
 const profileFetcher = () => getUserProfile().then((res) => res.result)
 const qualifcationsFetcher = () => getQualifications().then((res) => res.result.occupations)
 
@@ -113,7 +118,7 @@ const profileServices = {
   updateUserQualification,
   deleteUserQualification,
   updateUserWorkHistory,
-  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber,createCompany,updateCompany,createOccupation,updateOccupation,deleteUserOccupation
+  deleteUserWorkHistory,addPhoneNumber,joinAsArtisan,joinAsEmployer,updateUserEmail,updateMainNumber,createCompany,updateCompany,createOccupation,updateOccupation,deleteUserOccupation,getProfileById
 }
 
 export default profileServices

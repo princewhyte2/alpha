@@ -48,6 +48,7 @@ import utilsService from "../../services/utils"
 import { ErrorComponent } from "../../components/alert"
 import NoInvitationIllustration from "../../components/icons/NoInvitationIllustration"
 import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustration"
+import { useRouter } from "next/router"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -120,6 +121,7 @@ const debounce = (func: any) => {
 }
 
 function Page() {
+  const router = useRouter()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [value, setValue] = useState(0)
@@ -154,25 +156,8 @@ function Page() {
   const optimizedFn = useCallback(debounce(setSearchTerm), [])
 
   const sendConnectionRequest = useCallback(
-    (userId: string) => async () => {
-      try {
-        const response = await connectionService.sendConnectionRequest(userId)
-        mutate("unApprovedConnections")
-        // mutate("approvedConnections")
-        setType("success")
-        setMessage(response.message)
-        setIsError(true)
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
-      }
+    (userId: string) => () => {
+      router.push(`/profile/${userId}`)
     },
     [],
   )
@@ -404,11 +389,11 @@ function Page() {
                                 </>
                               ) : (
                                 <>
-                                  <IconButton onClick={rejectConnectionRequest(item.id)} size="small" color="error">
-                                    <CancelIcon />
+                                  <IconButton onClick={rejectConnectionRequest(item.id)} size="large" color="error">
+                                    <CancelIcon fontSize="large" />
                                   </IconButton>
-                                  <IconButton onClick={acceptConnectionRequest(item.id)} size="small" color="primary">
-                                    <CheckCircleIcon />
+                                  <IconButton onClick={acceptConnectionRequest(item.id)} size="large" color="success">
+                                    <CheckCircleIcon fontSize="large" />
                                   </IconButton>
                                 </>
                               )}
@@ -481,7 +466,7 @@ function Page() {
                                 onClick={sendConnectionRequest(item.id)}
                                 variant="contained"
                               >
-                                Send Request
+                                View
                               </Button>
                             )}
                           </Stack>

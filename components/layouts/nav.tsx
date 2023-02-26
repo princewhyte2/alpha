@@ -171,6 +171,14 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
   )
 }
 
+const onLogout = () => {
+  Cookies.remove("access_token")
+
+  if (typeof window !== undefined) {
+    window.location.href = `${window?.location?.origin}/auth/login`
+  }
+}
+
 export default function NavLayout(props: Props) {
   const { data: user, error } = useSWR(
     Cookies.get("access_token") ? "userProfile" : null,
@@ -198,13 +206,6 @@ export default function NavLayout(props: Props) {
     },
   )
 
-  React.useEffect(() => {
-    if (error) {
-      // router.reload()
-      // Cookies.remove("access_token")
-      onLogout()
-    }
-  }, [error])
   // const [countryId, setCountryId] = React.useState("160")
   const { mutate } = useSWRConfig()
   // const { data: countryList } = useSWR("countries", locationService.countriesFetcher)
@@ -233,21 +234,6 @@ export default function NavLayout(props: Props) {
   const businessEmailRef = React.useRef<HTMLInputElement>()
   const businessAddressRef = React.useRef<HTMLInputElement>()
   const industryRef = React.useRef<HTMLInputElement>()
-
-  const onLogout = () => {
-    Cookies.remove("access_token")
-
-    // if ("serviceWorker" in navigator) {
-    //   console.log("service")
-    //   navigator.serviceWorker.getRegistrations().then((registrations) => {
-    //     for (let registration of registrations) {
-    //       registration.unregister()
-    //     }
-    //   })
-    // }
-    router.reload()
-    // router.replace("/")
-  }
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "left", color: "primary.dark" }}>

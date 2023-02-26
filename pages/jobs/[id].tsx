@@ -599,6 +599,7 @@ export default Page
 
 function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const router = useRouter()
   const [isShowMore, setIsShowMore] = useState(false)
 
   const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
@@ -652,8 +653,10 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
     if (user?.user_type === "employer" || !jobApplicantsList) {
       return false
     }
-    return Boolean(jobApplicantsList.find((applicant: any) => applicant.applicant_id === user.id))
+    return jobApplicantsList.some((applicant: any) => applicant.applicant_id === user.id)
   }, [user, jobApplicantsList])
+
+  console.log("job applicant", jobApplicantsList)
 
   return (
     <Paper
@@ -746,6 +749,7 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
           {jobApplicantsList?.map((applicant: any) => (
             <Paper
               key={applicant.applicant?.id}
+              onClick={() => router.push(`/profile/${applicant.applicant_id}`)}
               elevation={1}
               sx={{
                 p: 2,
@@ -777,8 +781,8 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
                       {applicant.applicant?.title}
                     </Typography>
                     <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
-                      {applicant.applicant?.hobbies?.map((item: string) => (
-                        <Chip key={item} label={item} />
+                      {applicant.applicant?.skills?.map((item: any) => (
+                        <Chip key={item.id} label={item.name} />
                       ))}
                     </Stack>
                   </Stack>

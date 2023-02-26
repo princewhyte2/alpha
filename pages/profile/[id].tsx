@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useRef, useState, FormEvent, useCallback, MutableRefObject } from "react"
+import { ChangeEvent, ReactElement, useRef, useState, FormEvent, useCallback, MutableRefObject, useMemo } from "react"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import Checkbox from "@mui/material/Checkbox"
 import Typography from "@mui/material/Typography"
@@ -46,6 +46,7 @@ import NavLayout from "../../components/layouts/nav"
 import locationService from "../../services/location"
 import profileServices from "../../services/profile"
 import { hobbiesList } from "../../utils"
+import connectionService from "../../services/connection"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -117,37 +118,22 @@ function Page() {
   const router = useRouter()
   const [countryId, setCountryId] = useState("160")
   const { mutate } = useSWRConfig()
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  const { data: countryList } = useSWR("countries", locationService.countriesFetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  })
-  const { data: statesList } = useSWR(`country_id=${countryId}`, locationService.statesFetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  })
-  const { data: qualificationsList } = useSWR(`qualificationsList`, profileServices.qualifcationsFetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  })
+  const { data: user } = useSWR(router.query?.id ? `/users/${router.query?.id}` : null, profileServices.getProfileById)
+
+  console.log("user", user)
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+  //TODO : scale this algorightm later
+
+  const isConnection = useMemo(() => {
+    return approvedConnectionList?.some((item: any) => item.id === user?.id)
+  }, [approvedConnectionList, user])
+  console.log(approvedConnectionList, "list")
 
   const { data: occupations } = useSWR(`/occupations`, utilsService.getOccupations, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
-  const [isEditPersonalInfo, setIsEditPersonalInfo] = useState(false)
-  const [isEditOccupation, setIsEditOccupation] = useState(false)
-  const [isEditEducation, setIsEditEducation] = useState(false)
-  const [isEditWorkHistory, setIsEditWorkHistory] = useState(false)
-  const [isImageLoading, setIsImageLoading] = useState(false)
-
-  const [isEditHobbies, setIsEditHobbies] = useState(false)
-  const [educationId, setEducationId] = useState<UserQualification | undefined>()
-  const [workId, setWorkId] = useState<UserWorkHistory | undefined>()
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -160,6 +146,30 @@ function Page() {
     options: occupations,
     getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
   }
+
+  const sendConnectionRequest = useCallback(
+    () => async () => {
+      try {
+        const response = await connectionService.sendConnectionRequest(user.id)
+        mutate("unApprovedConnections")
+        // mutate("approvedConnections")
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
 
   return (
     <Box sx={{ p: 2 }}>
@@ -352,7 +362,7 @@ function Page() {
                 <Avatar
                   sx={{ width: { xs: "64px", md: "140px" }, height: { xs: "64px", md: "140px" } }}
                   alt={`${user?.first_name} ${user?.last_name}`}
-                  src={user?.relationships.profile_image?.url}
+                  src={user?.relationships?.profile_image?.url}
                 />
 
                 <Stack direction={"column"} spacing={3}>
@@ -371,9 +381,15 @@ function Page() {
                   <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
                     {user?.relationships?.state?.name} {user?.relationships?.country?.name}
                   </Typography>
-                  <Stack>
-                    <Button variant="contained">Message</Button>
-                  </Stack>
+                  <Box>
+                    {isConnection ? (
+                      <Button variant="contained">Message</Button>
+                    ) : (
+                      <Button onClick={sendConnectionRequest} variant="contained">
+                        Send Request
+                      </Button>
+                    )}
+                  </Box>
                 </Stack>
               </Stack>
             </Box>
@@ -392,7 +408,7 @@ function Page() {
                     </Typography>
                   </Grid>
                 </Grid>
-                {user?.relationships.occupations?.map((item: any) => (
+                {user?.relationships?.occupations?.map((item: any) => (
                   <Box
                     key={item.id}
                     sx={{
@@ -424,7 +440,7 @@ function Page() {
                           Skills
                         </Typography>
                         <Stack alignItems="flex-end" direction="row" spacing={1}>
-                          <Stack direction="row" spacing={1}>
+                          <Stack flexDirection={"row"} sx={{ flexWrap: "wrap", gap: 1 }}>
                             {item.user_skills.map((item: any) => (
                               <Chip key={item.id} label={item.name} />
                             ))}
@@ -445,7 +461,7 @@ function Page() {
                     </Typography>
                   </Grid>
                 </Grid>
-                {user?.relationships.qualifications?.map((item: UserQualification) => (
+                {user?.relationships?.qualifications?.map((item: UserQualification) => (
                   <Grid key={item.id} sx={{ pt: "1.5rem", position: "relative" }} container spacing={2}>
                     <Grid item xs={12}>
                       <Typography sx={{ color: "primary.dark" }} variant="body1">
@@ -483,7 +499,7 @@ function Page() {
                     </Typography>
                   </Grid>
                 </Grid>
-                {user?.relationships.work_histories?.map((item: UserWorkHistory) => (
+                {user?.relationships?.work_histories?.map((item: UserWorkHistory) => (
                   <Grid key={item.id} sx={{ pt: "1.5rem" }} container spacing={2}>
                     <Grid item xs={12}>
                       <Typography sx={{ color: "primary.dark" }} variant="body1">
