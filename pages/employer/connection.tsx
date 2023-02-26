@@ -315,9 +315,9 @@ function Page() {
                                 {item.title}
                               </Typography>
                               <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
-                                <Chip size={matches ? "medium" : "small"} label="Tailor" />
-                                <Chip size={matches ? "medium" : "small"} label="Embroidery" />
-                                <Chip size={matches ? "medium" : "small"} label="Monogram" />
+                                {item.hobbies.map((skill: string) => (
+                                  <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
+                                ))}
                               </Stack>
                             </Stack>
                             <Stack direction="column" alignItems={"flex-end"} spacing={1}>
@@ -382,9 +382,9 @@ function Page() {
                                 {item.title}
                               </Typography>
                               <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
-                                <Chip size={matches ? "medium" : "small"} label="Tailor" />
-                                <Chip size={matches ? "medium" : "small"} label="Embroidery" />
-                                <Chip size={matches ? "medium" : "small"} label="Monogram" />
+                                {item.hobbies.map((skill: string) => (
+                                  <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
+                                ))}
                               </Stack>
                             </Stack>
                             <Stack
@@ -465,9 +465,9 @@ function Page() {
                               {item.title}
                             </Typography>
                             <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
-                              <Chip size={matches ? "medium" : "small"} label="Tailor" />
-                              <Chip size={matches ? "medium" : "small"} label="Embroidery" />
-                              <Chip size={matches ? "medium" : "small"} label="Monogram" />
+                              {item.relationships.skills.map((skill: any) => (
+                                <Chip key={skill.id} size={matches ? "medium" : "small"} label={skill.name} />
+                              ))}
                             </Stack>
                           </Stack>
                           <Stack direction="column" alignItems={"flex-end"} spacing={1}>

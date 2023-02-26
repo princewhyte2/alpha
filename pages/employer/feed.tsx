@@ -214,7 +214,7 @@ function Page() {
           .share({
             title: "WorkFynder Post",
             url: `${window.location.origin}/posts/${postId}`,
-            text: `Check out this amazing post on workfynder ${stripHtml(content)}`,
+            text: `Check out this amazing post on workfynder \n "${stripHtml(content)}" \n`,
           })
           .then(() => {
             console.log("Thanks for sharing!", postId)
