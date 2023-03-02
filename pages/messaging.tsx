@@ -17,7 +17,7 @@ import BorderColorIcon from "@mui/icons-material/BorderColor"
 import { styled } from "@mui/material/styles"
 import Badge from "@mui/material/Badge"
 import ProfileLayout from "../components/layouts/profile"
-import { ReactElement } from "react"
+import { ReactElement, useEffect, useRef } from "react"
 import NavLayout from "../components/layouts/nav"
 import Chip from "@mui/material/Chip"
 
@@ -59,6 +59,17 @@ const Root = styled("div")(({ theme }) => ({
 }))
 
 const Messaging = () => {
+  const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
+
+  const scrollToBottom = () => {
+    if (!scrollToBottomRef.current) return
+    scrollToBottomRef.current.scrollIntoView()
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [])
+
   return (
     <Container maxWidth="xl">
       <Box sx={{ flexGrow: 1, pt: 2 }}>
@@ -155,13 +166,20 @@ const Messaging = () => {
                 </Stack>
                 <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
                   <Stack direction="column" spacing={2}>
-                    <Divider>yesterday, 29 aug</Divider>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-                      <Box key={item} sx={{ width: "100%" }}>
-                        <Chip sx={{ background: "green", ml: item % 2 === 0 ? "auto" : 0 }} label="Chip Filled" />
-                      </Box>
+                    <Divider sx={{ color: "#1F204A" }}>yesterday, 29 aug</Divider>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item) => (
+                      <Stack key={item} direction={"row"} justifyContent={item % 2 === 0 ? "flex-start" : "flex-end"}>
+                        <Chip
+                          sx={{
+                            color: item % 2 === 0 ? "#FFFFFF" : "#1F204A",
+                            background: item % 2 === 0 ? "#3E4095" : "#F2F4F7",
+                          }}
+                          label="Chip Filled"
+                        />
+                      </Stack>
                     ))}
                   </Stack>
+                  <div style={{ float: "left", clear: "both" }} ref={scrollToBottomRef}></div>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems={"center"} sx={{ p: 2, background: "#F9FAFB" }}>
                   <TextField
