@@ -234,10 +234,8 @@ function Page() {
       ...(!editor?.isEmpty && { body: JSON.stringify(editorContent) }),
       ...(files.length > 0 && { file_type: mediaType }),
       ...(mediaType === "image" && { images: files.map((i) => i.id) }),
-      ...(mediaType === "video" && { video: files.map((i) => i.id) }),
+      ...(mediaType === "video" && { video: files[0].id }),
     }
-
-    console.log("user data", data)
 
     try {
       if (isEditPost && editId) {
@@ -742,9 +740,25 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
         }
       </CardContent>
       <CardContent>
-        {item.relationships?.medias.length > 0 && (
-          <CardMedia component="img" height="100%" src={item.relationships.medias[0].url} alt="Paella dish" />
-        )}
+        {item.relationships?.medias.length > 0 &&
+          // <CardMedia component="img" height="100%" src={item.relationships.medias[0].url} alt="Paella dish" />
+          (item.relationships.medias[0].type === "video" ? (
+            <CardMedia
+              component={"video"}
+              height="100%"
+              src={item.relationships.medias[0].url}
+              title={item.relationships.medias[0].name}
+              autoPlay
+              controls
+            />
+          ) : (
+            <CardMedia
+              component={"img"}
+              height="100%"
+              image={item.relationships.medias[0].url}
+              title={item.relationships.medias[0].name}
+            />
+          ))}
       </CardContent>
 
       <CardActions disableSpacing sx={{ background: "#F8F9FC" }}>

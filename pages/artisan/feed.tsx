@@ -230,7 +230,7 @@ function Page() {
       body: JSON.stringify(editorContent),
       ...(files.length > 0 && { file_type: mediaType }),
       ...(mediaType === "image" && { images: files.map((i) => i.id) }),
-      ...(mediaType === "video" && { video: files.map((i) => i.id) }),
+      ...(mediaType === "video" && { video: files[0].id }),
     }
 
     try {
@@ -298,7 +298,6 @@ function Page() {
       const formData = new FormData()
       formData.append("file", file)
       const res = await uploadService.uploadFile(formData)
-      console.log("res")
       const item = res.result.file
       setMediaType("video")
       setFiles([item])
@@ -591,7 +590,18 @@ function Page() {
                 {files?.map((file) => (
                   <Grid key={file.id} item xs={12} md={4}>
                     <Card sx={{ position: "relative" }}>
-                      <CardMedia sx={{ height: 140 }} image={file.url} title={file.name} />
+                      {mediaType === "video" ? (
+                        <CardMedia
+                          component={"video"}
+                          sx={{ height: 140 }}
+                          src={file.url}
+                          title={file.name}
+                          autoPlay
+                          controls
+                        />
+                      ) : (
+                        <CardMedia sx={{ height: 140 }} image={file.url} title={file.name} />
+                      )}
 
                       <IconButton
                         onClick={() => setFiles((prev) => prev.filter((item) => item.id !== file.id))}
@@ -769,9 +779,25 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
         }
       </CardContent>
       <CardContent>
-        {item.relationships?.medias.length > 0 && (
-          <CardMedia component="img" height="100%" src={item.relationships.medias[0].url} alt="Paella dish" />
-        )}
+        {item.relationships?.medias.length > 0 &&
+          // <CardMedia component="img" height="100%" src={item.relationships.medias[0].url} alt="Paella dish" />
+          (item.relationships.medias[0].type === "video" ? (
+            <CardMedia
+              component={"video"}
+              height="100%"
+              src={item.relationships.medias[0].url}
+              title={item.relationships.medias[0].name}
+              autoPlay
+              controls
+            />
+          ) : (
+            <CardMedia
+              component={"img"}
+              height="100%"
+              image={item.relationships.medias[0].url}
+              title={item.relationships.medias[0].name}
+            />
+          ))}
       </CardContent>
 
       <CardActions disableSpacing sx={{ background: "#F8F9FC" }}>

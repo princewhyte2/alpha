@@ -189,9 +189,25 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
         }
       </CardContent>
       <CardContent>
-        {item.relationships?.medias.length > 0 && (
-          <CardMedia component="img" height="231" src={item.relationships.medias[0].url} alt="Paella dish" />
-        )}
+        {item.relationships?.medias.length > 0 &&
+          // <CardMedia component="img" height="100%" src={item.relationships.medias[0].url} alt="Paella dish" />
+          (item.relationships.medias[0].type === "video" ? (
+            <CardMedia
+              component={"video"}
+              height="100%"
+              src={item.relationships.medias[0].url}
+              title={item.relationships.medias[0].name}
+              autoPlay
+              controls
+            />
+          ) : (
+            <CardMedia
+              component={"img"}
+              height="100%"
+              image={item.relationships.medias[0].url}
+              title={item.relationships.medias[0].name}
+            />
+          ))}
       </CardContent>
 
       <CardActions disableSpacing sx={{ background: "#F8F9FC" }}>

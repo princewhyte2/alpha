@@ -19,6 +19,7 @@ import Badge from "@mui/material/Badge"
 import ProfileLayout from "../components/layouts/profile"
 import { ReactElement } from "react"
 import NavLayout from "../components/layouts/nav"
+import Chip from "@mui/material/Chip"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -60,9 +61,9 @@ const Root = styled("div")(({ theme }) => ({
 const Messaging = () => {
   return (
     <Container maxWidth="xl">
-      <Box sx={{ flexGrow: 1, height: "calc(100vh - 10px)", pt: 2 }}>
-        <Grid sx={{ height: "100%" }} container spacing={2}>
-          <Grid item xs={4}>
+      <Box sx={{ flexGrow: 1, pt: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={4} sx={{ height: "calc(100vh - 84px)" }}>
             <Paper
               sx={{
                 height: "100%",
@@ -84,8 +85,8 @@ const Messaging = () => {
                   <BorderColorIcon />
                 </IconButton>
               </Stack>
-              <Stack sx={{ maxHeight: "calc(100% - 40px )", overflowY: "auto" }}>
-                {[1, 2, 3, 4, 5, 6].map((item) => (
+              <Stack direction="column" sx={{ height: "calc(100% - 74px)", overflowY: "auto" }}>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
                   <Stack
                     key={item}
                     direction="row"
@@ -109,7 +110,7 @@ const Messaging = () => {
                     >
                       <Stack direction="column" spacing={1}>
                         <Typography sx={{ fontSize: 14 }} color="primary.dark">
-                          Darlene Black
+                          Darlene Black {item}
                         </Typography>
                         <Typography sx={{ fontSize: 10 }} color="primary.dark">
                           Hey, how is your project?
@@ -129,7 +130,7 @@ const Messaging = () => {
               </Stack>
             </Paper>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={8} sx={{ height: "calc(100vh - 84px)" }}>
             <Paper
               sx={{
                 height: "100%",
@@ -152,8 +153,15 @@ const Messaging = () => {
                     last online: 4 hours ago
                   </Typography>
                 </Stack>
-                <Box sx={{ p: 2, flexGrow: 1 }}>
-                  <Divider>yesterday, 29 aug</Divider>
+                <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
+                  <Stack direction="column" spacing={2}>
+                    <Divider>yesterday, 29 aug</Divider>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                      <Box key={item} sx={{ width: "100%" }}>
+                        <Chip sx={{ background: "green", ml: item % 2 === 0 ? "auto" : 0 }} label="Chip Filled" />
+                      </Box>
+                    ))}
+                  </Stack>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems={"center"} sx={{ p: 2, background: "#F9FAFB" }}>
                   <TextField
