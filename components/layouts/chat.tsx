@@ -5,7 +5,11 @@ import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Stack from "@mui/material/Stack"
 import SendIcon from "@mui/icons-material/Send"
+import useSWR, { useSWRConfig } from "swr"
 import IconButton from "@mui/material/IconButton"
+import { useTheme, Theme } from "@mui/material/styles"
+import useMediaQuery from "@mui/material/useMediaQuery"
+
 import Avatar from "@mui/material/Avatar"
 import TextField from "@mui/material/TextField"
 import AttachmentIcon from "@mui/icons-material/Attachment"
@@ -16,10 +20,10 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import BorderColorIcon from "@mui/icons-material/BorderColor"
 import { styled } from "@mui/material/styles"
 import Badge from "@mui/material/Badge"
-import ProfileLayout from "../components/layouts/profile"
 import { ReactElement, useEffect, useRef } from "react"
-import NavLayout from "../components/layouts/nav"
 import Chip from "@mui/material/Chip"
+import messagingService from "../../services/messaging"
+import { useRouter } from "next/router"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -58,99 +62,99 @@ const Root = styled("div")(({ theme }) => ({
   },
 }))
 
-const Messaging = () => {
-  const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
-
-  const scrollToBottom = () => {
-    if (!scrollToBottomRef.current) return
-    scrollToBottomRef.current.scrollIntoView()
-  }
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [])
+const ChatLayout = ({ children, isDefault }: any) => {
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const router = useRouter()
+  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
+  console.log("conversations", conversations)
 
   return (
     <Container maxWidth="xl">
       <Box sx={{ flexGrow: 1, pt: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={4} sx={{ height: "calc(100vh - 84px)" }}>
-            <Paper
-              sx={{
-                height: "100%",
-                background: "#FFFFFF",
-                filter:
-                  "drop-shadow(0px 0px 1px rgba(66, 71, 76, 0.32)) drop-shadow(0px 4px 8px rgba(66, 71, 76, 0.06)) drop-shadow(0px 8px 48px #EEEEEE)",
-              }}
-            >
-              <Stack
-                direction="row"
-                alignItems={"center"}
-                justifyContent="space-between"
-                sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
+          {isDefault && matches && (
+            <Grid item xs={12} md={4} sx={{ height: "calc(100vh - 84px)" }}>
+              <Paper
+                sx={{
+                  height: "100%",
+                  background: "#FFFFFF",
+                  filter:
+                    "drop-shadow(0px 0px 1px rgba(66, 71, 76, 0.32)) drop-shadow(0px 4px 8px rgba(66, 71, 76, 0.06)) drop-shadow(0px 8px 48px #EEEEEE)",
+                }}
               >
-                <Typography sx={{ fontSize: 20 }} color="primary.dark">
-                  Message
-                </Typography>
-                <IconButton aria-label="edit">
-                  <BorderColorIcon />
-                </IconButton>
-              </Stack>
-              <Stack direction="column" sx={{ height: "calc(100% - 74px)", overflowY: "auto" }}>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-                  <Stack
-                    key={item}
-                    direction="row"
-                    alignItems={"center"}
-                    spacing={2}
-                    sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
-                  >
-                    <StyledBadge
-                      overlap="circular"
-                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                      variant="dot"
-                    >
-                      <Avatar sx={{ width: 56, height: 56 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                    </StyledBadge>
+                <Stack
+                  direction="row"
+                  alignItems={"center"}
+                  justifyContent="space-between"
+                  sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
+                >
+                  <Typography sx={{ fontSize: 20 }} color="primary.dark">
+                    Message
+                  </Typography>
+                  <IconButton aria-label="edit">
+                    <BorderColorIcon />
+                  </IconButton>
+                </Stack>
+                <Stack direction="column" sx={{ height: "calc(100% - 74px)", overflowY: "auto" }}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
                     <Stack
-                      sx={{ flexGrow: 1 }}
+                      onClick={() => router.push(`messaging/${item}`)}
+                      key={item}
                       direction="row"
                       alignItems={"center"}
-                      justifyContent="space-between"
                       spacing={2}
+                      sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
                     >
-                      <Stack direction="column" spacing={1}>
-                        <Typography sx={{ fontSize: 14 }} color="primary.dark">
-                          Darlene Black {item}
-                        </Typography>
-                        <Typography sx={{ fontSize: 10 }} color="primary.dark">
-                          Hey, how is your project?
-                        </Typography>
-                      </Stack>
-                      <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                        <IconButton size="small" aria-label="options">
-                          <MoreHorizIcon />
-                        </IconButton>
-                        <Typography sx={{ fontSize: 10 }} color="primary.dark">
-                          04:00PM
-                        </Typography>
+                      <StyledBadge
+                        overlap="circular"
+                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                        variant="dot"
+                      >
+                        <Avatar sx={{ width: 56, height: 56 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      </StyledBadge>
+                      <Stack
+                        sx={{ flexGrow: 1 }}
+                        direction="row"
+                        alignItems={"center"}
+                        justifyContent="space-between"
+                        spacing={2}
+                      >
+                        <Stack direction="column" spacing={1}>
+                          <Typography sx={{ fontSize: 14 }} color="primary.dark">
+                            Darlene Black {item}
+                          </Typography>
+                          <Typography sx={{ fontSize: 10 }} color="primary.dark">
+                            Hey, how is your project?
+                          </Typography>
+                        </Stack>
+                        <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                          <IconButton size="small" aria-label="options">
+                            <MoreHorizIcon />
+                          </IconButton>
+                          <Typography sx={{ fontSize: 10 }} color="primary.dark">
+                            04:00PM
+                          </Typography>
+                        </Stack>
                       </Stack>
                     </Stack>
-                  </Stack>
-                ))}
-              </Stack>
-            </Paper>
-          </Grid>
-          <Grid item xs={8} sx={{ height: "calc(100vh - 84px)" }}>
-            <Paper
-              sx={{
-                height: "100%",
-                background: "#FFFFFF",
-                filter:
-                  "drop-shadow(0px 0px 1px rgba(66, 71, 76, 0.32)) drop-shadow(0px 4px 8px rgba(66, 71, 76, 0.06)) drop-shadow(0px 8px 48px #EEEEEE)",
-              }}
-            >
-              <Stack direction="column" sx={{ height: "100%" }}>
+                  ))}
+                </Stack>
+              </Paper>
+            </Grid>
+          )}
+          {matches && (
+            <Grid item xs={12} md={8} sx={{ height: "calc(100vh - 84px)" }}>
+              <Paper
+                sx={{
+                  height: "100%",
+                  background: "#FFFFFF",
+                  filter:
+                    "drop-shadow(0px 0px 1px rgba(66, 71, 76, 0.32)) drop-shadow(0px 4px 8px rgba(66, 71, 76, 0.06)) drop-shadow(0px 8px 48px #EEEEEE)",
+                }}
+              >
+                {children}
+                {/* <Stack direction="column" sx={{ height: "100%" }}>
                 <Stack
                   direction="row"
                   alignItems={"center"}
@@ -196,17 +200,14 @@ const Messaging = () => {
                     <SendIcon />
                   </IconButton>
                 </Stack>
-              </Stack>
-            </Paper>
-          </Grid>
+              </Stack> */}
+              </Paper>
+            </Grid>
+          )}
         </Grid>
       </Box>
     </Container>
   )
 }
 
-Messaging.getLayout = function getLayout(page: ReactElement) {
-  return <NavLayout>{page}</NavLayout>
-}
-
-export default Messaging
+export default ChatLayout

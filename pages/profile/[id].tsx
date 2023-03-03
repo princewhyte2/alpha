@@ -151,7 +151,7 @@ function Page() {
   const sendConnectionRequest = useCallback(async () => {
     setIsConnecting(true)
     try {
-      const response = await connectionService.sendConnectionRequest(user.id)
+      const response = await connectionService.sendConnectionRequest(user?.id)
       mutate("unApprovedConnections")
       // mutate("approvedConnections")
       setType("success")
@@ -170,7 +170,7 @@ function Page() {
     } finally {
       setIsConnecting(false)
     }
-  }, [])
+  }, [user])
 
   return (
     <Box sx={{ p: 2 }}>
