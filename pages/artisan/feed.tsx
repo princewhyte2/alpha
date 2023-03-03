@@ -591,14 +591,7 @@ function Page() {
                   <Grid key={file.id} item xs={12} md={4}>
                     <Card sx={{ position: "relative" }}>
                       {mediaType === "video" ? (
-                        <CardMedia
-                          component={"video"}
-                          sx={{ height: 140 }}
-                          src={file.url}
-                          title={file.name}
-                          autoPlay
-                          controls
-                        />
+                        <CardMedia component={"video"} sx={{ height: 140 }} src={file.url} title={file.name} controls />
                       ) : (
                         <CardMedia sx={{ height: 140 }} image={file.url} title={file.name} />
                       )}
@@ -787,7 +780,6 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
               height="100%"
               src={item.relationships.medias[0].url}
               title={item.relationships.medias[0].name}
-              autoPlay
               controls
             />
           ) : (

@@ -748,7 +748,6 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
               height="100%"
               src={item.relationships.medias[0].url}
               title={item.relationships.medias[0].name}
-              autoPlay
               controls
             />
           ) : (
