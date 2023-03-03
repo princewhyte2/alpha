@@ -117,6 +117,7 @@ function Page() {
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
   const [countryId, setCountryId] = useState("160")
+  const [isConnecting, setIsConnecting] = useState(false)
   const { mutate } = useSWRConfig()
   const { data: user } = useSWR(router.query?.id ? `/users/${router.query?.id}` : null, profileServices.getProfileById)
 
@@ -147,29 +148,29 @@ function Page() {
     getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
   }
 
-  const sendConnectionRequest = useCallback(
-    () => async () => {
-      try {
-        const response = await connectionService.sendConnectionRequest(user.id)
-        mutate("unApprovedConnections")
-        // mutate("approvedConnections")
-        setType("success")
-        setMessage(response.message)
-        setIsError(true)
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
+  const sendConnectionRequest = useCallback(async () => {
+    setIsConnecting(true)
+    try {
+      const response = await connectionService.sendConnectionRequest(user.id)
+      mutate("unApprovedConnections")
+      // mutate("approvedConnections")
+      setType("success")
+      setMessage(response.message)
+      setIsError(true)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
       }
-    },
-    [],
-  )
+      setIsError(true)
+    } finally {
+      setIsConnecting(false)
+    }
+  }, [])
 
   return (
     <Box sx={{ p: 2 }}>
@@ -385,9 +386,9 @@ function Page() {
                     {isConnection ? (
                       <Button variant="contained">Message</Button>
                     ) : (
-                      <Button onClick={sendConnectionRequest} variant="contained">
+                      <LoadingButton loading={isConnecting} onClick={sendConnectionRequest} variant="contained">
                         Send Request
-                      </Button>
+                      </LoadingButton>
                     )}
                   </Box>
                 </Stack>
