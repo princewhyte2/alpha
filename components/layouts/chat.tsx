@@ -62,18 +62,19 @@ const Root = styled("div")(({ theme }) => ({
   },
 }))
 
-const ChatLayout = ({ children, isDefault }: any) => {
+const ChatLayout = ({ children }: any) => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
   const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
   console.log("conversations", conversations)
+  const isNotDefault = router.query?.id
 
   return (
     <Container maxWidth="xl">
       <Box sx={{ flexGrow: 1, pt: 2 }}>
         <Grid container spacing={2}>
-          {isDefault && matches && (
+          {!isNotDefault || matches ? (
             <Grid item xs={12} md={4} sx={{ height: "calc(100vh - 84px)" }}>
               <Paper
                 sx={{
@@ -142,8 +143,8 @@ const ChatLayout = ({ children, isDefault }: any) => {
                 </Stack>
               </Paper>
             </Grid>
-          )}
-          {matches && (
+          ) : null}
+          {isNotDefault || matches ? (
             <Grid item xs={12} md={8} sx={{ height: "calc(100vh - 84px)" }}>
               <Paper
                 sx={{
@@ -203,7 +204,7 @@ const ChatLayout = ({ children, isDefault }: any) => {
               </Stack> */}
               </Paper>
             </Grid>
-          )}
+          ) : null}
         </Grid>
       </Box>
     </Container>

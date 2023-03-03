@@ -121,7 +121,7 @@ const employerMainNav = [
   },
   {
     name: "Messaging",
-    route: "/employer/messaging",
+    route: "/messaging",
   },
   {
     name: "Profile",
