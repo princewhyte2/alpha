@@ -300,7 +300,7 @@ function Page() {
                                 {item.title}
                               </Typography>
                               <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
-                                {item.hobbies.map((skill: string) => (
+                                {item.hobbies?.map((skill: string) => (
                                   <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
                                 ))}
                               </Stack>
@@ -367,7 +367,7 @@ function Page() {
                                 {item.title}
                               </Typography>
                               <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
-                                {item.hobbies.map((skill: string) => (
+                                {item.hobbies?.map((skill: string) => (
                                   <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
                                 ))}
                               </Stack>
