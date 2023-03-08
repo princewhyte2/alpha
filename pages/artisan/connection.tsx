@@ -49,6 +49,7 @@ import { ErrorComponent } from "../../components/alert"
 import NoInvitationIllustration from "../../components/icons/NoInvitationIllustration"
 import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustration"
 import { useRouter } from "next/router"
+import messagingService from "../../services/messaging"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -141,6 +142,7 @@ function Page() {
     connectionService.getUnApprovedUserConnections,
   )
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+  const { data: chats } = useSWR("chats", messagingService.getAllConversations)
 
   const { data: usersList } = useSWR(
     searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
@@ -151,7 +153,7 @@ function Page() {
   )
   console.log("userList", usersList)
   console.log("approved", approvedConnectionList)
-  console.log("unapproved", unApprovedConnectionList)
+  console.log("chats", chats)
 
   const optimizedFn = useCallback(debounce(setSearchTerm), [])
 
@@ -210,6 +212,18 @@ function Page() {
     },
     [],
   )
+
+  const handleSendMessage = async (userId: string) => {
+    const defaultMessage = "we are starting ur converstation"
+    try {
+      const chat = await messagingService.sendMessage("", { receiver_id: userId, message: defaultMessage })
+      console.log("chat", chat)
+    } catch (error) {
+      console.log("error", error)
+    }
+  }
+
+  console.log("approved", approvedConnectionList)
 
   useEffect(() => {
     if (!searchTerm) {
@@ -314,7 +328,9 @@ function Page() {
                                   <MessageIcon />
                                 </IconButton>
                               ) : (
-                                <Button variant="contained">Message</Button>
+                                <Button onClick={() => handleSendMessage(item.id)} variant="contained">
+                                  Message
+                                </Button>
                               )}
                             </Stack>
                           </Stack>

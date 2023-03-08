@@ -182,7 +182,13 @@ function Page() {
         <Grid container spacing={2}>
           <Grid item xs={12} md={9}>
             <Container maxWidth="md">
-              <Stack sx={{ p: 2 }} direction="row" justifyContent="center" alignItems="center" spacing={1}>
+              <Stack
+                sx={{ p: { xs: 0, md: 2 }, my: { xs: 2, md: 0 } }}
+                direction={{ xs: "column", md: "row" }}
+                justifyContent="center"
+                alignItems="center"
+                spacing={1}
+              >
                 <Box sx={{ width: "100%" }}>
                   <Typography sx={{ fontSize: 20 }} color="primary.dark">
                     Jobs
@@ -335,8 +341,13 @@ const JobCard = ({ item, onJobApplication }: any) => {
       }}
     >
       <Stack direction="column" spacing={2}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-          <Typography sx={{ fontSize: 20 }} color="primary.main">
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "start", md: "center" }}
+          spacing={2}
+        >
+          <Typography sx={{ fontSize: { xs: 16, md: 20 } }} color="primary.main">
             {item.title}
           </Typography>
           <Typography sx={{ fontSize: 14 }} color="primary.dark">
@@ -370,8 +381,13 @@ const JobCard = ({ item, onJobApplication }: any) => {
             Closing Date: {dayjs().to(item.closing_at)}
           </Typography>
         </Stack>
-        <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
-          <Button onClick={onJobApplication(item.id)} variant="contained">
+        <Stack
+          direction={{ xs: "column-reverse", md: "row" }}
+          alignItems={{ xs: "start", md: "center" }}
+          justifyContent="space-between"
+          spacing={1}
+        >
+          <Button sx={{ px: 4 }} onClick={onJobApplication(item.id)} variant="contained">
             View
           </Button>
           <Typography sx={{ fontSize: 12 }} color="primary.main">

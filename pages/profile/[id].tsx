@@ -551,7 +551,7 @@ function Page() {
                     </Typography>
                   </Grid>
                 </Grid>
-                <Stack sx={{ mt: "1rem" }} alignItems="center" direction="row" spacing={1}>
+                <Stack sx={{ mt: "1rem", gap: 1, flexWrap: "wrap" }} alignItems="center" direction="row">
                   {user?.hobbies?.map((hobby: string) => (
                     <Chip key={hobby} label={hobby} />
                   ))}

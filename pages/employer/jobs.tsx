@@ -630,8 +630,8 @@ function JobCard({ item, onEdit, onDelete }: any) {
       }}
     >
       <Stack direction="column" spacing={2}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-          <Typography sx={{ fontSize: 20 }} color="primary.main">
+        <Stack direction="row" justifyContent="space-between" alignItems={{ xs: "start", md: "center" }} spacing={2}>
+          <Typography sx={{ fontSize: { xs: 16, md: 20 } }} color="primary.main">
             {item.title}
           </Typography>
           {/* <Typography sx={{ fontSize: 14 }} color="primary.dark">
@@ -689,7 +689,12 @@ function JobCard({ item, onEdit, onDelete }: any) {
             Closing Date: {dayjs().to(item.closing_at)}
           </Typography>
         </Stack>
-        <Stack direction="row" alignItems={"center"} justifyContent="space-between" spacing={1}>
+        <Stack
+          direction={{ xs: "column-reverse", md: "row" }}
+          alignItems={{ xs: "start", md: "center" }}
+          justifyContent="space-between"
+          spacing={1}
+        >
           <Button onClick={handleExpandClick} variant="text">
             View applications
           </Button>

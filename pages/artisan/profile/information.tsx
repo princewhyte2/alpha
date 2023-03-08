@@ -560,10 +560,10 @@ function Page() {
   return (
     <Box sx={{ p: 2 }}>
       <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
-        <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
+        <Typography variant="h6" sx={{ my: 1, color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
           Profile Information
         </Typography>
-        {!matches && (
+        {/* {!matches && (
           <IconButton
             aria-label="close"
             onClick={() => router.push("/artisan/feed")}
@@ -573,7 +573,7 @@ function Page() {
           >
             <CancelIcon fontSize="inherit" />
           </IconButton>
-        )}
+        )} */}
       </Stack>
 
       <Box sx={{ flexGrow: 1 }}>
@@ -653,24 +653,28 @@ function Page() {
                   >
                     <Grid container direction="row" justifyContent="space-between" alignItems="center">
                       <Grid item>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="body1">
                           Personal Information
                         </Typography>
                       </Grid>
                       <Grid item>
                         <Button
+                          size="small"
                           onClick={() => setIsEditPersonalInfo(true)}
                           variant="text"
-                          startIcon={<BorderColorIcon />}
+                          startIcon={<BorderColorIcon fontSize="inherit" />}
                         >
                           Edit
                         </Button>
                       </Grid>
                     </Grid>
-                    <Typography sx={{ color: "primary.dark", mt: "1.5rem" }} variant="body1">
+                    <Typography
+                      sx={{ color: "primary.dark", mt: "1.5rem", fontSize: { xs: 13, md: 16 } }}
+                      variant="body1"
+                    >
                       Title
                     </Typography>
-                    <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                    <Typography sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }} variant="h6">
                       {user?.title}
                     </Typography>
                   </Box>
@@ -684,26 +688,35 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           First Name
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.first_name}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Middle Name
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.middle_name}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Last Name
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.last_name}
                         </Typography>
                       </Grid>
@@ -719,26 +732,35 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Date of Birth
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.date_of_birth ? new Date(user?.date_of_birth).toDateString() : null}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Gender
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.gender}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Email
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.email}
                         </Typography>
                       </Grid>
@@ -754,18 +776,24 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Phone Number
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.phone_number}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Other Phone
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.other_phone_number}
                         </Typography>
                       </Grid>
@@ -782,18 +810,24 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Country
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.relationships?.country?.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           State
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.relationships?.state?.name}
                         </Typography>
                       </Grid>
@@ -810,7 +844,7 @@ function Page() {
                     pb: "1rem",
                   }}
                 >
-                  <Typography sx={{ color: "primary.dark", mb: "3rem" }} variant="body1">
+                  <Typography sx={{ color: "primary.dark", mb: "3rem", fontSize: { xs: 16, md: 20 } }} variant="body1">
                     Update your personal information
                   </Typography>
                   <Grid container spacing={2}>
@@ -991,30 +1025,26 @@ function Page() {
             </Box>
             <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
               <Box sx={{ width: "100%", pb: "1rem" }}>
-                <Grid
+                <Stack
                   sx={{ px: { xs: "1rem", md: "3rem" } }}
-                  container
                   direction="row"
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Your Occupations and Skills
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    {matches ? (
-                      <Button onClick={() => setIsEditOccupation(true)} variant="text" startIcon={<AddIcon />}>
-                        Add Occupation & Skills
-                      </Button>
-                    ) : (
-                      <IconButton onClick={() => setIsEditOccupation(true)} aria-label="add an alarm">
-                        <AddIcon sx={{ color: "primary.main" }} />
-                      </IconButton>
-                    )}
-                  </Grid>
-                </Grid>
+                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
+                    Your Occupations and Skills
+                  </Typography>
+
+                  {matches ? (
+                    <Button onClick={() => setIsEditOccupation(true)} variant="text" startIcon={<AddIcon />}>
+                      Add Occupation & Skills
+                    </Button>
+                  ) : (
+                    <IconButton onClick={() => setIsEditOccupation(true)} aria-label="add an alarm">
+                      <AddIcon sx={{ color: "primary.main" }} />
+                    </IconButton>
+                  )}
+                </Stack>
                 {user?.relationships.occupations?.map((item: any) => (
                   <Box
                     key={item.id}
@@ -1028,26 +1058,24 @@ function Page() {
                       key={item}
                       sx={{
                         py: "1.5rem",
-
-                        position: "relative",
                       }}
                       container
                       spacing={2}
                     >
                       <Grid item xs={12} md={4}>
-                        <Typography sx={{ color: "primary.dark", mb: 1 }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", mb: 1, fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Occupation
                         </Typography>
                         <Stack alignItems="flex-end" direction="row" spacing={1}>
                           <Chip label={item.name} />
                         </Stack>
                       </Grid>
-                      <Grid item xs={12} md={8}>
-                        <Typography sx={{ color: "primary.dark", mb: 1 }} variant="body1">
+                      <Grid sx={{ position: "relative" }} item xs={12} md={8}>
+                        <Typography sx={{ color: "primary.dark", mb: 1, fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Skills
                         </Typography>
                         <Stack alignItems="flex-end" direction="row" spacing={1}>
-                          <Stack direction="row" spacing={1}>
+                          <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1, my: 2 }}>
                             {item.user_skills.map((item: any) => (
                               <Chip key={item.id} label={item.name} />
                             ))}
@@ -1055,7 +1083,7 @@ function Page() {
                           <Stack
                             direction="row"
                             spacing={1}
-                            sx={{ position: { xs: "absolute", md: "relative" }, top: 0, bottom: 0, right: 0 }}
+                            sx={{ position: { xs: "absolute", md: "relative" }, top: 0, right: 0 }}
                           >
                             <IconButton
                               onClick={handleEditOccupation(item)}
@@ -1083,43 +1111,40 @@ function Page() {
             </Box>
             <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
               <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" }, pb: "1rem" }}>
-                <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Educational Qualification
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    {matches ? (
-                      <Button onClick={() => setIsEditEducation(true)} variant="text" startIcon={<AddIcon />}>
-                        Add Educational Qualification
-                      </Button>
-                    ) : (
-                      <IconButton onClick={() => setIsEditEducation(true)} aria-label="add an alarm">
-                        <AddIcon sx={{ color: "primary.main" }} />
-                      </IconButton>
-                    )}
-                  </Grid>
-                </Grid>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="body1">
+                    Educational Qualification
+                  </Typography>
+
+                  {matches ? (
+                    <Button onClick={() => setIsEditEducation(true)} variant="text" startIcon={<AddIcon />}>
+                      Add Educational Qualification
+                    </Button>
+                  ) : (
+                    <IconButton onClick={() => setIsEditEducation(true)} aria-label="add an alarm">
+                      <AddIcon sx={{ color: "primary.main" }} />
+                    </IconButton>
+                  )}
+                </Stack>
                 {user?.relationships.qualifications?.map((item: UserQualification) => (
                   <Grid key={item.id} sx={{ pt: "1.5rem", position: "relative" }} container spacing={2}>
                     <Grid item xs={12}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="body1">
                         {item.name}
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                       <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           {item.detail?.institution}
                         </Typography>
                       </Stack>
                     </Grid>
 
-                    <Grid item xs={6}>
-                      <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                    <Grid item xs={12} md={6}>
+                      <Stack mt={1} alignItems="center" direction={{ xs: "column", md: "row" }} spacing={1}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           {`${months[new Date(item.detail.graduation_date).getMonth()]} ${new Date(
                             item.detail.graduation_date,
                           ).getUTCFullYear()}`}
@@ -1158,42 +1183,39 @@ function Page() {
             </Box>
             <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
               <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" }, pb: "1rem" }}>
-                <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Work History
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    {matches ? (
-                      <Button onClick={() => setIsEditWorkHistory(true)} variant="text" startIcon={<AddIcon />}>
-                        Add Work History
-                      </Button>
-                    ) : (
-                      <IconButton onClick={() => setIsEditWorkHistory(true)} aria-label="add an alarm">
-                        <AddIcon sx={{ color: "primary.main" }} />
-                      </IconButton>
-                    )}
-                  </Grid>
-                </Grid>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="body1">
+                    Work History
+                  </Typography>
+
+                  {matches ? (
+                    <Button onClick={() => setIsEditWorkHistory(true)} variant="text" startIcon={<AddIcon />}>
+                      Add Work History
+                    </Button>
+                  ) : (
+                    <IconButton onClick={() => setIsEditWorkHistory(true)} aria-label="add an alarm">
+                      <AddIcon sx={{ color: "primary.main" }} />
+                    </IconButton>
+                  )}
+                </Stack>
                 {user?.relationships.work_histories?.map((item: UserWorkHistory) => (
                   <Grid key={item.id} sx={{ pt: "1.5rem" }} container spacing={2}>
                     <Grid item xs={12}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                         {item.company_name}
                       </Typography>
                     </Grid>
 
                     <Grid item xs={6}>
                       <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           {item.job_title}
                         </Typography>
                       </Stack>
                     </Grid>
                     <Grid item xs={6}>
                       <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           {`${months[new Date(item.start_date).getMonth()]} ${new Date(
                             item.start_date,
                           ).getUTCFullYear()}`}{" "}
@@ -1209,7 +1231,7 @@ function Page() {
 
                     <Grid item xs={12}>
                       <Stack mt={0} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 12, md: 16 } }} variant="body1">
                           {item.summary}
                         </Typography>
 
@@ -1241,19 +1263,21 @@ function Page() {
             <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
               {!isEditHobbies ? (
                 <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" } }}>
-                  <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                    <Grid item>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Hobbies
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Button onClick={() => setIsEditHobbies(true)} variant="text" startIcon={<BorderColorIcon />}>
-                        Edit
-                      </Button>
-                    </Grid>
-                  </Grid>
-                  <Stack sx={{ mt: "1rem" }} alignItems="center" direction="row" spacing={1}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="body1">
+                      Hobbies
+                    </Typography>
+
+                    <Button
+                      size="small"
+                      onClick={() => setIsEditHobbies(true)}
+                      variant="text"
+                      startIcon={<BorderColorIcon fontSize="inherit" />}
+                    >
+                      Edit
+                    </Button>
+                  </Stack>
+                  <Stack sx={{ mt: "1rem", gap: 1, flexWrap: "wrap" }} alignItems="center" direction="row">
                     {user?.hobbies?.map((hobby: string) => (
                       <Chip key={hobby} label={hobby} />
                     ))}
@@ -1263,7 +1287,7 @@ function Page() {
                 <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" } }}>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="body1">
                         Update your Hobbies
                       </Typography>
                     </Grid>

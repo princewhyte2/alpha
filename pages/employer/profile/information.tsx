@@ -287,7 +287,7 @@ function Page() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
+      <Typography variant="h6" sx={{ my: 1, color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
         Business Information
       </Typography>
       <Box sx={{ flexGrow: 1 }}>
@@ -366,36 +366,40 @@ function Page() {
                       borderBottom: "1px dashed #3E4095",
                     }}
                   >
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                      <Grid item>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
-                          Business Information
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          onClick={() => setisEditBusinessInfo(true)}
-                          variant="text"
-                          startIcon={<BorderColorIcon />}
-                        >
-                          Edit
-                        </Button>
-                      </Grid>
-                    </Grid>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="body1">
+                        Business Information
+                      </Typography>
+
+                      <Button
+                        size="small"
+                        onClick={() => setisEditBusinessInfo(true)}
+                        variant="text"
+                        startIcon={<BorderColorIcon fontSize="inherit" />}
+                      >
+                        Edit
+                      </Button>
+                    </Stack>
                     <Grid container spacing={2} sx={{ mt: "1.5rem" }}>
-                      <Grid item xs={6}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      <Grid item xs={12} md={6}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Business Name
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.relationships.company?.name}
                         </Typography>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      <Grid item xs={12} md={6}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Company Website
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.relationships.company?.website}
                         </Typography>
                       </Grid>
@@ -410,19 +414,25 @@ function Page() {
                     }}
                   >
                     <Grid container spacing={2}>
-                      <Grid item xs={8}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      <Grid item xs={12} md={8}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Business/Office Address
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.relationships.company?.address}
                         </Typography>
                       </Grid>
-                      <Grid item xs={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      <Grid item xs={12} md={4}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Location
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           Lagos
                         </Typography>
                       </Grid>
@@ -438,10 +448,13 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Company Email Address
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.relationships.company?.email}
                         </Typography>
                       </Grid>
@@ -457,7 +470,7 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Business Sector
                         </Typography>
                         {/* <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
@@ -480,10 +493,13 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Services Provided
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
                           {user?.relationships.company?.service_provided}
                         </Typography>
                       </Grid>
@@ -659,22 +675,20 @@ function Page() {
                       pb: "1rem",
                     }}
                   >
-                    <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                      <Grid item>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
-                          Owner’s Information
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          onClick={() => setIsEditPersonalInfo(true)}
-                          variant="text"
-                          startIcon={<BorderColorIcon />}
-                        >
-                          Edit
-                        </Button>
-                      </Grid>
-                    </Grid>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                        Owner’s Information
+                      </Typography>
+
+                      <Button
+                        size="small"
+                        onClick={() => setIsEditPersonalInfo(true)}
+                        variant="text"
+                        startIcon={<BorderColorIcon fontSize="inherit" />}
+                      >
+                        Edit
+                      </Button>
+                    </Stack>
                   </Box>
                   <Box
                     sx={{
@@ -686,26 +700,35 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           First Name
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.first_name}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Middle Name
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.middle_name}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Last Name
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.last_name}
                         </Typography>
                       </Grid>
@@ -721,26 +744,35 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Date of Birth
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.date_of_birth ? new Date(user?.date_of_birth).toDateString() : null}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Gender
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.gender}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Email
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.email}
                         </Typography>
                       </Grid>
@@ -756,18 +788,24 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Phone Number
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.phone_number}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} sm={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Other Phone
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.other_phone_number || null}
                         </Typography>
                       </Grid>
@@ -784,18 +822,24 @@ function Page() {
                   >
                     <Grid container spacing={2}>
                       <Grid item xs={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           Country
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.relationships?.country?.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           State
                         </Typography>
-                        <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 13, md: 16 } }}
+                          variant="h6"
+                        >
                           {user?.relationships?.state?.name}
                         </Typography>
                       </Grid>
@@ -812,7 +856,7 @@ function Page() {
                     pb: "1rem",
                   }}
                 >
-                  <Typography sx={{ color: "primary.dark", mb: "3rem" }} variant="body1">
+                  <Typography sx={{ color: "primary.dark", mb: "3rem", fontSize: { xs: 13, md: 16 } }} variant="body1">
                     Update your personal information
                   </Typography>
                   <Grid container spacing={2}>
