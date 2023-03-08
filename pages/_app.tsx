@@ -16,7 +16,7 @@ export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
 
 export default function MyApp({ Component, pageProps }: { Component: NextApplicationPage; pageProps: any }) {
   // const router = useRouter()
-  // const [pageLoading, setPageLoading] = useState(true)
+  const [pageLoading, setPageLoading] = useState(true)
   const setInitializing = useAuth((state: any) => state.setInitializing)
   const theme = createTheme({
     palette: {
@@ -37,13 +37,22 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
   }, [])
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const loader = document.getElementById("splash")
-      if (loader) loader.style.display = "none"
-    }
+    setTimeout(() => {
+      setPageLoading(false)
+    }, 3000)
   }, [])
 
   const getLayout = Component.getLayout ?? ((page: any) => page)
+
+  if (pageLoading) {
+    return (
+      <div className="splashScreen">
+        <div className="ping">
+          <img src="/fynder_logo.png" alt="finder" />{" "}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <SWRDevTools>
