@@ -33,7 +33,13 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
 
   /* show loading indicator while the auth provider is still initializing */
   if (initializing) {
-    return <h1>Application Loading</h1>
+    return (
+      <div className="splashScreen">
+        <div className="ping">
+          <img src="/fynder_logo.png" alt="finder" />{" "}
+        </div>
+      </div>
+    )
   }
 
   // if auth initialized with a valid user show protected page
@@ -42,5 +48,11 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
   }
 
   /* otherwise don't return anything, will do a redirect from useEffect */
-  return null
+  return (
+    <div className="splashScreen">
+      <div className="ping">
+        <img src="/fynder_logo.png" alt="finder" />{" "}
+      </div>
+    </div>
+  )
 }
