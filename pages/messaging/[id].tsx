@@ -131,7 +131,7 @@ const Messaging = () => {
           {activeConversationParticipant?.first_name} {activeConversationParticipant?.last_name}
         </Typography>
         <Typography sx={{ fontSize: 12 }} color="primary.dark">
-          {/* last online: 4 hours ago */}
+          {/* last online: 4 hours ago removed*/}
         </Typography>
       </Stack>
       <Box
