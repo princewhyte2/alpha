@@ -134,7 +134,7 @@ const Messaging = () => {
           {/* last online: 4 hours ago */}
         </Typography>
       </Stack>
-      <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
+      <Stack direction={"column"} justifyContent={"flex-end"} sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
         <Stack direction="column" spacing={2}>
           {/* <Divider sx={{ color: "#1F204A" }}>yesterday, 29 aug</Divider> */}
           {conversation?.map((item: any) => {
@@ -163,7 +163,7 @@ const Messaging = () => {
           })}
         </Stack>
         <div style={{ float: "left", clear: "both" }} ref={scrollToBottomRef}></div>
-      </Box>
+      </Stack>
       <Stack direction="row" spacing={2} alignItems={"center"} sx={{ p: 2, background: "#F9FAFB" }}>
         <TextField
           inputRef={messageInputRef}
