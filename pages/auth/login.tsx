@@ -4,6 +4,7 @@ import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import Cookies from "js-cookie"
+
 import LoadingButton from "@mui/lab/LoadingButton"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import GoogleIcon from "../../components/icons/Google"
@@ -28,6 +29,16 @@ import { validateEmail } from "../../utils"
 import { useAuth } from "../../store"
 import { useRouter } from "next/router"
 import { AlertColor } from "@mui/material"
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut,
+} from "firebase/auth"
+import { auth } from "../../lib/firebaseConfig"
 
 const Root = styled("div")(({ theme }) => ({
   width: "100%",
@@ -47,6 +58,9 @@ const Root = styled("div")(({ theme }) => ({
     },
   },
 }))
+
+const googleProvider = new GoogleAuthProvider()
+// ​​const auth = getAuth(app);
 
 const Login = () => {
   const theme = useTheme()
@@ -114,8 +128,11 @@ const Login = () => {
 
   const onGoogleLogin = useCallback(async () => {
     try {
-      const response = await authService.googleLogin()
-      console.log("google", response)
+      const res = await signInWithPopup(auth, googleProvider)
+      console.log(res)
+      // const user = res.user
+      // const response = await authService.googleLogin()
+      // console.log("google", response)
     } catch (error: any) {
       setType("error")
       if (error.response) {
