@@ -13,11 +13,11 @@ import FormControl from "@mui/material/FormControl"
 import EmailIcon from "@mui/icons-material/Email"
 import InputAdornment from "@mui/material/InputAdornment"
 import Autocomplete from "@mui/material/Autocomplete"
-import DialogContent from "@mui/material/DialogContent"
+// import DialogContent from "@mui/material/DialogContent"
 import CircularProgress from "@mui/material/CircularProgress"
 import CloseIcon from "@mui/icons-material/Close"
-import Dialog from "@mui/material/Dialog"
-import DialogTitle from "@mui/material/DialogTitle"
+// import Dialog from "@mui/material/Dialog"
+// import DialogTitle from "@mui/material/DialogTitle"
 import { AlertColor } from "@mui/material"
 import LoadingButton from "@mui/lab/LoadingButton"
 import CancelIcon from "@mui/icons-material/Cancel"
@@ -30,10 +30,16 @@ import Avatar from "@mui/material/Avatar"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme, Theme } from "@mui/material/styles"
 import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
+// import TextField from "@mui/material/TextField"
 import DeleteIcon from "@mui/icons-material/Delete"
 import PhoneIcon from "@mui/icons-material/Phone"
 import { styled } from "@mui/material/styles"
+import TextField from "@mui/material/TextField"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
 import Stack from "@mui/material/Stack"
 import AddIcon from "@mui/icons-material/Add"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
@@ -47,6 +53,7 @@ import locationService from "../../services/location"
 import profileServices from "../../services/profile"
 import { hobbiesList } from "../../utils"
 import connectionService from "../../services/connection"
+import messagingService from "../../services/messaging"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -120,6 +127,49 @@ function Page() {
   const [isConnecting, setIsConnecting] = useState(false)
   const { mutate } = useSWRConfig()
   const { data: user } = useSWR(router.query?.id ? `/users/${router.query?.id}` : null, profileServices.getProfileById)
+  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
+
+  const hasConversation = useMemo(() => {
+    const conversation = conversations?.find((conversation: any) =>
+      conversation.relationships.participants.find((participant: any) => participant.messageable_id === user?.id),
+    )
+    return conversation?.id
+  }, [conversations, user])
+  console.log("conversations", conversations)
+  console.log("has conversation", hasConversation)
+  const [open, setOpen] = useState(false)
+  const messageInputRef = useRef()
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleSendMessage = async () => {
+    //@ts-ignore
+    const defaultMessage: any = messageInputRef.current?.value
+    if (!defaultMessage) return
+    try {
+      const chat = await messagingService.sendMessage("", { receiver_id: user?.id, message: defaultMessage })
+      console.log("chat", chat)
+      //@ts-ignore
+      messageInputRef.current.value = ""
+      console.log("chat", chat)
+    } catch (error) {
+      console.log("error", error)
+    }
+  }
+
+  const handleChat = () => {
+    if (hasConversation) {
+      router.push(`/messaging/${hasConversation}`)
+    } else {
+      handleClickOpen()
+    }
+  }
 
   console.log("user", user)
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
@@ -384,7 +434,9 @@ function Page() {
                   </Typography>
                   <Box>
                     {isConnection ? (
-                      <Button variant="contained">Message</Button>
+                      <Button onClick={handleChat} variant="contained">
+                        Message
+                      </Button>
                     ) : (
                       <LoadingButton loading={isConnecting} onClick={sendConnectionRequest} variant="contained">
                         Send Request
@@ -561,6 +613,27 @@ function Page() {
           </Grid>
         </Grid>
       </Box>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Start Conversation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Start a conversation with {user?.first_name} {user?.middle_name} {user?.last_name} by sending a message
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="message-quick"
+            label="message"
+            inputRef={messageInputRef}
+            fullWidth
+            variant="standard"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSendMessage}>Send</Button>
+        </DialogActions>
+      </Dialog>
 
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>

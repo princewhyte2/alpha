@@ -216,6 +216,17 @@ function Page() {
     [],
   )
 
+  const handleSendMessage = async (userId: string) => {
+    router.push(`/profile/${userId}`)
+    // const defaultMessage = "we are starting ur converstation"
+    // try {
+    //   const chat = await messagingService.sendMessage("", { receiver_id: userId, message: defaultMessage })
+    //   console.log("chat", chat)
+    // } catch (error) {
+    //   console.log("error", error)
+    // }
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container disableGutters maxWidth="xl">
@@ -309,11 +320,13 @@ function Page() {
                                 <MoreHorizIcon />
                               </IconButton>
                               {!matches ? (
-                                <IconButton size="small" color="primary">
+                                <IconButton onClick={() => handleSendMessage(item.id)} size="small" color="primary">
                                   <MessageIcon />
                                 </IconButton>
                               ) : (
-                                <Button variant="contained">Message</Button>
+                                <Button onClick={() => handleSendMessage(item.id)} variant="contained">
+                                  View
+                                </Button>
                               )}
                             </Stack>
                           </Stack>

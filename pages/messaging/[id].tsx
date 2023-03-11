@@ -17,11 +17,13 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import BorderColorIcon from "@mui/icons-material/BorderColor"
 import { styled } from "@mui/material/styles"
 import Badge from "@mui/material/Badge"
-import { ReactElement, useEffect, useRef } from "react"
+import { ReactElement, useEffect, useMemo, useRef } from "react"
 import NavLayout from "../../components/layouts/nav"
 import Chip from "@mui/material/Chip"
 import ChatLayout from "../../components/layouts/chat"
 import messagingService from "../../services/messaging"
+import { useRouter } from "next/router"
+import profileServices from "../../services/profile"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -61,9 +63,34 @@ const Root = styled("div")(({ theme }) => ({
 }))
 
 const Messaging = () => {
+  const { mutate } = useSWRConfig()
+  const router = useRouter()
   const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
-  //   const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
-  //   console.log("conversations", conversations)
+  const messageInputRef = useRef<HTMLInputElement>()
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
+  const active = conversations?.find((item: any) => item?.id === router.query?.id)
+  const activeConversationParticipant = useMemo(() => {
+    const chat: any = conversations?.find((item: any) => item?.id == router.query?.id)
+    const participant = chat?.relationships.participants.find(
+      (participant: any) => participant.messageable_id !== user?.id,
+    )
+    return participant
+  }, [router.query?.id, conversations, user])
+  const { data: conversation } = useSWR(
+    router.query?.id ? `/conversations/${router.query?.id}` : null,
+    messagingService.getConversationsById,
+  )
+  console.log("user", user)
+  console.log("conversation", conversation)
+  console.log("active", activeConversationParticipant)
+
+  const { data: messages } = useSWR(
+    router.query?.id ? `/messages/${router.query?.id}` : null,
+    messagingService.getMessageById,
+  )
+
+  console.log("messsages", messages)
 
   const scrollToBottom = () => {
     if (!scrollToBottomRef.current) return
@@ -74,6 +101,24 @@ const Messaging = () => {
     scrollToBottom()
   }, [])
 
+  const handleSendMessage = async () => {
+    const chatMessage = messageInputRef.current?.value
+    if (!chatMessage) return
+
+    try {
+      await messagingService.sendMessage(router.query.id as string, {
+        receiver_id: activeConversationParticipant?.messageable_id,
+        message: chatMessage,
+      })
+      mutate(`/conversations/${router.query?.id}`)
+      mutate("conversations")
+      //@ts-ignore
+      messageInputRef.current.value = ""
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
       <Stack
@@ -83,35 +128,55 @@ const Messaging = () => {
         sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
       >
         <Typography sx={{ fontSize: 16 }} color="primary.dark">
-          Mary Rurpet
+          {activeConversationParticipant?.messageable.first_name} {activeConversationParticipant?.messageable.last_name}
         </Typography>
         <Typography sx={{ fontSize: 12 }} color="primary.dark">
-          last online: 4 hours ago
+          {/* last online: 4 hours ago */}
         </Typography>
       </Stack>
       <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
         <Stack direction="column" spacing={2}>
-          <Divider sx={{ color: "#1F204A" }}>yesterday, 29 aug</Divider>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item) => (
-            <Stack key={item} direction={"row"} justifyContent={item % 2 === 0 ? "flex-start" : "flex-end"}>
-              <Chip
-                sx={{
-                  color: item % 2 === 0 ? "#FFFFFF" : "#1F204A",
-                  background: item % 2 === 0 ? "#3E4095" : "#F2F4F7",
-                }}
-                label="Chip Filled"
-              />
-            </Stack>
-          ))}
+          {/* <Divider sx={{ color: "#1F204A" }}>yesterday, 29 aug</Divider> */}
+          {conversation?.map((item: any) => {
+            return (
+              <Stack
+                key={item.id}
+                direction={"row"}
+                justifyContent={item.relationships?.sender?.id !== user?.id ? "flex-start" : "flex-end"}
+              >
+                <Chip
+                  sx={{
+                    color: item.relationships?.sender?.id !== user?.id ? "#FFFFFF" : "#1F204A",
+                    background: item.relationships?.sender?.id !== user?.id ? "#3E4095" : "#F2F4F7",
+                    height: "100%",
+                    p: 1,
+                    maxWidth: "70%",
+                  }}
+                  label={
+                    <Typography sx={{ whiteSpace: "normal", fontSize: { xs: 13, md: 14 }, fontWeight: 400 }}>
+                      {item.attributes.message}
+                    </Typography>
+                  }
+                />
+              </Stack>
+            )
+          })}
         </Stack>
         <div style={{ float: "left", clear: "both" }} ref={scrollToBottomRef}></div>
       </Box>
       <Stack direction="row" spacing={2} alignItems={"center"} sx={{ p: 2, background: "#F9FAFB" }}>
-        <TextField fullWidth placeholder="Write your message" id="standard-multiline-flexible" multiline maxRows={2} />
+        <TextField
+          inputRef={messageInputRef}
+          fullWidth
+          placeholder="Write your message"
+          id="standard-multiline-flexible"
+          multiline
+          maxRows={2}
+        />
         <IconButton aria-label="delete">
           <AttachmentIcon />
         </IconButton>
-        <IconButton aria-label="delete" color="primary">
+        <IconButton onClick={handleSendMessage} aria-label="delete" color="primary">
           <SendIcon />
         </IconButton>
       </Stack>

@@ -24,6 +24,7 @@ import { ReactElement, useEffect, useRef } from "react"
 import Chip from "@mui/material/Chip"
 import messagingService from "../../services/messaging"
 import { useRouter } from "next/router"
+import profileServices from "../../services/profile"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -66,8 +67,10 @@ const ChatLayout = ({ children }: any) => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
   console.log("conversations", conversations)
+  console.log("user", user)
   const isNotDefault = router.query?.id
 
   return (
@@ -79,6 +82,7 @@ const ChatLayout = ({ children }: any) => {
               <Paper
                 sx={{
                   height: "100%",
+                  width: "100%",
                   background: "#FFFFFF",
                   filter:
                     "drop-shadow(0px 0px 1px rgba(66, 71, 76, 0.32)) drop-shadow(0px 4px 8px rgba(66, 71, 76, 0.06)) drop-shadow(0px 8px 48px #EEEEEE)",
@@ -98,48 +102,59 @@ const ChatLayout = ({ children }: any) => {
                   </IconButton>
                 </Stack>
                 <Stack direction="column" sx={{ height: "calc(100% - 74px)", overflowY: "auto" }}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-                    <Stack
-                      onClick={() => router.push(`messaging/${item}`)}
-                      key={item}
-                      direction="row"
-                      alignItems={"center"}
-                      spacing={2}
-                      sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
-                    >
-                      <StyledBadge
-                        overlap="circular"
-                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                        variant="dot"
-                      >
-                        <Avatar sx={{ width: 56, height: 56 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                      </StyledBadge>
-                      <Stack
-                        sx={{ flexGrow: 1 }}
-                        direction="row"
-                        alignItems={"center"}
-                        justifyContent="space-between"
-                        spacing={2}
-                      >
-                        <Stack direction="column" spacing={1}>
-                          <Typography sx={{ fontSize: 14 }} color="primary.dark">
-                            Darlene Black {item}
-                          </Typography>
-                          <Typography sx={{ fontSize: 10 }} color="primary.dark">
-                            Hey, how is your project?
-                          </Typography>
-                        </Stack>
-                        <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                          <IconButton size="small" aria-label="options">
-                            <MoreHorizIcon />
-                          </IconButton>
-                          <Typography sx={{ fontSize: 10 }} color="primary.dark">
+                  {conversations?.map((item: any) => {
+                    const receipient = item.relationships.participants.find(
+                      (participant: any) => participant.messageable_id !== user?.id,
+                    )
+                    return (
+                      <Box sx={{ width: "100%" }}>
+                        <Stack
+                          onClick={() => router.push(`/messaging/${item.id}`)}
+                          key={item.id}
+                          direction="row"
+                          alignItems={"center"}
+                          spacing={2}
+                          sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
+                        >
+                          <StyledBadge
+                            overlap="circular"
+                            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                            variant="dot"
+                          >
+                            <Avatar
+                              sx={{ width: 56, height: 56 }}
+                              alt={receipient.messageable.first_name}
+                              src="/static/images/avatar/1.jpg"
+                            />
+                          </StyledBadge>
+                          <Stack
+                            sx={{ flexGrow: 1 }}
+                            direction="row"
+                            alignItems={"center"}
+                            // justifyContent="space-between"
+                            spacing={2}
+                          >
+                            <Box sx={{ width: "100%", overflow: "hidden" }}>
+                              <Typography noWrap={true} sx={{ fontSize: 14 }} color="primary.dark">
+                                {receipient.messageable.first_name} {receipient.messageable.last_name}
+                              </Typography>
+                              <Typography noWrap={true} sx={{ fontSize: 10 }} color="primary.dark">
+                                {item.relationships?.last_message?.body}
+                              </Typography>
+                            </Box>
+                            <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                              <IconButton size="small" aria-label="options">
+                                <MoreHorizIcon />
+                              </IconButton>
+                              {/* <Typography sx={{ fontSize: 10 }} color="primary.dark">
                             04:00PM
-                          </Typography>
+                          </Typography> */}
+                            </Stack>
+                          </Stack>
                         </Stack>
-                      </Stack>
-                    </Stack>
-                  ))}
+                      </Box>
+                    )
+                  })}
                 </Stack>
               </Paper>
             </Grid>

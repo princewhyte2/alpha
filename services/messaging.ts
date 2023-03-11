@@ -8,7 +8,7 @@ const sendMessage = async(chatId:string,data:{receiver_id:string,message:string}
 
 const getMessageById = async (url: string) => {
     const response = await axiosInstance.get(url)
-    return response.data
+    return response.data.result
 }
 
 const getAllConversations = async () => {
@@ -18,7 +18,7 @@ const getAllConversations = async () => {
 
 const getConversationsById = async (url:string) => {
     const response = await axiosInstance.get(url)
-    return response.data
+    return response.data.result
 }
 
 const messagingService = {
