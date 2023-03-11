@@ -104,7 +104,7 @@ const ChatLayout = ({ children }: any) => {
                 <Stack direction="column" sx={{ height: "calc(100% - 74px)", overflowY: "auto" }}>
                   {conversations?.map((item: any) => {
                     const receipient = item.relationships.participants.find(
-                      (participant: any) => participant.messageable_id !== user?.id,
+                      (participant: any) => participant.id !== user?.id,
                     )
                     return (
                       <Box sx={{ width: "100%" }}>
@@ -123,8 +123,8 @@ const ChatLayout = ({ children }: any) => {
                           >
                             <Avatar
                               sx={{ width: 56, height: 56 }}
-                              alt={receipient.messageable.first_name}
-                              src="/static/images/avatar/1.jpg"
+                              alt={receipient.first_name}
+                              src={receipient.profile_image.url}
                             />
                           </StyledBadge>
                           <Stack
@@ -136,7 +136,7 @@ const ChatLayout = ({ children }: any) => {
                           >
                             <Box sx={{ width: "100%", overflow: "hidden" }}>
                               <Typography noWrap={true} sx={{ fontSize: 14 }} color="primary.dark">
-                                {receipient.messageable.first_name} {receipient.messageable.last_name}
+                                {receipient.first_name} {receipient.last_name}
                               </Typography>
                               <Typography noWrap={true} sx={{ fontSize: 10 }} color="primary.dark">
                                 {item.relationships?.last_message?.body}

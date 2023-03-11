@@ -72,9 +72,7 @@ const Messaging = () => {
   const active = conversations?.find((item: any) => item?.id === router.query?.id)
   const activeConversationParticipant = useMemo(() => {
     const chat: any = conversations?.find((item: any) => item?.id == router.query?.id)
-    const participant = chat?.relationships.participants.find(
-      (participant: any) => participant.messageable_id !== user?.id,
-    )
+    const participant = chat?.relationships.participants.find((participant: any) => participant.id !== user?.id)
     return participant
   }, [router.query?.id, conversations, user])
   const { data: conversation } = useSWR(
@@ -107,7 +105,7 @@ const Messaging = () => {
 
     try {
       await messagingService.sendMessage(router.query.id as string, {
-        receiver_id: activeConversationParticipant?.messageable_id,
+        receiver_id: activeConversationParticipant?.id,
         message: chatMessage,
       })
       mutate(`/conversations/${router.query?.id}`)
@@ -128,7 +126,7 @@ const Messaging = () => {
         sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
       >
         <Typography sx={{ fontSize: 16 }} color="primary.dark">
-          {activeConversationParticipant?.messageable.first_name} {activeConversationParticipant?.messageable.last_name}
+          {activeConversationParticipant?.first_name} {activeConversationParticipant?.last_name}
         </Typography>
         <Typography sx={{ fontSize: 12 }} color="primary.dark">
           {/* last online: 4 hours ago */}

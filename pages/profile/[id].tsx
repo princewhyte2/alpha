@@ -13,6 +13,8 @@ import FormControl from "@mui/material/FormControl"
 import EmailIcon from "@mui/icons-material/Email"
 import InputAdornment from "@mui/material/InputAdornment"
 import Autocomplete from "@mui/material/Autocomplete"
+import Paper from "@mui/material/Paper"
+
 // import DialogContent from "@mui/material/DialogContent"
 import CircularProgress from "@mui/material/CircularProgress"
 import CloseIcon from "@mui/icons-material/Close"
@@ -82,6 +84,14 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }))
 
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  color: theme.palette.text.secondary,
+  // width: "100%",
+  position: "relative",
+}))
+
 function BootstrapDialogTitle(props: DialogTitleProps) {
   const { children, onClose, ...other } = props
 
@@ -125,6 +135,8 @@ function Page() {
   const router = useRouter()
   const [countryId, setCountryId] = useState("160")
   const [isConnecting, setIsConnecting] = useState(false)
+  const [projectData, setProjectData] = useState<ProjectResponseData | any>()
+  const [isViewProjectInfo, setIsViewProjectInfo] = useState(false)
   const { mutate } = useSWRConfig()
   const { data: user } = useSWR(router.query?.id ? `/users/${router.query?.id}` : null, profileServices.getProfileById)
   const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
@@ -157,6 +169,7 @@ function Page() {
       console.log("chat", chat)
       //@ts-ignore
       messageInputRef.current.value = ""
+      handleClose()
       console.log("chat", chat)
     } catch (error) {
       console.log("error", error)
@@ -221,6 +234,20 @@ function Page() {
       setIsConnecting(false)
     }
   }, [user])
+
+  const onViewProject = useCallback(
+    (item: ProjectResponseData) => (e: any) => {
+      setProjectData(item)
+      setIsViewProjectInfo(true)
+    },
+    [],
+  )
+
+  const handleCloseModal = useCallback(() => {
+    setIsViewProjectInfo(false)
+
+    setProjectData(undefined)
+  }, [])
 
   return (
     <Box sx={{ p: 2 }}>
@@ -599,6 +626,40 @@ function Page() {
                 <Grid container direction="row" justifyContent="space-between" alignItems="center">
                   <Grid item>
                     <Typography sx={{ color: "primary.dark" }} variant="body1">
+                      Projects
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                  {user?.relationships.projects?.map((item: any) => (
+                    <Grid onClick={onViewProject(item)} key={item.id} item xs={12} md={4}>
+                      <Item>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Box sx={{ width: "180px", height: "131px", overflow: "hidden", background: "black" }}>
+                            <img
+                              width="180px"
+                              height="131px"
+                              className="overlay-image"
+                              src={item.images[0]?.url}
+                              alt={item.images[0]?.name}
+                              loading="lazy"
+                            />
+                          </Box>
+                        </Stack>
+                        <Typography variant="body1" sx={{ mt: 1, color: "primary.main" }}>
+                          {item.title}
+                        </Typography>
+                      </Item>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            </Box>
+            <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
+              <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" } }}>
+                <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                  <Grid item>
+                    <Typography sx={{ color: "primary.dark" }} variant="body1">
                       Hobbies
                     </Typography>
                   </Grid>
@@ -634,6 +695,28 @@ function Page() {
           <Button onClick={handleSendMessage}>Send</Button>
         </DialogActions>
       </Dialog>
+      <BootstrapDialog
+        open={isViewProjectInfo}
+        onClose={handleCloseModal}
+        aria-labelledby="project-modal-title"
+        aria-describedby="project-modal-description"
+      >
+        <BootstrapDialogTitle id="projects-dialog-title" onClose={handleCloseModal}>
+          {projectData?.title}
+        </BootstrapDialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <Typography variant="body1" sx={{ my: 2, color: "#4D5761" }}>
+            {projectData?.description}
+          </Typography>
+          <Grid container spacing={2}>
+            {projectData?.images.map((item: any) => (
+              <Grid key={item.id} item xs={12} md={6}>
+                <img width="100%" height="224px" className="img" src={item.url} alt={item.name} loading="lazy" />
+              </Grid>
+            ))}
+          </Grid>
+        </DialogContent>
+      </BootstrapDialog>
 
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
