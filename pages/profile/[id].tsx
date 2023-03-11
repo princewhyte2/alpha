@@ -143,7 +143,7 @@ function Page() {
 
   const hasConversation = useMemo(() => {
     const conversation = conversations?.find((conversation: any) =>
-      conversation.relationships.participants.find((participant: any) => participant.messageable_id === user?.id),
+      conversation.relationships.participants.find((participant: any) => participant.id === user?.id),
     )
     return conversation?.id
   }, [conversations, user])
