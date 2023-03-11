@@ -62,18 +62,18 @@ const Root = styled("div")(({ theme }) => ({
 }))
 
 const Messaging = () => {
-  const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
+  // const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
   const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
   console.log("conversations", conversations)
 
-  const scrollToBottom = () => {
-    if (!scrollToBottomRef.current) return
-    scrollToBottomRef.current.scrollIntoView()
-  }
+  // const scrollToBottom = () => {
+  //   if (!scrollToBottomRef.current) return
+  //   scrollToBottomRef.current.scrollIntoView()
+  // }
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [])
+  // useEffect(() => {
+  //   scrollToBottom()
+  // }, [])
 
   return (
     <Stack direction="column" justifyContent={"center"} alignItems={"center"} sx={{ height: "100%" }}>

@@ -96,7 +96,9 @@ const Messaging = () => {
   }
 
   useEffect(() => {
-    scrollToBottom()
+    setTimeout(() => {
+      scrollToBottom()
+    }, 3000)
   }, [])
 
   const handleSendMessage = async () => {
