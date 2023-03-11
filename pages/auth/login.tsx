@@ -126,7 +126,7 @@ const Login = () => {
     }
   }
 
-  const onGoogleLogin = useCallback(async () => {
+  const onGoogleLogin = async () => {
     try {
       const res = await signInWithPopup(auth, googleProvider)
       console.log(res)
@@ -144,7 +144,7 @@ const Login = () => {
       }
       setIsError(true)
     }
-  }, [])
+  }
   return (
     <Box
       sx={{
