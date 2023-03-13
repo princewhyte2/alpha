@@ -37,6 +37,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  FacebookAuthProvider,
 } from "firebase/auth"
 import { auth } from "../../lib/firebaseConfig"
 
@@ -60,6 +61,8 @@ const Root = styled("div")(({ theme }) => ({
 }))
 
 const googleProvider = new GoogleAuthProvider()
+
+const facebookProvider = new FacebookAuthProvider()
 // ​​const auth = getAuth(app);
 
 const Login = () => {
@@ -128,8 +131,79 @@ const Login = () => {
 
   const onGoogleLogin = async () => {
     try {
-      const res = await signInWithPopup(auth, googleProvider)
-      console.log(res)
+      const result: any = await signInWithPopup(auth, googleProvider)
+      const res = await authService.socialLogin(result.user.accessToken)
+      console.log("google login", res)
+      // const user = res.user
+      // const response = await authService.googleLogin()
+      // console.log("google", response)
+
+      const user = res.result.user
+
+      setUser(user)
+      // localStorage.setItem("access_token", res.result.token)
+      Cookies.set("access_token", res.result.token, {
+        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      })
+      setMessage("login successful")
+      setType("success")
+      setIsError(true)
+
+      if (!user?.has_verified_email) {
+        router.push("/auth/verification")
+        return
+      }
+      if (!user?.user_type) {
+        router.push("/join-as")
+        return
+      }
+      // const { redirect = "/profile/information" } = router.query
+      const redirect = `/${user?.user_type}/feed`
+      router.push(redirect)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    }
+  }
+
+  const onFaceBookLogin = async () => {
+    try {
+      const result: any = await signInWithPopup(auth, facebookProvider)
+      // console.log("google login", res.user)
+      const res = await authService.socialLogin(result.user.accessToken)
+      console.log("google login", res)
+      // const user = res.user
+      // const response = await authService.googleLogin()
+      // console.log("google", response)
+
+      const user = res.result.user
+
+      setUser(user)
+      // localStorage.setItem("access_token", res.result.token)
+      Cookies.set("access_token", res.result.token, {
+        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      })
+      setMessage("login successful")
+      setType("success")
+      setIsError(true)
+
+      if (!user?.has_verified_email) {
+        router.push("/auth/verification")
+        return
+      }
+      if (!user?.user_type) {
+        router.push("/join-as")
+        return
+      }
+      // const { redirect = "/profile/information" } = router.query
+      const redirect = `/${user?.user_type}/feed`
       // const user = res.user
       // const response = await authService.googleLogin()
       // console.log("google", response)
@@ -145,6 +219,7 @@ const Login = () => {
       setIsError(true)
     }
   }
+
   return (
     <Box
       sx={{
@@ -188,7 +263,12 @@ const Login = () => {
         >
           Log in with Google
         </Button>
-        <Button sx={{ mt: 2, color: "primary.dark" }} startIcon={<FacebookIcon />} variant="outlined">
+        <Button
+          onClick={onFaceBookLogin}
+          sx={{ mt: 2, color: "primary.dark" }}
+          startIcon={<FacebookIcon />}
+          variant="outlined"
+        >
           Log in with Facebook
         </Button>
         <Root sx={{ px: { xs: 2 } }}>

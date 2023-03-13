@@ -5,6 +5,7 @@ import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Stack from "@mui/material/Stack"
 import SendIcon from "@mui/icons-material/Send"
+import Pusher from "pusher-js"
 import useSWR, { useSWRConfig } from "swr"
 import IconButton from "@mui/material/IconButton"
 import Avatar from "@mui/material/Avatar"
@@ -101,6 +102,16 @@ const Messaging = () => {
     }, 3000)
   }, [])
 
+  useEffect(() => {
+    const pusher = new Pusher("368f650c2721ffac0219", {
+      cluster: "eu",
+    })
+    const channel = pusher.subscribe("chat")
+    channel.bind("message", (data: any) => {
+      console.log(data)
+    })
+  }, [])
+
   const handleSendMessage = async () => {
     const chatMessage = messageInputRef.current?.value
     if (!chatMessage) return
@@ -112,6 +123,7 @@ const Messaging = () => {
       })
       mutate(`/conversations/${router.query?.id}`)
       mutate("conversations")
+      scrollToBottom()
       //@ts-ignore
       messageInputRef.current.value = ""
     } catch (error) {
@@ -143,6 +155,7 @@ const Messaging = () => {
           flexDirection: "column",
           justifyContent: "flex-end",
         }}
+        // ref={scrollToBottomRef}
       >
         <Stack sx={{ overflowY: "auto" }} direction="column" spacing={2}>
           {/* <Divider sx={{ color: "#1F204A" }}>yesterday, 29 aug</Divider> */}
@@ -170,8 +183,8 @@ const Messaging = () => {
               </Stack>
             )
           })}
+          <div style={{ float: "left", clear: "both" }} ref={scrollToBottomRef}></div>
         </Stack>
-        <div style={{ float: "left", clear: "both" }} ref={scrollToBottomRef}></div>
       </Box>
       <Stack direction="row" spacing={2} alignItems={"center"} sx={{ p: 2, background: "#F9FAFB" }}>
         <TextField

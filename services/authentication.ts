@@ -13,6 +13,18 @@ const phoneLogin = async (phone_number: string, password: string):Promise<any> =
     return response.data
 }
 
+const socialLogin = async (token: string) => {
+    const data = { token }
+    const response = await axiosInstance.post('/auth/social/login', data)
+    return response.data
+}
+
+const socialSignUp =async (token:string) => {
+      const data = { token }
+    const response = await axiosInstance.post('/auth/social/signup', data)
+    return response.data
+}
+
 const forgotPasswordEmail = async (email:string):Promise<any> => {
      const data = {email,forgot_mode:'email'}
     const response = await axiosInstance.post('/auth/forgot-password', data )
@@ -63,6 +75,6 @@ const faceBookLogin = async () => {
     return response.data
 }
 
-const authService = {faceBookLogin,googleLogin, emailLogin,phoneLogin,forgotPasswordEmail,forgotPasswordPhone,resetPassword,userRegistration,verifyEmail,resendEmailToken}
+const authService = {socialSignUp,socialLogin,faceBookLogin,googleLogin, emailLogin,phoneLogin,forgotPasswordEmail,forgotPasswordPhone,resetPassword,userRegistration,verifyEmail,resendEmailToken}
 
 export default authService
