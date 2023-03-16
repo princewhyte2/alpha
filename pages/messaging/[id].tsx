@@ -80,16 +80,11 @@ const Messaging = () => {
     router.query?.id ? `/conversations/${router.query?.id}` : null,
     messagingService.getConversationsById,
   )
-  console.log("user", user)
-  console.log("conversation", conversation)
-  console.log("active", activeConversationParticipant)
 
   const { data: messages } = useSWR(
     router.query?.id ? `/messages/${router.query?.id}` : null,
     messagingService.getMessageById,
   )
-
-  console.log("messsages", messages)
 
   const scrollToBottom = () => {
     if (!scrollToBottomRef.current) return
@@ -103,14 +98,16 @@ const Messaging = () => {
   }, [])
 
   useEffect(() => {
-    const pusher = new Pusher("368f650c2721ffac0219", {
-      cluster: "eu",
-    })
-    const channel = pusher.subscribe("chat")
-    channel.bind("message", (data: any) => {
-      console.log(data)
-    })
-  }, [])
+    if (router.query?.id) {
+      const pusher = new Pusher("66c92305717c79ada4a4", {
+        cluster: "eu",
+      })
+      const channel = pusher.subscribe(`private-chat-conversation.${router.query?.id}`)
+      channel.bind("MessageSentEvent", (data: any) => {
+        console.log("incoming", data)
+      })
+    }
+  }, [router?.query?.id])
 
   const handleSendMessage = async () => {
     const chatMessage = messageInputRef.current?.value
@@ -123,7 +120,9 @@ const Messaging = () => {
       })
       mutate(`/conversations/${router.query?.id}`)
       mutate("conversations")
-      scrollToBottom()
+      setTimeout(() => {
+        scrollToBottom()
+      }, 3000)
       //@ts-ignore
       messageInputRef.current.value = ""
     } catch (error) {

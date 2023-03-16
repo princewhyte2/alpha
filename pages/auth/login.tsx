@@ -31,12 +31,14 @@ import { useRouter } from "next/router"
 import { AlertColor } from "@mui/material"
 import {
   GoogleAuthProvider,
+  signInWithCredential,
   getAuth,
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  linkWithPopup,
   FacebookAuthProvider,
 } from "firebase/auth"
 import { auth } from "../../lib/firebaseConfig"
@@ -131,8 +133,16 @@ const Login = () => {
 
   const onGoogleLogin = async () => {
     try {
-      const result: any = await signInWithPopup(auth, googleProvider)
-      const res = await authService.socialLogin(result.user.accessToken)
+      let result
+      if (auth?.currentUser) {
+        result = await linkWithPopup(auth.currentUser, googleProvider)
+      } else {
+        result = await signInWithPopup(auth, googleProvider)
+      }
+      // const credential = GoogleAuthProvider.credentialFromResult(result)
+      // console.log("credential", credential)
+      const gUser: any = result.user
+      const res = await authService.socialLogin(gUser.accessToken)
       console.log("google login", res)
       // const user = res.user
       // const response = await authService.googleLogin()
@@ -161,13 +171,55 @@ const Login = () => {
       const redirect = `/${user?.user_type}/feed`
       router.push(redirect)
     } catch (error: any) {
+      // The provider's credential:
+      let credential = GoogleAuthProvider.credentialFromError(error)
+      // In case of auth/account-exists-with-different-credential error,
+      // you can fetch the providers using this:
+      if (error.code === "auth/credential-already-in-use" && credential) {
+        try {
+          const sign: any = await signInWithCredential(auth, credential)
+          if (sign) {
+            const res = await authService.socialLogin(sign.user.accessToken)
+
+            const user = res.result.user
+
+            setUser(user)
+            // localStorage.setItem("access_token", res.result.token)
+            Cookies.set("access_token", res.result.token, {
+              expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+            })
+            setMessage("login successful")
+            setType("success")
+            setIsError(true)
+
+            if (!user?.has_verified_email) {
+              router.push("/auth/verification")
+              return
+            }
+            if (!user?.user_type) {
+              router.push("/join-as")
+              return
+            }
+            // const { redirect = "/profile/information" } = router.query
+            const redirect = `/${user?.user_type}/feed`
+            router.push(redirect)
+          }
+        } catch (error) {
+          console.log(error)
+        }
+
+        return
+      }
       setType("error")
       if (error.response) {
+        console.log("error is here 1", error)
         setMessage(error.response.data.message)
       } else if (error.request) {
         console.log(error.request)
+        console.log("error is here 2", error)
       } else {
         console.log("Error", error.message)
+        console.log("error is here 3", error)
       }
       setIsError(true)
     }
@@ -175,8 +227,17 @@ const Login = () => {
 
   const onFaceBookLogin = async () => {
     try {
-      const result: any = await signInWithPopup(auth, facebookProvider)
+      let result: any
+
+      if (auth?.currentUser) {
+        result = await linkWithPopup(auth.currentUser, facebookProvider)
+      } else {
+        result = await signInWithPopup(auth, facebookProvider)
+      }
+
       // console.log("google login", res.user)
+      // const credential = FacebookAuthProvider.credentialFromResult(result)
+      // console.log("credential", credential)
       const res = await authService.socialLogin(result.user.accessToken)
       console.log("google login", res)
       // const user = res.user
@@ -190,6 +251,7 @@ const Login = () => {
       Cookies.set("access_token", res.result.token, {
         expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
       })
+
       setMessage("login successful")
       setType("success")
       setIsError(true)
@@ -204,10 +266,47 @@ const Login = () => {
       }
       // const { redirect = "/profile/information" } = router.query
       const redirect = `/${user?.user_type}/feed`
-      // const user = res.user
-      // const response = await authService.googleLogin()
-      // console.log("google", response)
+      router.push(redirect)
     } catch (error: any) {
+      // The provider's credential:
+      let credential = FacebookAuthProvider.credentialFromError(error)
+      // In case of auth/account-exists-with-different-credential error,
+      // you can fetch the providers using this:
+      if (error.code === "auth/credential-already-in-use" && credential) {
+        try {
+          const sign: any = await signInWithCredential(auth, credential)
+          if (sign) {
+            const res = await authService.socialLogin(sign.user.accessToken)
+
+            const user = res.result.user
+
+            setUser(user)
+            // localStorage.setItem("access_token", res.result.token)
+            Cookies.set("access_token", res.result.token, {
+              expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+            })
+            setMessage("login successful")
+            setType("success")
+            setIsError(true)
+
+            if (!user?.has_verified_email) {
+              router.push("/auth/verification")
+              return
+            }
+            if (!user?.user_type) {
+              router.push("/join-as")
+              return
+            }
+            // const { redirect = "/profile/information" } = router.query
+            const redirect = `/${user?.user_type}/feed`
+            router.push(redirect)
+          }
+        } catch (error) {
+          console.log(error)
+        }
+
+        return
+      }
       setType("error")
       if (error.response) {
         setMessage(error.response.data.message)
