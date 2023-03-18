@@ -36,6 +36,7 @@
     "pusher-js": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-pwa-install-prompt": "^1.0.5",
     "react-swipeable-views": "^0.14.0",
     "react-type-animation": "^2.1.2",
     "swr": "^2.0.0",
