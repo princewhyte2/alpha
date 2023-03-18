@@ -1,5 +1,6 @@
 import { ReactElement, useState, useMemo, useCallback, memo } from "react"
 import Grid from "@mui/material/Grid"
+import usePWA from "react-pwa-install-prompt"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
 import CircularProgress from "@mui/material/CircularProgress"
@@ -170,6 +171,14 @@ function Page() {
   const theme = useTheme()
   const { mutate } = useSWRConfig()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const { isStandalone, isInstallPromptSupported, promptInstall } = usePWA()
+
+  const onClickInstall = async () => {
+    const didInstall = await promptInstall()
+    if (didInstall) {
+      // User accepted PWA install
+    }
+  }
 
   const { posts } = usePosts()
 
@@ -451,6 +460,7 @@ function Page() {
                     <SendIcon sx={{ color: "#757575" }} />
                     <Typography sx={{ fontSize: 13, color: "#757575" }}>Post</Typography>
                   </Button>
+                  <button onClick={onClickInstall}>Prompt PWA Install</button>
                 </Stack>
               </Paper>
               <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
