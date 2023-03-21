@@ -63,6 +63,8 @@ const Root = styled("div")(({ theme }) => ({
   },
 }))
 
+Pusher.logToConsole = true
+
 const Messaging = () => {
   const { mutate } = useSWRConfig()
   const router = useRouter()
@@ -102,9 +104,9 @@ const Messaging = () => {
       const pusher = new Pusher("66c92305717c79ada4a4", {
         cluster: "eu",
       })
-      const channel = pusher.subscribe(`private-chat-conversation.${router.query?.id}`)
-      channel.bind("MessageSentEvent", (data: any) => {
-        console.log("incoming", data)
+      const channel = pusher.subscribe(`private-chat-conversation-1`)
+      channel.bind("message_sent_event", (data: any) => {
+        alert(data)
       })
     }
   }, [router?.query?.id])

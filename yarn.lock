@@ -3822,6 +3822,11 @@ pusher-js@^8.0.1:
     "@types/node" "^14.14.31"
     tweetnacl "^1.0.3"
 
+pwa-install-handler@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/pwa-install-handler/-/pwa-install-handler-2.4.0.tgz#cee326b1c46db94491d9ef85b8d525eee18782ee"
+  integrity sha512-lUQWIk9Bg02aAOfq8YaUwHGxtj1pZRmcCxR9b89d3UtTkNwEebuXjlXETjcHv/Azei4CdbTXlwmDDnZMUHbTsQ==
+
 queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
@@ -3860,11 +3865,6 @@ react-is@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
-
-react-pwa-install-prompt@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-pwa-install-prompt/-/react-pwa-install-prompt-1.0.5.tgz#c3f8dfcce398847eb0ed24a0f349115137abb278"
-  integrity sha512-sOMFTd9gkSkqy60S4Iabg2I/KvihvSPOAx3oDkounOG7m3P22tBn5hI0j6ryKCV8OKqXGzuoAUwywKUO3oCgrQ==
 
 react-swipeable-views-core@^0.14.0:
   version "0.14.0"
@@ -3911,6 +3911,13 @@ react-type-animation@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/react-type-animation/-/react-type-animation-2.1.2.tgz#9a67c87e8e7a5e4ca3411e30cd2fa308365307a4"
   integrity sha512-6/t4Whl87sLR0c8kzvJngTrCV6OVy3jEeUZoe2svVu9VaYr951VD7OeUie1rIyeD8JfpBIqZGYrPFHZQ04XHrw==
+
+react-use-pwa-install@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/react-use-pwa-install/-/react-use-pwa-install-0.2.4.tgz#4807257933f11c905118cfedf0fcad659ea703bf"
+  integrity sha512-J3aGMEf6yqLfiDjy4WH9OByCXxgjpACMYFwqA5xLLpNacCLE3/TUyTJ6IFEg14CzFUXIWymSxpvSkdm4TdNoCg==
+  dependencies:
+    pwa-install-handler "^2.4.0"
 
 "react@^17.0.0 || ^18.0.0", react@^18.2.0:
   version "18.2.0"

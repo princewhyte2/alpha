@@ -1,8 +1,9 @@
-import { ReactElement, useState, useMemo, useCallback, memo } from "react"
+import { ReactElement, useState, useMemo, useCallback, memo, useEffect } from "react"
 import Grid from "@mui/material/Grid"
-import usePWA from "react-pwa-install-prompt"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
+import { usePWAInstall } from "react-use-pwa-install"
+import Snackbar from "@mui/material/Snackbar"
 import CircularProgress from "@mui/material/CircularProgress"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
@@ -167,18 +168,13 @@ function usePosts() {
   }
 }
 
+let deferredPrompt
+
 function Page() {
   const theme = useTheme()
   const { mutate } = useSWRConfig()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
-  const { isStandalone, isInstallPromptSupported, promptInstall } = usePWA()
-
-  const onClickInstall = async () => {
-    const didInstall = await promptInstall()
-    if (didInstall) {
-      // User accepted PWA install
-    }
-  }
+  const install = usePWAInstall()
 
   const { posts } = usePosts()
 
@@ -460,7 +456,6 @@ function Page() {
                     <SendIcon sx={{ color: "#757575" }} />
                     <Typography sx={{ fontSize: 13, color: "#757575" }}>Post</Typography>
                   </Button>
-                  <button onClick={onClickInstall}>Prompt PWA Install</button>
                 </Stack>
               </Paper>
               <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
@@ -636,6 +631,17 @@ function Page() {
         </DialogContent>
       </BootstrapDialog>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
+      <Snackbar
+        open={Boolean(install)}
+        autoHideDuration={6000}
+        message="Install Workfynder for easy access"
+        action={
+          <Button onClick={install} color="inherit" size="small">
+            install
+          </Button>
+        }
+        sx={{ bottom: { xs: 90, sm: 0 } }}
+      />
     </Box>
   )
 }

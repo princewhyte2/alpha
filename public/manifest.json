@@ -7,6 +7,30 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
+  "description": "A web app for artisans to find their next and dream job",
+  "screenshots": [
+    {
+      "src": "artisan.webp",
+      "sizes": "1280x720",
+      "type": "image/webp"
+    },
+    {
+      "src": "employer.webp",
+      "sizes": "1280x720",
+      "type": "image/webp"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Feed",
+      "url": "/artisan/feed",
+      "description": "get a view of all feeds happening"
+    },
+    {
+      "name": "Messaging",
+      "url": "/messaging"
+    }
+  ],
   "icons": [
     {
       "src": "icons/icon-72x72.png",
