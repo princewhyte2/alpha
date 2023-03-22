@@ -1,5 +1,8 @@
 import { ReactElement, useState, useMemo, useCallback, useEffect } from "react"
 import Grid from "@mui/material/Grid"
+import InputAdornment from "@mui/material/InputAdornment"
+import Snackbar from "@mui/material/Snackbar"
+import { usePWAInstall } from "react-use-pwa-install"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
 import CircularProgress from "@mui/material/CircularProgress"
@@ -171,6 +174,7 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 
 function Page() {
   const theme = useTheme()
+  const install = usePWAInstall()
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
@@ -594,6 +598,17 @@ function Page() {
         </DialogContent>
       </BootstrapDialog>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
+      <Snackbar
+        open={Boolean(install)}
+        autoHideDuration={6000}
+        message="Install Workfynder for easy access"
+        action={
+          <Button onClick={install} color="inherit" size="small">
+            install
+          </Button>
+        }
+        sx={{ bottom: { xs: 90, sm: 0 } }}
+      />
     </Box>
   )
 }
@@ -802,8 +817,25 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                 variant="outlined"
                 margin="dense"
                 onChange={({ target }) => setUserComment(target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => {
+                          onComment(item.id, userComment)
+                          setUserComment("")
+                        }}
+                        disabled={Boolean(!userComment)}
+                        aria-label="post comment"
+                        color="primary"
+                      >
+                        <SendIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
-              <Box>
+              {/* <Box>
                 <Button
                   onClick={() => {
                     onComment(item.id, userComment)
@@ -814,7 +846,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                 >
                   Post
                 </Button>
-              </Box>
+              </Box> */}
             </Stack>
           </Stack>
           <Stack direction="column" sx={{ m: 2 }} spacing={2}>

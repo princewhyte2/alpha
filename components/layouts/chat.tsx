@@ -25,6 +25,7 @@ import Chip from "@mui/material/Chip"
 import messagingService from "../../services/messaging"
 import { useRouter } from "next/router"
 import profileServices from "../../services/profile"
+import NoConnectionIllustartion from "../icons/NoConnectionIllustration"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -102,59 +103,71 @@ const ChatLayout = ({ children }: any) => {
                   </IconButton>
                 </Stack>
                 <Stack direction="column" sx={{ height: "calc(100% - 74px)", overflowY: "auto" }}>
-                  {conversations?.map((item: any) => {
-                    const receipient = item.relationships.participants.find(
-                      (participant: any) => participant.id !== user?.id,
-                    )
-                    return (
-                      <Box sx={{ width: "100%" }}>
-                        <Stack
-                          onClick={() => router.push(`/messaging/${item.id}`)}
-                          key={item.id}
-                          direction="row"
-                          alignItems={"center"}
-                          spacing={2}
-                          sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
-                        >
-                          <StyledBadge
-                            overlap="circular"
-                            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                            variant="dot"
-                          >
-                            <Avatar
-                              sx={{ width: 56, height: 56 }}
-                              alt={receipient.first_name}
-                              src={receipient.profile_image?.url}
-                            />
-                          </StyledBadge>
+                  {conversations?.length > 0 ? (
+                    conversations?.map((item: any) => {
+                      const receipient = item.relationships.participants.find(
+                        (participant: any) => participant.id !== user?.id,
+                      )
+                      return (
+                        <Box sx={{ width: "100%" }}>
                           <Stack
-                            sx={{ flexGrow: 1 }}
+                            onClick={() => router.push(`/messaging/${item.id}`)}
+                            key={item.id}
                             direction="row"
                             alignItems={"center"}
-                            // justifyContent="space-between"
                             spacing={2}
+                            sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
                           >
-                            <Box sx={{ width: "100%", overflow: "hidden" }}>
-                              <Typography noWrap={true} sx={{ fontSize: 14 }} color="primary.dark">
-                                {receipient.first_name} {receipient.last_name}
-                              </Typography>
-                              <Typography noWrap={true} sx={{ fontSize: 10 }} color="primary.dark">
-                                {item.relationships?.last_message?.body}
-                              </Typography>
-                            </Box>
-                            <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                              <IconButton size="small" aria-label="options">
-                                <MoreHorizIcon />
-                              </IconButton>
-                              {/* <Typography sx={{ fontSize: 10 }} color="primary.dark">
+                            <StyledBadge
+                              overlap="circular"
+                              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                              variant="dot"
+                            >
+                              <Avatar
+                                sx={{ width: 56, height: 56 }}
+                                alt={receipient.first_name}
+                                src={receipient.profile_image?.url}
+                              />
+                            </StyledBadge>
+                            <Stack
+                              sx={{ flexGrow: 1 }}
+                              direction="row"
+                              alignItems={"center"}
+                              // justifyContent="space-between"
+                              spacing={2}
+                            >
+                              <Box sx={{ width: "100%", overflow: "hidden" }}>
+                                <Typography noWrap sx={{ fontSize: 14 }} color="primary.dark">
+                                  {receipient.first_name} {receipient.last_name}
+                                </Typography>
+                                <Typography className="textTwoLines" sx={{ fontSize: 10 }} color="primary.dark">
+                                  {item.relationships?.last_message?.body}
+                                </Typography>
+                              </Box>
+                              <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                                <IconButton size="small" aria-label="options">
+                                  <MoreHorizIcon />
+                                </IconButton>
+                                {/* <Typography sx={{ fontSize: 10 }} color="primary.dark">
                             04:00PM
                           </Typography> */}
+                              </Stack>
                             </Stack>
                           </Stack>
-                        </Stack>
-                      </Box>
-                    )
-                  })}
+                        </Box>
+                      )
+                    })
+                  ) : (
+                    <Stack direction="column" justifyContent={"center"} alignItems={"center"} sx={{ height: "100%" }}>
+                      <NoConnectionIllustartion />
+                      <Typography sx={{ fontSize: 13, color: "#4D5761", my: 2 }}>
+                        You currently have no conversations.
+                      </Typography>
+                      <Typography sx={{ fontSize: 13, color: "#4D5761", my: 2 }}>
+                        Make connections and start a conversation.
+                      </Typography>
+                    </Stack>
+                  )}
                 </Stack>
               </Paper>
             </Grid>

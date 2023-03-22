@@ -523,7 +523,7 @@ function Page() {
                         </Typography>
                         <Stack alignItems="flex-end" direction="row" spacing={1}>
                           <Stack flexDirection={"row"} sx={{ flexWrap: "wrap", gap: 1 }}>
-                            {item.user_skills.map((item: any) => (
+                            {user?.relationships?.skills.map((item: any) => (
                               <Chip key={item.id} label={item.name} />
                             ))}
                           </Stack>

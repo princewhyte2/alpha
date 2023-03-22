@@ -292,7 +292,7 @@ function Page() {
                         <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                           <Avatar
                             alt={item.first_name}
-                            src={item.relationships.profile_image?.url}
+                            src={item.relationships?.profile_image?.url}
                             sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                           />
                           <Stack
@@ -361,7 +361,7 @@ function Page() {
                         <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                           <Avatar
                             alt={item.first_name}
-                            src={item.relationships.profile_image?.url}
+                            src={item.relationships?.profile_image?.url}
                             sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                           />
                           <Stack
@@ -444,7 +444,7 @@ function Page() {
                       <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                         <Avatar
                           alt={item.first_name}
-                          src={item.relationships.profile_image?.url}
+                          src={item.relationships?.profile_image?.url}
                           sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                         />
                         <Stack

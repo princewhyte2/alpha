@@ -274,7 +274,7 @@ function Page() {
   const handleEdit = useCallback(
     (jobItem: any) => () => {
       setSkills(jobItem.skills)
-      setInitContent(jobItem.description)
+      setInitContent(JSON.parse(jobItem.description))
       setJobDetails(jobItem)
       setIsPostJob(true)
     },
@@ -527,6 +527,7 @@ function Page() {
                   >
                     <MenuItem value={"male"}>Male</MenuItem>
                     <MenuItem value={"female"}>Female</MenuItem>
+                    <MenuItem value={"any"}>Any</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -667,7 +668,7 @@ function JobCard({ item, onEdit, onDelete }: any) {
           onClick={() => setIsShowMore(true)}
           className="ProseMirror"
           dangerouslySetInnerHTML={{
-            __html: isShowMore ? content : htmlTruncate(content, 200, { ellipsis: "... see more" }),
+            __html: htmlTruncate(content, 200, { ellipsis: "... see more" }),
           }}
         />
         <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">

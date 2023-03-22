@@ -359,7 +359,7 @@ const JobCard = ({ item, onJobApplication }: any) => {
           onClick={() => setIsShowMore(true)}
           className="ProseMirror"
           dangerouslySetInnerHTML={{
-            __html: isShowMore ? content : htmlTruncate(content, 200, { ellipsis: "... see more" }),
+            __html: htmlTruncate(content, 200, { ellipsis: "... see more" }),
           }}
         />
         <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>

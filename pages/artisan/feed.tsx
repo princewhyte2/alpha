@@ -2,6 +2,7 @@ import { ReactElement, useState, useMemo, useCallback, memo, useEffect } from "r
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
+import InputAdornment from "@mui/material/InputAdornment"
 import { usePWAInstall } from "react-use-pwa-install"
 import Snackbar from "@mui/material/Snackbar"
 import CircularProgress from "@mui/material/CircularProgress"
@@ -167,8 +168,6 @@ function usePosts() {
     posts,
   }
 }
-
-let deferredPrompt
 
 function Page() {
   const theme = useTheme()
@@ -850,8 +849,25 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                 variant="outlined"
                 margin="dense"
                 onChange={({ target }) => setUserComment(target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => {
+                          onComment(item.id, userComment)
+                          setUserComment("")
+                        }}
+                        disabled={Boolean(!userComment)}
+                        aria-label="post comment"
+                        color="primary"
+                      >
+                        <SendIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
-              <Box>
+              {/* <Box>
                 <Button
                   onClick={() => {
                     onComment(item.id, userComment)
@@ -862,7 +878,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                 >
                   Post
                 </Button>
-              </Box>
+              </Box> */}
             </Stack>
           </Stack>
           <Stack direction="column" sx={{ m: 2 }} spacing={2}>
