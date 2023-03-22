@@ -25,6 +25,8 @@ import ChatLayout from "../../components/layouts/chat"
 import messagingService from "../../services/messaging"
 import { useRouter } from "next/router"
 import profileServices from "../../services/profile"
+import { useSocket } from "../../hooks/useSocket"
+import notificationsServices from "../../services/notifications"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -83,6 +85,8 @@ const Messaging = () => {
     messagingService.getConversationsById,
   )
 
+  const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications)
+  console.log("user notifications", notifications)
   const { data: messages } = useSWR(
     router.query?.id ? `/messages/${router.query?.id}` : null,
     messagingService.getMessageById,
@@ -99,17 +103,25 @@ const Messaging = () => {
     }, 3000)
   }, [])
 
-  useEffect(() => {
-    if (router.query?.id) {
-      const pusher = new Pusher("66c92305717c79ada4a4", {
-        cluster: "eu",
-      })
-      const channel = pusher.subscribe(`private-chat-conversation-1`)
-      channel.bind("message_sent_event", (data: any) => {
-        alert(data)
-      })
-    }
-  }, [router?.query?.id])
+  useSocket({
+    type: "message_sent_event",
+    callBack: (payload: any) => {
+      console.log("chat income", payload)
+    },
+    channelName: `chat-conversation-${router.query?.id}`,
+  })
+
+  // useEffect(() => {
+  //   if (router.query?.id) {
+  //     const pusher = new Pusher("66c92305717c79ada4a4", {
+  //       cluster: "eu",
+  //     })
+  //     const channel = pusher.subscribe(`private-chat-conversation-${router.query?.id}`)
+  //     channel.bind("message_sent_event", (data: any) => {
+  //       console.log("event", data)
+  //     })
+  //   }
+  // }, [router?.query?.id])
 
   const handleSendMessage = async () => {
     const chatMessage = messageInputRef.current?.value
