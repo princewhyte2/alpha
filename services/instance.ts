@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 
 
 
-const axiosInstance = axios.create({baseURL: 'https://backend-staging.workfynder.com/api',withCredentials: true,
+const axiosInstance = axios.create({baseURL: 'http://workfynder.test/api',withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use( function(config:any) {
