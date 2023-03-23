@@ -25,8 +25,11 @@ import ChatLayout from "../../components/layouts/chat"
 import messagingService from "../../services/messaging"
 import { useRouter } from "next/router"
 import profileServices from "../../services/profile"
-import { useSocket } from "../../hooks/useSocket"
+import Cookies from "js-cookie"
 import notificationsServices from "../../services/notifications"
+
+const pusher_key = process?.env?.NEXT_PUBLIC_PUSHER_APP_KEY ?? ""
+const broadcast_endpoint = process.env?.NEXT_PUBLIC_BACKEND_BROADCAST_URL ?? ""
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -65,16 +68,24 @@ const Root = styled("div")(({ theme }) => ({
   },
 }))
 
-Pusher.logToConsole = true
+// Pusher.logToConsole = true
 
 const Messaging = () => {
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
   const messageInputRef = useRef<HTMLInputElement>()
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
-  const active = conversations?.find((item: any) => item?.id === router.query?.id)
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  // const active = conversations?.find((item: any) => item?.id === router.query?.id)
   const activeConversationParticipant = useMemo(() => {
     const chat: any = conversations?.find((item: any) => item?.id == router.query?.id)
     const participant = chat?.relationships.participants.find((participant: any) => participant.id !== user?.id)
@@ -83,14 +94,22 @@ const Messaging = () => {
   const { data: conversation } = useSWR(
     router.query?.id ? `/conversations/${router.query?.id}` : null,
     messagingService.getConversationsById,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   )
 
-  const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications)
-  console.log("user notifications", notifications)
-  const { data: messages } = useSWR(
-    router.query?.id ? `/messages/${router.query?.id}` : null,
-    messagingService.getMessageById,
-  )
+  // const { data: messages } = useSWR(
+  //   router.query?.id ? `/messages/${router.query?.id}` : null,
+  //   messagingService.getMessageById,
+  //   {
+  //     revalidateIfStale: false,
+  //     revalidateOnFocus: false,
+  //     revalidateOnReconnect: false,
+  //   },
+  // )
 
   const scrollToBottom = () => {
     if (!scrollToBottomRef.current) return
@@ -103,25 +122,40 @@ const Messaging = () => {
     }, 3000)
   }, [])
 
-  useSocket({
-    type: "message_sent_event",
-    callBack: (payload: any) => {
-      console.log("chat income", payload)
-    },
-    channelName: `chat-conversation-${router.query?.id}`,
-  })
+  useEffect(() => {
+    try {
+      if (router.query?.id) {
+        const token = Cookies.get("access_token")
 
-  // useEffect(() => {
-  //   if (router.query?.id) {
-  //     const pusher = new Pusher("66c92305717c79ada4a4", {
-  //       cluster: "eu",
-  //     })
-  //     const channel = pusher.subscribe(`private-chat-conversation-${router.query?.id}`)
-  //     channel.bind("message_sent_event", (data: any) => {
-  //       console.log("event", data)
-  //     })
-  //   }
-  // }, [router?.query?.id])
+        const pusher = new Pusher(pusher_key, {
+          cluster: "eu",
+          channelAuthorization: {
+            endpoint: broadcast_endpoint,
+            transport: "ajax",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          },
+        })
+        const channel = pusher.subscribe(`private-chat-conversation-${router.query?.id}`)
+        channel.bind("message_sent_event", (data: any) => {
+          // alert(data);
+          if (data?.sender?.id === user?.id) {
+            return
+          }
+
+          mutate(`/conversations/${router.query?.id}`)
+          mutate("conversations")
+          setTimeout(() => {
+            scrollToBottom()
+          }, 3000)
+        })
+      }
+    } catch (error) {
+      console.log({ error })
+      console.log({ message: router.query?.id })
+    }
+  }, [router?.query?.id, conversation, user, scrollToBottomRef])
 
   const handleSendMessage = async () => {
     const chatMessage = messageInputRef.current?.value
@@ -188,7 +222,13 @@ const Messaging = () => {
                     maxWidth: "70%",
                   }}
                   label={
-                    <Typography sx={{ whiteSpace: "normal", fontSize: { xs: 13, md: 14 }, fontWeight: 400 }}>
+                    <Typography
+                      sx={{
+                        whiteSpace: "normal",
+                        fontSize: { xs: 13, md: 14 },
+                        fontWeight: 400,
+                      }}
+                    >
                       {item.attributes.message}
                     </Typography>
                   }
@@ -196,7 +236,7 @@ const Messaging = () => {
               </Stack>
             )
           })}
-          <div style={{ float: "left", clear: "both" }} ref={scrollToBottomRef}></div>
+          <div style={{ float: "left", clear: "both", height: "60px" }} ref={scrollToBottomRef}></div>
         </Stack>
       </Box>
       <Stack direction="row" spacing={2} alignItems={"center"} sx={{ p: 2, background: "#F9FAFB" }}>
@@ -226,5 +266,7 @@ Messaging.getLayout = function getLayout(page: ReactElement) {
     </NavLayout>
   )
 }
+
+Messaging.requireAuth = true
 
 export default Messaging
