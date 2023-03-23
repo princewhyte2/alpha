@@ -47,6 +47,7 @@ import utilsService from "../../services/utils"
 import uploadService from "../../services/upload"
 import LogoutIcon from "@mui/icons-material/Logout"
 import { ErrorComponent } from "../alert"
+import notificationsServices from "../../services/notifications"
 
 interface Props {
   /**
@@ -427,6 +428,17 @@ export default function NavLayout(props: Props) {
     [user, logo],
   )
 
+  const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications, {
+    // revalidateIfStale: false,
+    // revalidateOnFocus: false,
+    // revalidateOnReconnect: false,
+  })
+
+  const unreadNotification = React.useMemo(() => {
+    const unread = notifications?.filter((item: any) => item.read_at === null)
+    return unread?.length || 0
+  }, [notifications])
+
   return (
     <Box sx={{ display: "flex" }}>
       <Container disableGutters maxWidth="xl">
@@ -504,7 +516,7 @@ export default function NavLayout(props: Props) {
                         color="inherit"
                       >
                         <NotificationsIcon />
-                        <Badge badgeContent={17} color="error"></Badge>
+                        {unreadNotification > 0 && <Badge badgeContent={unreadNotification} color="error"></Badge>}
                       </IconButton>
                       <IconButton onClick={goToProfile}>
                         <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
@@ -520,7 +532,7 @@ export default function NavLayout(props: Props) {
                         color="inherit"
                       >
                         <NotificationsIcon />
-                        <Badge badgeContent={17} color="error"></Badge>
+                        {unreadNotification > 0 && <Badge badgeContent={unreadNotification} color="error"></Badge>}
                       </IconButton>
                       <IconButton onClick={goToProfile}>
                         <Avatar

@@ -1,5 +1,26 @@
-import { ReactElement, useCallback, useState, useEffect } from "react"
+import { ReactElement, useCallback, useState, useEffect, useMemo } from "react"
 import MessageIcon from "@mui/icons-material/Message"
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
+import updateLocale from "dayjs/plugin/updateLocale"
+import TiptapEditor from "../../components/TiptapEditor"
+import { generateHTML } from "@tiptap/core"
+
+import BlockQuote from "@tiptap/extension-blockquote"
+import BulletList from "@tiptap/extension-bullet-list"
+import Bold from "@tiptap/extension-bold"
+import ListItem from "@tiptap/extension-list-item"
+import Code from "@tiptap/extension-code"
+import CodeBlock from "@tiptap/extension-code-block"
+import Document from "@tiptap/extension-document"
+import HardBreak from "@tiptap/extension-hard-break"
+import Heading from "@tiptap/extension-heading"
+import HorizontalRule from "@tiptap/extension-horizontal-rule"
+import Italic from "@tiptap/extension-italic"
+import { Link as TipTapLink } from "@tiptap/extension-link"
+import OrderedList from "@tiptap/extension-ordered-list"
+import Paragraph from "@tiptap/extension-paragraph"
+import { Text as TestTipTap } from "@tiptap/extension-text"
 import Link from "@mui/material/Link"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme, Theme } from "@mui/material/styles"
@@ -53,6 +74,8 @@ import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustr
 import { useRouter } from "next/router"
 import profileServices from "../../services/profile"
 import notificationsServices from "../../services/notifications"
+import jobService from "../../services/job"
+import htmlTruncate from "../../lib/htmlTruncate"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -76,6 +99,8 @@ const debounce = (func: any) => {
     }, 500)
   }
 }
+
+dayjs.extend(relativeTime)
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
@@ -129,9 +154,9 @@ function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
+    // revalidateIfStale: false,
+    // revalidateOnFocus: false,
+    // revalidateOnReconnect: false,
   })
   console.log("user notifications", notifications)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
@@ -139,6 +164,12 @@ function Page() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
+  const { data: jobsList } = useSWR(`/jobs`, jobService.getAllJobs, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
   console.log("user", user)
   const [value, setValue] = useState(0)
@@ -159,7 +190,6 @@ function Page() {
   //     "unApprovedConnections",
   //     connectionService.getUnApprovedUserConnections,
   //   )
-  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
   //   const { data: usersList } = useSWR(
   //     searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
@@ -242,6 +272,16 @@ function Page() {
     // }
   }
 
+  const handleReadNotification = (notififcationId: string) => {
+    const notifyItem = notifications.find((item: any) => item.id === notififcationId)
+    if (notifyItem.read_at !== null) return
+
+    notificationsServices
+      .markReadNotification(notififcationId)
+      .then(() => mutate("notifications"))
+      .catch((err) => console.log(err))
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container disableGutters maxWidth="xl">
@@ -268,12 +308,14 @@ function Page() {
                       return (
                         <Stack
                           key={item.id}
+                          onMouseEnter={() => handleReadNotification(item.id)}
                           sx={{
                             px: 2,
                             py: 3,
                             borderBottom: "0.2px solid #3E4095",
                             flexWrap: "wrap",
                             gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
                           // spacing={2
@@ -291,7 +333,11 @@ function Page() {
                                 </Link>
                                 sent you a message
                               </Typography>
-                              <Typography sx={{ fontSize: 13, color: "#667085" }} color="primary.main">
+                              <Typography
+                                className="textTwoLines"
+                                sx={{ fontSize: 13, color: "#667085" }}
+                                color="primary.main"
+                              >
                                 “{item.data?.body}”
                               </Typography>
                             </Stack>
@@ -302,6 +348,43 @@ function Page() {
                             variant="text"
                           >
                             View Conversation
+                          </Button>
+                        </Stack>
+                      )
+                    } else if (item.type === "SendConnectionRequestNotification") {
+                      return (
+                        <Stack
+                          key={item.id}
+                          onMouseEnter={() => handleReadNotification(item.id)}
+                          sx={{
+                            px: 2,
+                            py: 3,
+                            borderBottom: "0.2px solid #3E4095",
+                            flexWrap: "wrap",
+                            gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
+                          }}
+                          direction={"row"}
+                          // spacing={2
+                        >
+                          <Stack alignItems={"center"} direction={"row"} spacing={2}>
+                            <Avatar
+                              sx={{ width: 40, height: 40 }}
+                              alt={user?.relationships?.company?.name}
+                              src={user?.relationships?.company?.logo_image.url}
+                            />
+                            <Stack direction={"column"} spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                                <Link underline="none" href="#">
+                                  {item.data?.name}{" "}
+                                </Link>
+                                sent you a connection request
+                              </Typography>
+                            </Stack>
+                          </Stack>
+
+                          <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
+                            View connection
                           </Button>
                         </Stack>
                       )
@@ -324,15 +407,13 @@ function Page() {
                     <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
                       <Avatar
                         sx={{ width: 80, height: 80 }}
-                        alt={user?.relationships?.company?.name}
-                        src={user?.relationships?.company?.logo_image.url}
+                        alt={user?.first_name}
+                        src={user?.relationships?.profile_image.url}
                       />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        {user?.relationships?.company?.name}
+                        {user?.first_name} {user?.last_name}
                       </Typography>
-                      <Typography sx={{ fontSize: 16, color: "#475467" }}>
-                        {user?.relationships?.company?.business_sector?.name}
-                      </Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>{user?.title}</Typography>
                     </Stack>
                     {/* <Box sx={{ width: "100%", my: "2rem" }}>
                       <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
@@ -343,7 +424,7 @@ function Page() {
                     </Typography>
                   </CardContent>
                 </Card>
-                {/* <Paper
+                <Paper
                   elevation={3}
                   sx={{ p: 2, boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE" }}
                 >
@@ -351,30 +432,14 @@ function Page() {
                     Recent Jobs Fitting your profile
                   </Typography>
                   <Stack spacing={2}>
-                    {[1, 2].map((item) => (
-                      <Box key={item} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
-                        <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
-                          Fashoin Designer
-                        </Typography>
-                        <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                          neque molestie et.
-                        </Typography>
-                        <Stack
-                          direction="row"
-                          sx={{ mt: 2 }}
-                          justifyContent="space-between"
-                          alignItems="center"
-                          spacing={2}
-                        >
-                          <Button variant="contained">Apply</Button>
-                          <Typography sx={{ fontSize: 12, color: "#475467" }}>Posted 2 days ago</Typography>
-                        </Stack>
-                      </Box>
-                    ))}
-                    <Button variant="text">View all</Button>
+                    {jobsList?.slice(-2).map((item: any) => {
+                      return <RecentJobCard key={item.id} item={item} />
+                    })}
+                    <Button onClick={() => router.push("/artisan/jobs")} variant="text">
+                      View all
+                    </Button>
                   </Stack>
-                </Paper> */}
+                </Paper>
               </Stack>
             </Grid>
           )}
@@ -392,3 +457,55 @@ Page.getLayout = function getLayout(page: ReactElement) {
 Page.requireAuth = true
 
 export default Page
+
+function RecentJobCard({ item }: any) {
+  const router = useRouter()
+  const content = useMemo(() => {
+    try {
+      return generateHTML(JSON.parse(item.description), [
+        Document,
+        Paragraph,
+        TestTipTap,
+        Italic,
+        HardBreak,
+        Code,
+        CodeBlock,
+        ListItem,
+        BulletList,
+        OrderedList,
+        BlockQuote,
+        Heading,
+        HorizontalRule,
+        Bold,
+        TipTapLink,
+        // other extensions …
+      ])
+    } catch (error) {
+      return item?.description
+    }
+  }, [])
+  // console.log("our com", item)
+  return (
+    <Box key={item.id} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
+      <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
+        {item.title}
+      </Typography>
+      {/* <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
+            neque molestie et.
+          </Typography> */}
+      <div
+        className="ProseMirror"
+        dangerouslySetInnerHTML={{
+          __html: htmlTruncate(content, 50, { ellipsis: "..." }),
+        }}
+      />
+      <Stack direction="row" sx={{ mt: 2 }} justifyContent="space-between" alignItems="center" spacing={2}>
+        <Button onClick={() => router.push(`/jobs/${item.id}`)} variant="contained">
+          Apply
+        </Button>
+        <Typography sx={{ fontSize: 12, color: "#475467" }}>Closing: {dayjs().to(item.closing_at)}</Typography>
+      </Stack>
+    </Box>
+  )
+}

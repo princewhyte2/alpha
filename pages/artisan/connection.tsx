@@ -1,6 +1,27 @@
-import { ReactElement, useCallback, useState, useEffect } from "react"
+import { ReactElement, useCallback, useState, useEffect, useMemo } from "react"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import MessageIcon from "@mui/icons-material/Message"
+import dayjs from "dayjs"
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
+import { generateHTML } from "@tiptap/core"
+import relativeTime from "dayjs/plugin/relativeTime"
+import updateLocale from "dayjs/plugin/updateLocale"
+import TiptapEditor from "../../components/TiptapEditor"
+import BlockQuote from "@tiptap/extension-blockquote"
+import BulletList from "@tiptap/extension-bullet-list"
+import Bold from "@tiptap/extension-bold"
+import ListItem from "@tiptap/extension-list-item"
+import Code from "@tiptap/extension-code"
+import CodeBlock from "@tiptap/extension-code-block"
+import Document from "@tiptap/extension-document"
+import HardBreak from "@tiptap/extension-hard-break"
+import Heading from "@tiptap/extension-heading"
+import HorizontalRule from "@tiptap/extension-horizontal-rule"
+import Italic from "@tiptap/extension-italic"
+import Link from "@tiptap/extension-link"
+import OrderedList from "@tiptap/extension-ordered-list"
+import Paragraph from "@tiptap/extension-paragraph"
+import { Text as TestTipTap } from "@tiptap/extension-text"
 import { useTheme, Theme } from "@mui/material/styles"
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
@@ -50,6 +71,11 @@ import NoInvitationIllustration from "../../components/icons/NoInvitationIllustr
 import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustration"
 import { useRouter } from "next/router"
 import messagingService from "../../services/messaging"
+import htmlTruncate from "../../lib/htmlTruncate"
+import jobService from "../../services/job"
+import profileServices from "../../services/profile"
+
+dayjs.extend(relativeTime)
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -128,6 +154,14 @@ function Page() {
   const [value, setValue] = useState(0)
   const { mutate } = useSWRConfig()
   const [searchTerm, setSearchTerm] = useState("")
+
+  const { data: jobsList } = useSWR(`/jobs`, jobService.getAllJobs)
+
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   //error handler
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
@@ -151,9 +185,6 @@ function Page() {
       keepPreviousData: true,
     },
   )
-  console.log("userList", usersList)
-  console.log("approved", approvedConnectionList)
-  console.log("chats", chats)
 
   const optimizedFn = useCallback(debounce(setSearchTerm), [])
 
@@ -193,6 +224,30 @@ function Page() {
     (userId: string) => async () => {
       try {
         const response = await connectionService.rejectConnectionRequest(userId)
+        mutate("unApprovedConnections")
+        mutate("approvedConnections")
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          console.log(error.request)
+        } else {
+          console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [],
+  )
+
+  const unFollowConnection = useCallback(
+    (userId: string) => async () => {
+      try {
+        const response = await connectionService.unFollowConnection(userId)
         mutate("unApprovedConnections")
         mutate("approvedConnections")
         setType("success")
@@ -321,9 +376,24 @@ function Page() {
                               </Stack>
                             </Stack>
                             <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                              <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
+                              {/* <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
                                 <MoreHorizIcon />
-                              </IconButton>
+                              </IconButton> */}
+                              {!matches ? (
+                                <IconButton onClick={unFollowConnection(item.id)} size="small" color="error">
+                                  <DeleteForeverIcon color="error" />
+                                </IconButton>
+                              ) : (
+                                <Button
+                                  size={matches ? "medium" : "small"}
+                                  onClick={unFollowConnection(item.id)}
+                                  sx={{ mt: -1 }}
+                                  color="error"
+                                  variant="outlined"
+                                >
+                                  Delete
+                                </Button>
+                              )}
                               {!matches ? (
                                 <IconButton onClick={() => handleSendMessage(item.id)} size="small" color="primary">
                                   <MessageIcon />
@@ -506,18 +576,22 @@ function Page() {
                 >
                   <CardContent>
                     <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Avatar
+                        sx={{ width: 80, height: 80 }}
+                        alt={user?.first_name}
+                        src={user?.relationships?.profile_image.url}
+                      />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        Babatunde Olakunle
+                        {user?.first_name} {user?.last_name}
                       </Typography>
-                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>{user?.title}</Typography>
                     </Stack>
-                    <Box sx={{ width: "100%", my: "2rem" }}>
+                    {/* <Box sx={{ width: "100%", my: "2rem" }}>
                       <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
                       <LinearProgressWithLabel value={80} />
-                    </Box>
+                    </Box> */}
                     <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      40 Connections
+                      {approvedConnectionList?.length || 0} Connections
                     </Typography>
                   </CardContent>
                 </Card>
@@ -529,28 +603,12 @@ function Page() {
                     Recent Jobs Fitting your profile
                   </Typography>
                   <Stack spacing={2}>
-                    {[1, 2].map((item) => (
-                      <Box key={item} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
-                        <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
-                          Fashoin Designer
-                        </Typography>
-                        <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                          neque molestie et.
-                        </Typography>
-                        <Stack
-                          direction="row"
-                          sx={{ mt: 2 }}
-                          justifyContent="space-between"
-                          alignItems="center"
-                          spacing={2}
-                        >
-                          <Button variant="contained">Apply</Button>
-                          <Typography sx={{ fontSize: 12, color: "#475467" }}>Posted 2 days ago</Typography>
-                        </Stack>
-                      </Box>
-                    ))}
-                    <Button variant="text">View all</Button>
+                    {jobsList?.slice(-2).map((item: any) => {
+                      return <RecentJobCard key={item.id} item={item} />
+                    })}
+                    <Button onClick={() => router.push("/artisan/jobs")} variant="text">
+                      View all
+                    </Button>
                   </Stack>
                 </Paper>
               </Stack>
@@ -570,3 +628,55 @@ Page.getLayout = function getLayout(page: ReactElement) {
 Page.requireAuth = true
 
 export default Page
+
+function RecentJobCard({ item }: any) {
+  const router = useRouter()
+  const content = useMemo(() => {
+    try {
+      return generateHTML(JSON.parse(item.description), [
+        Document,
+        Paragraph,
+        TestTipTap,
+        Italic,
+        HardBreak,
+        Code,
+        CodeBlock,
+        ListItem,
+        BulletList,
+        OrderedList,
+        BlockQuote,
+        Heading,
+        HorizontalRule,
+        Bold,
+        Link,
+        // other extensions …
+      ])
+    } catch (error) {
+      return item?.description
+    }
+  }, [])
+  // console.log("our com", item)
+  return (
+    <Box key={item.id} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
+      <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
+        {item.title}
+      </Typography>
+      {/* <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
+            neque molestie et.
+          </Typography> */}
+      <div
+        className="ProseMirror"
+        dangerouslySetInnerHTML={{
+          __html: htmlTruncate(content, 50, { ellipsis: "..." }),
+        }}
+      />
+      <Stack direction="row" sx={{ mt: 2 }} justifyContent="space-between" alignItems="center" spacing={2}>
+        <Button onClick={() => router.push(`/jobs/${item.id}`)} variant="contained">
+          Apply
+        </Button>
+        <Typography sx={{ fontSize: 12, color: "#475467" }}>Closing: {dayjs().to(item.closing_at)}</Typography>
+      </Stack>
+    </Box>
+  )
+}

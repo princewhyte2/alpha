@@ -611,17 +611,19 @@ function Page() {
         </DialogContent>
       </BootstrapDialog>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
-      <Snackbar
-        open={Boolean(install)}
-        autoHideDuration={6000}
-        message="Install Workfynder for easy access"
-        action={
-          <Button onClick={install} color="inherit" size="small">
-            install
-          </Button>
-        }
-        sx={{ bottom: { xs: 90, sm: 0 } }}
-      />
+      {install && (
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          message="Install Workfynder for easy access"
+          action={
+            <Button onClick={install} color="inherit" size="small">
+              install
+            </Button>
+          }
+          sx={{ bottom: { xs: 90, sm: 0 } }}
+        />
+      )}
     </Box>
   )
 }

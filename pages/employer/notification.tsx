@@ -129,9 +129,9 @@ function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
+    // revalidateIfStale: false,
+    // revalidateOnFocus: false,
+    // revalidateOnReconnect: false,
   })
   console.log("user notifications", notifications)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
@@ -241,6 +241,15 @@ function Page() {
     //   console.log("error", error)
     // }
   }
+  const handleReadNotification = (notififcationId: string) => {
+    const notifyItem = notifications.find((item: any) => item.id === notififcationId)
+    if (notifyItem.read_at !== null) return
+
+    notificationsServices
+      .markReadNotification(notififcationId)
+      .then(() => mutate("notifications"))
+      .catch((err) => console.log(err))
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -274,8 +283,10 @@ function Page() {
                             borderBottom: "0.2px solid #3E4095",
                             flexWrap: "wrap",
                             gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
+                          onMouseEnter={() => handleReadNotification(item.id)}
                           // spacing={2
                         >
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
@@ -302,6 +313,43 @@ function Page() {
                             variant="text"
                           >
                             View Conversation
+                          </Button>
+                        </Stack>
+                      )
+                    } else if (item.type === "SendConnectionRequestNotification") {
+                      return (
+                        <Stack
+                          key={item.id}
+                          onMouseEnter={() => handleReadNotification(item.id)}
+                          sx={{
+                            px: 2,
+                            py: 3,
+                            borderBottom: "0.2px solid #3E4095",
+                            flexWrap: "wrap",
+                            gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
+                          }}
+                          direction={"row"}
+                          // spacing={2
+                        >
+                          <Stack alignItems={"center"} direction={"row"} spacing={2}>
+                            <Avatar
+                              sx={{ width: 40, height: 40 }}
+                              alt={user?.relationships?.company?.name}
+                              src={user?.relationships?.company?.logo_image.url}
+                            />
+                            <Stack direction={"column"} spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                                <Link underline="none" href="#">
+                                  {item.data?.name}{" "}
+                                </Link>
+                                sent you a connection request
+                              </Typography>
+                            </Stack>
+                          </Stack>
+
+                          <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
+                            View connection
                           </Button>
                         </Stack>
                       )

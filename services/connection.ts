@@ -25,7 +25,12 @@ const rejectConnectionRequest = async (requestId:string) => {
     return response.data
 }
 
-const connectionService = {
+const unFollowConnection = async (userId: string) => {
+    const response = await axiosInstance.get(`/unfollow/connection/${userId}`)
+    return response.data
+}
+
+const connectionService = {unFollowConnection,
     getApprovedUserConnections,sendConnectionRequest,acceptConnectionRequest,rejectConnectionRequest,getUnApprovedUserConnections
 }
 

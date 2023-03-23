@@ -75,6 +75,9 @@ import htmlTruncate from "../../lib/htmlTruncate"
 import { useAuth } from "../../store"
 import profileServices from "../../services/profile"
 import { stripHtml } from "../../utils"
+import jobService from "../../services/job"
+import connectionService from "../../services/connection"
+import { useRouter } from "next/router"
 
 dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
@@ -174,6 +177,7 @@ function Page() {
   const { mutate } = useSWRConfig()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const install = usePWAInstall()
+  const router = useRouter()
 
   const { posts } = usePosts()
 
@@ -196,6 +200,17 @@ function Page() {
   const handleExpandClick = () => {
     setExpanded(!expanded)
   }
+
+  const { data: jobsList } = useSWR(`/jobs?searchTerm=${""}`, jobService.getAllJobs, {
+    keepPreviousData: true,
+  })
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
 
   const handlePostShare = useCallback(
     (postId: string, content: string) => () => {
@@ -496,18 +511,22 @@ function Page() {
                 >
                   <CardContent>
                     <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Avatar
+                        sx={{ width: 80, height: 80 }}
+                        alt={user?.first_name}
+                        src={user?.relationships?.profile_image.url}
+                      />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        Babatunde Olakunle
+                        {user?.first_name} {user?.last_name}
                       </Typography>
-                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>{user?.title}</Typography>
                     </Stack>
-                    <Box sx={{ width: "100%", my: "2rem" }}>
+                    {/* <Box sx={{ width: "100%", my: "2rem" }}>
                       <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
                       <LinearProgressWithLabel value={80} />
-                    </Box>
+                    </Box> */}
                     <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      40 Connections
+                      {approvedConnectionList?.length || 0} Connections
                     </Typography>
                   </CardContent>
                 </Card>
@@ -519,28 +538,12 @@ function Page() {
                     Recent Jobs Fitting your profile
                   </Typography>
                   <Stack spacing={2}>
-                    {[1, 2].map((item) => (
-                      <Box key={item} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
-                        <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
-                          Fashoin Designer
-                        </Typography>
-                        <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                          neque molestie et.
-                        </Typography>
-                        <Stack
-                          direction="row"
-                          sx={{ mt: 2 }}
-                          justifyContent="space-between"
-                          alignItems="center"
-                          spacing={2}
-                        >
-                          <Button variant="contained">Apply</Button>
-                          <Typography sx={{ fontSize: 12, color: "#475467" }}>Posted 2 days ago</Typography>
-                        </Stack>
-                      </Box>
-                    ))}
-                    <Button variant="text">View all</Button>
+                    {jobsList?.slice(-2).map((item: any) => {
+                      return <RecentJobCard key={item.id} item={item} />
+                    })}
+                    <Button onClick={() => router.push("/artisan/jobs")} variant="text">
+                      View all
+                    </Button>
                   </Stack>
                 </Paper>
               </Stack>
@@ -630,17 +633,19 @@ function Page() {
         </DialogContent>
       </BootstrapDialog>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
-      <Snackbar
-        open={Boolean(install)}
-        autoHideDuration={6000}
-        message="Install Workfynder for easy access"
-        action={
-          <Button onClick={install} color="inherit" size="small">
-            install
-          </Button>
-        }
-        sx={{ bottom: { xs: 90, sm: 0 } }}
-      />
+      {install && (
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          message="Install Workfynder for easy access"
+          action={
+            <Button onClick={install} color="inherit" size="small">
+              install
+            </Button>
+          }
+          sx={{ bottom: { xs: 90, sm: 0 } }}
+        />
+      )}
     </Box>
   )
 }
@@ -953,5 +958,57 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
         </CardContent>
       </Collapse>
     </Card>
+  )
+}
+
+function RecentJobCard({ item }: any) {
+  const router = useRouter()
+  const content = useMemo(() => {
+    try {
+      return generateHTML(JSON.parse(item.description), [
+        Document,
+        Paragraph,
+        TestTipTap,
+        Italic,
+        HardBreak,
+        Code,
+        CodeBlock,
+        ListItem,
+        BulletList,
+        OrderedList,
+        BlockQuote,
+        Heading,
+        HorizontalRule,
+        Bold,
+        Link,
+        // other extensions …
+      ])
+    } catch (error) {
+      return item?.description
+    }
+  }, [])
+  // console.log("our com", item)
+  return (
+    <Box key={item.id} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
+      <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
+        {item.title}
+      </Typography>
+      {/* <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
+            neque molestie et.
+          </Typography> */}
+      <div
+        className="ProseMirror"
+        dangerouslySetInnerHTML={{
+          __html: htmlTruncate(content, 50, { ellipsis: "..." }),
+        }}
+      />
+      <Stack direction="row" sx={{ mt: 2 }} justifyContent="space-between" alignItems="center" spacing={2}>
+        <Button onClick={() => router.push(`/jobs/${item.id}`)} variant="contained">
+          Apply
+        </Button>
+        <Typography sx={{ fontSize: 12, color: "#475467" }}>Closing: {dayjs().to(item.closing_at)}</Typography>
+      </Stack>
+    </Box>
   )
 }

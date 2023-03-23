@@ -280,7 +280,9 @@ function Page() {
                     {jobsList?.slice(-2).map((item: any) => {
                       return <RecentJobCard key={item.id} item={item} />
                     })}
-                    <Button variant="text">View all</Button>
+                    <Button onClick={() => router.push("/artisan/jobs")} variant="text">
+                      View all
+                    </Button>
                   </Stack>
                 </Paper>
               </Stack>
@@ -402,6 +404,7 @@ const JobCard = ({ item, onJobApplication }: any) => {
   )
 }
 function RecentJobCard({ item }: any) {
+  const router = useRouter()
   const content = useMemo(() => {
     try {
       return generateHTML(JSON.parse(item.description), [
@@ -439,12 +442,14 @@ function RecentJobCard({ item }: any) {
       <div
         className="ProseMirror"
         dangerouslySetInnerHTML={{
-          __html: htmlTruncate(content, 50, { ellipsis: "... see more" }),
+          __html: htmlTruncate(content, 50, { ellipsis: "..." }),
         }}
       />
       <Stack direction="row" sx={{ mt: 2 }} justifyContent="space-between" alignItems="center" spacing={2}>
-        <Button variant="contained">Apply</Button>
-        <Typography sx={{ fontSize: 12, color: "#475467" }}>Closing Date: {dayjs().to(item.closing_at)}</Typography>
+        <Button onClick={() => router.push(`/jobs/${item.id}`)} variant="contained">
+          Apply
+        </Button>
+        <Typography sx={{ fontSize: 12, color: "#475467" }}>Closing: {dayjs().to(item.closing_at)}</Typography>
       </Stack>
     </Box>
   )
