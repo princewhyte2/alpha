@@ -76,6 +76,7 @@ import { ErrorComponent } from "../../components/alert"
 import profileServices from "../../services/profile"
 import NavLayout from "../../components/layouts/nav"
 import TiptapEditor from "../../components/TiptapEditor"
+import connectionService from "../../services/connection"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -197,6 +198,8 @@ function Page() {
   const [skills, setSkills] = useState<string[]>([])
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
+
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -370,18 +373,24 @@ function Page() {
                 >
                   <CardContent>
                     <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Avatar
+                        sx={{ width: 80, height: 80 }}
+                        alt={user?.relationships?.company?.name}
+                        src={user?.relationships?.company.logo_image.url}
+                      />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        Babatunde Olakunle
+                        {user?.relationships?.company.name}
                       </Typography>
-                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>
+                        {user?.relationships?.company?.business_sector?.name}
+                      </Typography>
                     </Stack>
-                    <Box sx={{ width: "100%", my: "2rem" }}>
+                    {/* <Box sx={{ width: "100%", my: "2rem" }}>
                       <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
                       <LinearProgressWithLabel value={80} />
-                    </Box>
+                    </Box> */}
                     <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      40 Connections
+                      {approvedConnectionList?.length || 0} Connections
                     </Typography>
                   </CardContent>
                 </Card>
@@ -576,7 +585,15 @@ export default Page
 function JobCard({ item, onEdit, onDelete }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [isShowMore, setIsShowMore] = useState(false)
-  const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  // const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
+  // console.log("job item", item)
 
   // console.log("applicants", jobApplicantsList)
   const router = useRouter()
@@ -638,58 +655,64 @@ function JobCard({ item, onEdit, onDelete }: any) {
           {/* <Typography sx={{ fontSize: 14 }} color="primary.dark">
                             Name of Company/Author
                           </Typography> */}
-          <div>
-            <IconButton
-              aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
-              aria-haspopup="true"
-              sx={{ mt: -2 }}
-              aria-expanded={Boolean(anchorEl) ? "true" : undefined}
-              onClick={handleClick}
-              aria-label="settings"
-            >
-              <MoreHorizIcon />
-            </IconButton>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
-            >
-              <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
-              <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
-            </Menu>
-          </div>
+          {item?.posted_by?.id === user?.id && (
+            <div>
+              <IconButton
+                aria-controls={Boolean(anchorEl) ? "basic-menu" : undefined}
+                aria-haspopup="true"
+                sx={{ mt: -2 }}
+                aria-expanded={Boolean(anchorEl) ? "true" : undefined}
+                onClick={handleClick}
+                aria-label="settings"
+              >
+                <MoreHorizIcon />
+              </IconButton>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+              >
+                <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
+                <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
+              </Menu>
+            </div>
+          )}
         </Stack>
         {/* <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography> */}
         <div
           onClick={() => setIsShowMore(true)}
           className="ProseMirror"
           dangerouslySetInnerHTML={{
-            __html: htmlTruncate(content, 200, { ellipsis: "... see more" }),
+            __html: htmlTruncate(content, 50, { ellipsis: "... see more" }),
           }}
         />
-        <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
-          {item.skills.map((skill: string) => (
-            <Chip key={skill} label={skill} />
-          ))}
-        </Stack>
-        <Stack sx={{ flexWrap: "wrap", gap: 2 }} direction="row">
-          <Typography sx={{ fontSize: 13 }} color="primary.main">
-            Location: {item.location}
-          </Typography>
-          <Typography sx={{ fontSize: 13 }} color="primary.main">
-            Job Duration: {item.duration}
-          </Typography>
-          <Typography sx={{ fontSize: 13 }} color="primary.main">
-            Gender Required: {item.preferred_gender}
-          </Typography>
-          <Typography sx={{ fontSize: 13 }} color="primary.main">
-            Closing Date: {dayjs().to(item.closing_at)}
-          </Typography>
-        </Stack>
+        {matches && (
+          <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
+            {item.skills.map((skill: string) => (
+              <Chip key={skill} label={skill} />
+            ))}
+          </Stack>
+        )}
+        {matches && (
+          <Stack sx={{ flexWrap: "wrap", gap: 2 }} direction="row">
+            <Typography sx={{ fontSize: 13 }} color="primary.main">
+              Location: {item.location}
+            </Typography>
+            <Typography sx={{ fontSize: 13 }} color="primary.main">
+              Job Duration: {item.duration}
+            </Typography>
+            <Typography sx={{ fontSize: 13 }} color="primary.main">
+              Gender Required: {item.preferred_gender}
+            </Typography>
+            <Typography sx={{ fontSize: 13 }} color="primary.main">
+              Closing Date: {dayjs().to(item.closing_at)}
+            </Typography>
+          </Stack>
+        )}
         <Stack
           direction={{ xs: "column-reverse", md: "row" }}
           alignItems={{ xs: "start", md: "center" }}

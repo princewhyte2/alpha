@@ -91,4 +91,6 @@ Messaging.getLayout = function getLayout(page: ReactElement) {
   )
 }
 
+Messaging.requireAuth = true
+
 export default Messaging

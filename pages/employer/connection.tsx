@@ -50,6 +50,7 @@ import { ErrorComponent } from "../../components/alert"
 import NoInvitationIllustration from "../../components/icons/NoInvitationIllustration"
 import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustration"
 import { useRouter } from "next/router"
+import profileServices from "../../services/profile"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -125,6 +126,11 @@ function Page() {
   const router = useRouter()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   const [value, setValue] = useState(0)
   const [searchTerm, setSearchTerm] = useState("")
   const { mutate } = useSWRConfig()
@@ -136,6 +142,8 @@ function Page() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
+
+  console.log("user", user)
 
   const { data: unApprovedConnectionList } = useSWR(
     "unApprovedConnections",
@@ -150,9 +158,6 @@ function Page() {
       keepPreviousData: true,
     },
   )
-  // console.log("userList", usersList)
-  console.log("approved", approvedConnectionList)
-  console.log("unapproved", unApprovedConnectionList)
 
   const optimizedFn = useCallback(debounce(setSearchTerm), [])
   const sendConnectionRequest = useCallback(
@@ -501,22 +506,28 @@ function Page() {
                 >
                   <CardContent>
                     <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Avatar
+                        sx={{ width: 80, height: 80 }}
+                        alt={user?.relationships?.company?.name}
+                        src={user?.relationships?.company.logo_image.url}
+                      />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        Babatunde Olakunle
+                        {user?.relationships?.company.name}
                       </Typography>
-                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>
+                        {user?.relationships?.company?.business_sector?.name}
+                      </Typography>
                     </Stack>
-                    <Box sx={{ width: "100%", my: "2rem" }}>
+                    {/* <Box sx={{ width: "100%", my: "2rem" }}>
                       <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
                       <LinearProgressWithLabel value={80} />
-                    </Box>
+                    </Box> */}
                     <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      40 Connections
+                      {approvedConnectionList?.length || 0} Connections
                     </Typography>
                   </CardContent>
                 </Card>
-                <Paper
+                {/* <Paper
                   elevation={3}
                   sx={{ p: 2, boxShadow: " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 8px 48px #EEEEEE" }}
                 >
@@ -547,7 +558,7 @@ function Page() {
                     ))}
                     <Button variant="text">View all</Button>
                   </Stack>
-                </Paper>
+                </Paper> */}
               </Stack>
             </Grid>
           )}

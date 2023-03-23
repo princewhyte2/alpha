@@ -77,6 +77,7 @@ import profileServices from "../../services/profile"
 import EmployerNavLayout from "../../components/layouts/employernav"
 import { useRouter } from "next/router"
 import { stripHtml } from "../../utils"
+import connectionService from "../../services/connection"
 dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
 
@@ -180,6 +181,12 @@ function Page() {
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   // console.log("path", router?.pathname)
   const { data: posts } = useSWR("posts", postService.postFetcher)
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
   const [expanded, setExpanded] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -499,18 +506,24 @@ function Page() {
                 >
                   <CardContent>
                     <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Avatar
+                        sx={{ width: 80, height: 80 }}
+                        alt={user?.relationships?.company?.name}
+                        src={user?.relationships?.company.logo_image.url}
+                      />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        Babatunde Olakunle
+                        {user?.relationships?.company.name}
                       </Typography>
-                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>
+                        {user?.relationships?.company?.business_sector?.name}
+                      </Typography>
                     </Stack>
-                    <Box sx={{ width: "100%", my: "2rem" }}>
+                    {/* <Box sx={{ width: "100%", my: "2rem" }}>
                       <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
                       <LinearProgressWithLabel value={80} />
-                    </Box>
+                    </Box> */}
                     <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      40 Connections
+                      {approvedConnectionList?.length || 0} Connections
                     </Typography>
                   </CardContent>
                 </Card>

@@ -497,9 +497,10 @@ export default function NavLayout(props: Props) {
                   ) : user?.user_type === "artisan" ? (
                     <>
                       <IconButton
+                        onClick={() => router.push(`/${user.user_type}/notification`)}
                         size="large"
                         sx={{ color: "primary.main" }}
-                        aria-label="show 17 new notifications"
+                        aria-label="new notifications"
                         color="inherit"
                       >
                         <NotificationsIcon />
@@ -512,9 +513,10 @@ export default function NavLayout(props: Props) {
                   ) : (
                     <>
                       <IconButton
+                        onClick={() => router.push(`/${user.user_type}/notification`)}
                         size="large"
                         sx={{ color: "primary.main" }}
-                        aria-label="show 17 new notifications"
+                        aria-label="new notifications"
                         color="inherit"
                       >
                         <NotificationsIcon />

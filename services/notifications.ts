@@ -3,7 +3,7 @@ import axiosInstance from './instance'
 
 const getALlNotifications = async () => {
     const response = await axiosInstance.get('/notifications')
-    return response.data
+    return response.data.result.data
 }
 
 const markReadNotification = async (notificationid: string) => {

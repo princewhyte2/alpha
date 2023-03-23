@@ -61,6 +61,8 @@ import NoPostIllustration from "../../components/icons/NoPostIllustration"
 import { ErrorComponent } from "../../components/alert"
 import htmlTruncate from "../../lib/htmlTruncate"
 import Router, { useRouter } from "next/router"
+import profileServices from "../../services/profile"
+import connectionService from "../../services/connection"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -144,6 +146,16 @@ function Page() {
     keepPreviousData: true,
   })
   const optimizedFn = useCallback(debounce(setSearchTerm), [])
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+
+  console.log("user", user)
+  console.log("jobsList", jobsList)
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -238,18 +250,22 @@ function Page() {
                 >
                   <CardContent>
                     <Stack direction="column" justifyContent="center" alignItems="center" spacing={1}>
-                      <Avatar sx={{ width: 80, height: 80 }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Avatar
+                        sx={{ width: 80, height: 80 }}
+                        alt={user?.first_name}
+                        src={user?.relationships?.profile_image.url}
+                      />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        Babatunde Olakunle
+                        {user?.first_name} {user?.last_name}
                       </Typography>
-                      <Typography sx={{ fontSize: 16, color: "#475467" }}>Fashoin Designer</Typography>
+                      <Typography sx={{ fontSize: 16, color: "#475467" }}>{user?.title}</Typography>
                     </Stack>
-                    <Box sx={{ width: "100%", my: "2rem" }}>
+                    {/* <Box sx={{ width: "100%", my: "2rem" }}>
                       <Typography sx={{ fontSize: 13, color: "#4D5761" }}>Profile Completion</Typography>
                       <LinearProgressWithLabel value={80} />
-                    </Box>
+                    </Box> */}
                     <Typography sx={{ fontSize: 16 }} color="primary.main">
-                      40 Connections
+                      {approvedConnectionList?.length || 0} Connections
                     </Typography>
                   </CardContent>
                 </Card>
@@ -261,27 +277,9 @@ function Page() {
                     Recent Jobs Fitting your profile
                   </Typography>
                   <Stack spacing={2}>
-                    {[1, 2].map((item) => (
-                      <Box key={item} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
-                        <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
-                          Fashoin Designer
-                        </Typography>
-                        <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
-                          neque molestie et.
-                        </Typography>
-                        <Stack
-                          direction="row"
-                          sx={{ mt: 2 }}
-                          justifyContent="space-between"
-                          alignItems="center"
-                          spacing={2}
-                        >
-                          <Button variant="contained">Apply</Button>
-                          <Typography sx={{ fontSize: 12, color: "#475467" }}>Posted 2 days ago</Typography>
-                        </Stack>
-                      </Box>
-                    ))}
+                    {jobsList?.slice(-2).map((item: any) => {
+                      return <RecentJobCard key={item.id} item={item} />
+                    })}
                     <Button variant="text">View all</Button>
                   </Stack>
                 </Paper>
@@ -305,6 +303,8 @@ export default Page
 
 const JobCard = ({ item, onJobApplication }: any) => {
   const [isShowMore, setIsShowMore] = useState(false)
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
   const content = useMemo(() => {
     try {
       return generateHTML(JSON.parse(item.description), [
@@ -356,31 +356,34 @@ const JobCard = ({ item, onJobApplication }: any) => {
         </Stack>
         {/* <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography> */}
         <div
-          onClick={() => setIsShowMore(true)}
           className="ProseMirror"
           dangerouslySetInnerHTML={{
-            __html: htmlTruncate(content, 200, { ellipsis: "... see more" }),
+            __html: htmlTruncate(content, 50, { ellipsis: "... see more" }),
           }}
         />
-        <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
-          {item.skills.map((skill: string) => (
-            <Chip key={skill} label={skill} />
-          ))}
-        </Stack>
-        <Stack direction="row" sx={{ flexWrap: "wrap", gap: 2 }}>
-          <Typography sx={{ fontSize: 14 }} color="primary.main">
-            Location: {item.location}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="primary.main">
-            Job Duration: {item.duration}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="primary.main">
-            Gender Required: {item.preferred_gender}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="primary.main">
-            Closing Date: {dayjs().to(item.closing_at)}
-          </Typography>
-        </Stack>
+        {matches && (
+          <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+            {item.skills.map((skill: string) => (
+              <Chip key={skill} label={skill} />
+            ))}
+          </Stack>
+        )}
+        {matches && (
+          <Stack direction="row" sx={{ flexWrap: "wrap", gap: 2 }}>
+            <Typography sx={{ fontSize: 14 }} color="primary.main">
+              Location: {item.location}
+            </Typography>
+            <Typography sx={{ fontSize: 14 }} color="primary.main">
+              Job Duration: {item.duration}
+            </Typography>
+            <Typography sx={{ fontSize: 14 }} color="primary.main">
+              Gender Required: {item.preferred_gender}
+            </Typography>
+            <Typography sx={{ fontSize: 14 }} color="primary.main">
+              Closing Date: {dayjs().to(item.closing_at)}
+            </Typography>
+          </Stack>
+        )}
         <Stack
           direction={{ xs: "column-reverse", md: "row" }}
           alignItems={{ xs: "start", md: "center" }}
@@ -396,5 +399,53 @@ const JobCard = ({ item, onJobApplication }: any) => {
         </Stack>
       </Stack>
     </Paper>
+  )
+}
+function RecentJobCard({ item }: any) {
+  const content = useMemo(() => {
+    try {
+      return generateHTML(JSON.parse(item.description), [
+        Document,
+        Paragraph,
+        TestTipTap,
+        Italic,
+        HardBreak,
+        Code,
+        CodeBlock,
+        ListItem,
+        BulletList,
+        OrderedList,
+        BlockQuote,
+        Heading,
+        HorizontalRule,
+        Bold,
+        Link,
+        // other extensions …
+      ])
+    } catch (error) {
+      return item?.description
+    }
+  }, [])
+  // console.log("our com", item)
+  return (
+    <Box key={item.id} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
+      <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>
+        {item.title}
+      </Typography>
+      {/* <Typography sx={{ fontSize: 13, color: "#667085" }} gutterBottom>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Egestas eget sodales tempus diam vel,
+            neque molestie et.
+          </Typography> */}
+      <div
+        className="ProseMirror"
+        dangerouslySetInnerHTML={{
+          __html: htmlTruncate(content, 50, { ellipsis: "... see more" }),
+        }}
+      />
+      <Stack direction="row" sx={{ mt: 2 }} justifyContent="space-between" alignItems="center" spacing={2}>
+        <Button variant="contained">Apply</Button>
+        <Typography sx={{ fontSize: 12, color: "#475467" }}>Closing Date: {dayjs().to(item.closing_at)}</Typography>
+      </Stack>
+    </Box>
   )
 }

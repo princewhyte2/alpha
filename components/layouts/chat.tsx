@@ -68,15 +68,26 @@ const ChatLayout = ({ children }: any) => {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const router = useRouter()
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
-  console.log("conversations", conversations)
-  console.log("user", user)
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
+
   const isNotDefault = router.query?.id
 
+  const handleGoToConnections = () => {
+    router.push(`/${user.user_type}/connection`)
+  }
+
   return (
-    <Container maxWidth="xl">
-      <Box sx={{ flexGrow: 1, pt: 2 }}>
+    <Container disableGutters={matches ? false : true} maxWidth="xl">
+      <Box sx={{ flexGrow: 1, pt: { xs: 1, md: 2 } }}>
         <Grid container spacing={2}>
           {!isNotDefault || matches ? (
             <Grid item xs={12} md={4} sx={{ height: "calc(100vh - 84px)" }}>
@@ -98,7 +109,7 @@ const ChatLayout = ({ children }: any) => {
                   <Typography sx={{ fontSize: 20 }} color="primary.dark">
                     Message
                   </Typography>
-                  <IconButton aria-label="edit">
+                  <IconButton onClick={handleGoToConnections} aria-label="edit">
                     <BorderColorIcon />
                   </IconButton>
                 </Stack>
@@ -109,7 +120,7 @@ const ChatLayout = ({ children }: any) => {
                         (participant: any) => participant.id !== user?.id,
                       )
                       return (
-                        <Box sx={{ width: "100%" }}>
+                        <Box key={item.id} sx={{ width: "100%" }}>
                           <Stack
                             onClick={() => router.push(`/messaging/${item.id}`)}
                             key={item.id}
@@ -173,7 +184,7 @@ const ChatLayout = ({ children }: any) => {
             </Grid>
           ) : null}
           {isNotDefault || matches ? (
-            <Grid item xs={12} md={8} sx={{ height: "calc(100vh - 84px)" }}>
+            <Grid item xs={12} md={8} sx={{ height: { xs: "calc(100vh - 54px)", md: "calc(100vh - 84px)" } }}>
               <Paper
                 sx={{
                   height: "100%",
