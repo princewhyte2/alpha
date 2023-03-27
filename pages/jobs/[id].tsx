@@ -2,6 +2,7 @@ import { ReactElement, useCallback, useState, useRef, FormEvent, useMemo } from 
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import Avatar from "@mui/material/Avatar"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import Collapse from "@mui/material/Collapse"
@@ -341,9 +342,12 @@ function Page() {
                 spacing={1}
               >
                 <Box>
-                  <Typography sx={{ fontSize: 20 }} color="primary.dark">
+                  {/* <Typography sx={{ fontSize: 20 }} color="primary.dark">
                     Jobs
-                  </Typography>
+                  </Typography> */}
+                  <Button onClick={() => router.back()} variant="outlined" startIcon={<KeyboardBackspaceIcon />}>
+                    Jobs
+                  </Button>
                 </Box>
                 {/* {matches && (
                   <TextField
@@ -655,8 +659,6 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
     }
     return jobApplicantsList.some((applicant: any) => applicant.applicant_id === user.id)
   }, [user, jobApplicantsList])
-
-  console.log("job applicant", jobApplicantsList)
 
   return (
     <Paper
