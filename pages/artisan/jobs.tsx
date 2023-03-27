@@ -360,7 +360,7 @@ const JobCard = ({ item, onJobApplication }: any) => {
         <div
           className="ProseMirror"
           dangerouslySetInnerHTML={{
-            __html: htmlTruncate(content, 50, { ellipsis: "... see more" }),
+            __html: htmlTruncate(content, 50, { ellipsis: "... " }),
           }}
         />
         {matches && (
@@ -382,7 +382,7 @@ const JobCard = ({ item, onJobApplication }: any) => {
               Gender Required: {item.preferred_gender}
             </Typography>
             <Typography sx={{ fontSize: 14 }} color="primary.main">
-              Closing Date: {dayjs().to(item.closing_at)}
+              {dayjs().isAfter(item.closing_at) ? "Expired" : "Closing"}: {dayjs().to(item.closing_at)}
             </Typography>
           </Stack>
         )}
@@ -392,8 +392,13 @@ const JobCard = ({ item, onJobApplication }: any) => {
           justifyContent="space-between"
           spacing={1}
         >
-          <Button sx={{ px: 4 }} onClick={onJobApplication(item.id)} variant="contained">
-            View
+          <Button
+            disabled={dayjs().isAfter(item.closing_at)}
+            sx={{ px: 4 }}
+            onClick={onJobApplication(item.id)}
+            variant="contained"
+          >
+            {dayjs().isAfter(item.closing_at) ? "Expired" : " View"}
           </Button>
           <Typography sx={{ fontSize: 12 }} color="primary.main">
             Posted {dayjs(item.created_at).fromNow()}

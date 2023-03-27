@@ -55,7 +55,6 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
         {install && (
           <Snackbar
             open={isShow}
-            autoHideDuration={6000}
             onClose={() => setIsShow(false)}
             message="Install Workfynder for easy access"
             action={

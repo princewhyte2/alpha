@@ -304,16 +304,23 @@ const Messaging = () => {
                   //     style={{ height: 70, width: 70, background: "green" }}
                   //   />
                   // </Box>
-                  <Chip
-                    variant="outlined"
-                    avatar={<Avatar {...stringAvatar(item.attributes.data[0].file_name)} />}
-                    label={item.attributes.data[0].file_name}
-                    sx={{
-                      height: "100%",
-                      p: 1,
-                      maxWidth: "40%",
-                    }}
-                  />
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ width: "40%", cursor: "pointer", textDecoration: "none" }}
+                    href={item.attributes.data[0].file_url}
+                  >
+                    <Chip
+                      variant="outlined"
+                      avatar={<Avatar {...stringAvatar(item.attributes.data[0].file_name)} />}
+                      label={item.attributes.data[0].file_name}
+                      sx={{
+                        height: "100%",
+                        p: 1,
+                        // maxWidth: "40%",
+                      }}
+                    />
+                  </a>
                 ) : (
                   <Chip
                     sx={{
