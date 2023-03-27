@@ -79,26 +79,26 @@ import jobService from "../../services/job"
 import connectionService from "../../services/connection"
 import { useRouter } from "next/router"
 
-dayjs.extend(updateLocale)
+// dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
 
-dayjs.updateLocale("en", {
-  relativeTime: {
-    future: "in %s",
-    past: "%s ago",
-    s: "a sec",
-    m: "a min",
-    mm: "%d mins",
-    h: "an hr",
-    hh: "%d hrs",
-    d: "a d",
-    dd: "%d d",
-    M: "a mon",
-    MM: "%d mons",
-    y: "a yr",
-    yy: "%d yrs",
-  },
-})
+// dayjs.updateLocale("en", {
+//   relativeTime: {
+//     future: "in %s",
+//     past: "%s ago",
+//     s: "a sec",
+//     m: "a min",
+//     mm: "%d mins",
+//     h: "an hr",
+//     hh: "%d hrs",
+//     d: "a d",
+//     dd: "%d d",
+//     M: "a mon",
+//     MM: "%d mons",
+//     y: "a yr",
+//     yy: "%d yrs",
+//   },
+// })
 
 type BreakpointOrNull = Breakpoint | null
 
@@ -633,7 +633,7 @@ function Page() {
         </DialogContent>
       </BootstrapDialog>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
-      {install && (
+      {/* {install && (
         <Snackbar
           open={true}
           autoHideDuration={6000}
@@ -645,7 +645,7 @@ function Page() {
           }
           sx={{ bottom: { xs: 90, sm: 0 } }}
         />
-      )}
+      )} */}
     </Box>
   )
 }

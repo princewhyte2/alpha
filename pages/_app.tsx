@@ -2,6 +2,7 @@ import "../styles/globals.css"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { SWRDevTools } from "swr-devtools"
+
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import { useAuth } from "../store"
 import CssBaseline from "@mui/material/CssBaseline"

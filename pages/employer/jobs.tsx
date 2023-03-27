@@ -190,7 +190,7 @@ function Page() {
   const { mutate } = useSWRConfig()
   const [editor, setEditor] = useState<any>()
   const [initContent, setInitContent] = useState("")
-  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs, {
+  const { data: jobsList } = useSWR(`/companyjobs?searchTerm=${searchTerm}`, jobService.getCompanyJobs, {
     keepPreviousData: true,
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -198,6 +198,8 @@ function Page() {
   const [skills, setSkills] = useState<string[]>([])
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
+
+  console.log("job list", jobsList)
 
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
@@ -237,13 +239,13 @@ function Page() {
       try {
         if (jobDetails) {
           const response = await jobService.updateJob(String(jobDetails.id), data)
-          mutate(`/jobs?searchTerm=${searchTerm}`)
+          mutate(`/companyjobs?searchTerm=${searchTerm}`)
           setMessage(response?.message)
           setType("success")
           setIsError(true)
         } else {
           const response = await jobService.postJob(data)
-          mutate(`/jobs?searchTerm=${searchTerm}`)
+          mutate(`/companyjobs?searchTerm=${searchTerm}`)
           setMessage(response?.message)
           setType("success")
           setIsError(true)
@@ -288,7 +290,7 @@ function Page() {
     (jobId: number) => async () => {
       try {
         const response = await jobService.deleteJob(String(jobId))
-        mutate(`/jobs?searchTerm=${searchTerm}`)
+        mutate(`/companyjobs?searchTerm=${searchTerm}`)
         setType("success")
         setMessage(response.message)
         setIsError(true)

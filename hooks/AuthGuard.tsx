@@ -1,7 +1,10 @@
 import { useRouter } from "next/router"
 import useSWR from "swr"
 import Cookies from "js-cookie"
-import { useLayoutEffect, useEffect } from "react"
+import Snackbar from "@mui/material/Snackbar"
+import { usePWAInstall } from "react-use-pwa-install"
+import Button from "@mui/material/Button"
+import { useLayoutEffect, useEffect, useState } from "react"
 import { useAuth } from "../store"
 import profileServices from "../services/profile"
 
@@ -9,7 +12,9 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
   // const user = useAuth((state: any): any => state.user)
   const { data: user } = useSWR(Cookies.get("access_token") ? "userProfile" : null, profileServices.profileFetcher)
   const initializing = useAuth((state: any): any => state.initializing)
+  const install = usePWAInstall()
   const router = useRouter()
+  const [isShow, setIsShow] = useState(true)
 
   useEffect(() => {
     if (!initializing) {
@@ -44,7 +49,25 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
 
   // if auth initialized with a valid user show protected page
   if (!initializing && user) {
-    return <>{children}</>
+    return (
+      <>
+        {children}
+        {install && (
+          <Snackbar
+            open={isShow}
+            autoHideDuration={6000}
+            onClose={() => setIsShow(false)}
+            message="Install Workfynder for easy access"
+            action={
+              <Button onClick={install} color="inherit" size="small">
+                install
+              </Button>
+            }
+            sx={{ bottom: { xs: 90, sm: 0 } }}
+          />
+        )}
+      </>
+    )
   }
 
   /* otherwise don't return anything, will do a redirect from useEffect */

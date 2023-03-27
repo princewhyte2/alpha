@@ -5,7 +5,10 @@ const postJob = async(data:any) => {
     return response.data
 }
 
-
+const getCompanyJobs = async () => {
+    const response = await axiosInstance.get('/get/company/jobs')
+    return response.data.result.data
+}
 
 const updateJob = async (jobId: string, data: any) => {
     const response = await axiosInstance.patch(`/jobs/${jobId}`, data)
@@ -38,7 +41,7 @@ const getJobApplicants = async (url: string) => {
 }
 
 const jobService = {
-    postJob,getAllJobs,updateJob,deleteJob,applyForJob,getJobApplicants,getJobById
+    postJob,getAllJobs,updateJob,deleteJob,applyForJob,getJobApplicants,getJobById,getCompanyJobs
 }
 
 export default jobService

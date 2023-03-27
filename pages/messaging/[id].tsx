@@ -1,5 +1,7 @@
 import Container from "@mui/material/Container"
 import Typography from "@mui/material/Typography"
+import { FilePreviewerThumbnail } from "react-file-previewer"
+
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
@@ -18,7 +20,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import BorderColorIcon from "@mui/icons-material/BorderColor"
 import { styled } from "@mui/material/styles"
 import Badge from "@mui/material/Badge"
-import { ReactElement, useEffect, useMemo, useRef } from "react"
+import { ChangeEvent, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import NavLayout from "../../components/layouts/nav"
 import Chip from "@mui/material/Chip"
 import ChatLayout from "../../components/layouts/chat"
@@ -27,6 +29,9 @@ import { useRouter } from "next/router"
 import profileServices from "../../services/profile"
 import Cookies from "js-cookie"
 import notificationsServices from "../../services/notifications"
+import uploadService from "../../services/upload"
+import { AlertColor } from "@mui/material"
+import { ErrorComponent } from "../../components/alert"
 
 const pusher_key = process?.env?.NEXT_PUBLIC_PUSHER_APP_KEY ?? ""
 const broadcast_endpoint = process.env?.NEXT_PUBLIC_BACKEND_BROADCAST_URL ?? ""
@@ -67,6 +72,35 @@ const Root = styled("div")(({ theme }) => ({
     marginTop: theme.spacing(2),
   },
 }))
+
+function stringToColor(string: string) {
+  let hash = 0
+  let i
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash)
+  }
+
+  let color = "#"
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff
+    color += `00${value.toString(16)}`.slice(-2)
+  }
+  /* eslint-enable no-bitwise */
+
+  return color
+}
+
+function stringAvatar(name: string) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  }
+}
 
 // Pusher.logToConsole = true
 
@@ -157,6 +191,52 @@ const Messaging = () => {
     }
   }, [router?.query?.id, conversation, user, scrollToBottomRef])
 
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return
+
+    try {
+      const file = event.target.files[0]
+      if (!file) return
+      const formData = new FormData()
+      formData.append("file", file)
+      setMessage("upload...")
+      setType("info")
+      setIsError(true)
+      const res = await uploadService.uploadFile(formData)
+
+      const item = res.result.file
+      await messagingService.sendMessage(router.query.id as string, {
+        receiver_id: activeConversationParticipant?.id,
+        type: "attachment",
+        message: "attachment",
+        data: [
+          {
+            file_name: item.name,
+            file_url: item.url,
+          },
+        ],
+      })
+      mutate(`/conversations/${router.query?.id}`)
+      mutate("conversations")
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        console.log(error.request)
+      } else {
+        console.log("Error", error.message)
+      }
+      setIsError(true)
+    }
+  }
+
+  console.log("conver", conversation)
+
   const handleSendMessage = async () => {
     const chatMessage = messageInputRef.current?.value
     if (!chatMessage) return
@@ -213,26 +293,49 @@ const Messaging = () => {
                 direction={"row"}
                 justifyContent={item.relationships?.sender?.id !== user?.id ? "flex-start" : "flex-end"}
               >
-                <Chip
-                  sx={{
-                    color: item.relationships?.sender?.id !== user?.id ? "#FFFFFF" : "#1F204A",
-                    background: item.relationships?.sender?.id !== user?.id ? "#3E4095" : "#F2F4F7",
-                    height: "100%",
-                    p: 1,
-                    maxWidth: "70%",
-                  }}
-                  label={
-                    <Typography
-                      sx={{
-                        whiteSpace: "normal",
-                        fontSize: { xs: 13, md: 14 },
-                        fontWeight: 400,
-                      }}
-                    >
-                      {item.attributes.message}
-                    </Typography>
-                  }
-                />
+                {item.attributes.type === "attachment" ? (
+                  // <Box sx={{ maxHeight: "100px", width: "100px" }}>
+                  //   <FilePreviewerThumbnail
+                  //     file={{
+                  //       url: item.attributes.data[0].file_url,
+
+                  //       name: item.attributes.data[0].file_name, // for download
+                  //     }}
+                  //     style={{ height: 70, width: 70, background: "green" }}
+                  //   />
+                  // </Box>
+                  <Chip
+                    variant="outlined"
+                    avatar={<Avatar {...stringAvatar(item.attributes.data[0].file_name)} />}
+                    label={item.attributes.data[0].file_name}
+                    sx={{
+                      height: "100%",
+                      p: 1,
+                      maxWidth: "40%",
+                    }}
+                  />
+                ) : (
+                  <Chip
+                    sx={{
+                      color: item.relationships?.sender?.id !== user?.id ? "#FFFFFF" : "#1F204A",
+                      background: item.relationships?.sender?.id !== user?.id ? "#3E4095" : "#F2F4F7",
+                      height: "100%",
+                      p: 1,
+                      maxWidth: "70%",
+                    }}
+                    label={
+                      <Typography
+                        sx={{
+                          whiteSpace: "normal",
+                          fontSize: { xs: 13, md: 14 },
+                          fontWeight: 400,
+                        }}
+                      >
+                        {item.attributes.message}
+                      </Typography>
+                    }
+                  />
+                )}
               </Stack>
             )
           })}
@@ -248,13 +351,15 @@ const Messaging = () => {
           multiline
           maxRows={2}
         />
-        <IconButton aria-label="delete">
+        <IconButton component="label" aria-label="delete">
           <AttachmentIcon />
+          <input onChange={handleFileChange} hidden type="file" />
         </IconButton>
         <IconButton onClick={handleSendMessage} aria-label="delete" color="primary">
           <SendIcon />
         </IconButton>
       </Stack>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Stack>
   )
 }

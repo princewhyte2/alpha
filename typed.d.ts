@@ -1,5 +1,7 @@
 interface OnboardingData { other_phone_number:string, title?: string, first_name?: string, last_name?: string, middle_name?: string, date_of_birth?: string, gender?: string, profile_image_id?: string, country_id?: string, state_id?: string }
 
+declare module 'react-file-previewer'
+
  interface Qualifications {
         id: number;
         name: string;

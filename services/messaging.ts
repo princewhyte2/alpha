@@ -1,6 +1,6 @@
 import axiosInstance from './instance'
 
-const sendMessage = async(chatId:string,data:{receiver_id:string,message:string}) => {
+const sendMessage = async(chatId:string,data:{receiver_id:string,message?:string,type?:string,data?:any[]}) => {
 
     const response = await axiosInstance.post(`/messages/${chatId}`,data)
     return response.data

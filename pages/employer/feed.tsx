@@ -78,26 +78,26 @@ import EmployerNavLayout from "../../components/layouts/employernav"
 import { useRouter } from "next/router"
 import { stripHtml } from "../../utils"
 import connectionService from "../../services/connection"
-dayjs.extend(updateLocale)
+// dayjs.extend(updateLocale)
 dayjs.extend(relativeTime)
 
-dayjs.updateLocale("en", {
-  relativeTime: {
-    future: "in %s",
-    past: "%s ago",
-    s: "a sec",
-    m: "a min",
-    mm: "%d mins",
-    h: "an hr",
-    hh: "%d hrs",
-    d: "a d",
-    dd: "%d d",
-    M: "a mon",
-    MM: "%d mons",
-    y: "a yr",
-    yy: "%d yrs",
-  },
-})
+// dayjs.updateLocale("en", {
+//   relativeTime: {
+//     future: "in %s",
+//     past: "%s ago",
+//     s: "a sec",
+//     m: "a min",
+//     mm: "%d mins",
+//     h: "an hr",
+//     hh: "%d hrs",
+//     d: "a d",
+//     dd: "%d d",
+//     M: "a mon",
+//     MM: "%d mons",
+//     y: "a yr",
+//     yy: "%d yrs",
+//   },
+// })
 
 type BreakpointOrNull = Breakpoint | null
 
@@ -175,6 +175,7 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 
 function Page() {
   const theme = useTheme()
+  //@ts-ignore
   const install = usePWAInstall()
   const { mutate } = useSWRConfig()
   const router = useRouter()
@@ -429,6 +430,12 @@ function Page() {
     [],
   )
 
+  useEffect(() => {
+    if (install !== null) {
+      console.log("not null")
+    }
+  }, [install])
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container maxWidth="xl">
@@ -443,6 +450,7 @@ function Page() {
                 <Typography sx={{ fontSize: 16 }} color="primary.dark" gutterBottom>
                   New Post
                 </Typography>
+
                 <TextField
                   disabled
                   fullWidth
@@ -467,6 +475,7 @@ function Page() {
                   </Button>
                 </Stack>
               </Paper>
+
               <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                 {!posts || posts?.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
