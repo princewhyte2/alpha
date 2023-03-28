@@ -1,10 +1,13 @@
 import { ReactElement, useCallback, useState, useEffect, useMemo } from "react"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import MessageIcon from "@mui/icons-material/Message"
+import CircularProgress from "@mui/material/CircularProgress"
+
 import dayjs from "dayjs"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import { generateHTML } from "@tiptap/core"
 import relativeTime from "dayjs/plugin/relativeTime"
+import Link from "@mui/material/Link"
 import updateLocale from "dayjs/plugin/updateLocale"
 import TiptapEditor from "../../components/TiptapEditor"
 import BlockQuote from "@tiptap/extension-blockquote"
@@ -18,7 +21,7 @@ import HardBreak from "@tiptap/extension-hard-break"
 import Heading from "@tiptap/extension-heading"
 import HorizontalRule from "@tiptap/extension-horizontal-rule"
 import Italic from "@tiptap/extension-italic"
-import Link from "@tiptap/extension-link"
+import { Link as TipTapLink } from "@tiptap/extension-link"
 import OrderedList from "@tiptap/extension-ordered-list"
 import Paragraph from "@tiptap/extension-paragraph"
 import { Text as TestTipTap } from "@tiptap/extension-text"
@@ -175,8 +178,11 @@ function Page() {
     "unApprovedConnections",
     connectionService.getUnApprovedUserConnections,
   )
-  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
-  const { data: chats } = useSWR("chats", messagingService.getAllConversations)
+  const { data: approvedConnectionList, isLoading: isApprovedLoading } = useSWR(
+    "approvedConnections",
+    connectionService.getApprovedUserConnections,
+  )
+  // const { data: chats } = useSWR("chats", messagingService.getAllConversations)
 
   const { data: usersList } = useSWR(
     searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
@@ -363,17 +369,20 @@ function Page() {
                             spacing={1}
                           >
                             <Stack direction="column" spacing={1}>
-                              <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                                {item.first_name} {item.middle_name} {item.last_name}
-                              </Typography>
+                              <Link href={`/profile/${item.id}`} underline="none">
+                                <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                                  {item.first_name} {item.middle_name} {item.last_name}
+                                </Typography>
+                              </Link>
+
                               <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
                                 {item.title}
                               </Typography>
-                              <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
+                              {/* <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
                                 {item.hobbies?.map((skill: string) => (
                                   <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
                                 ))}
-                              </Stack>
+                              </Stack> */}
                             </Stack>
                             <Stack direction="column" alignItems={"flex-end"} spacing={1}>
                               {/* <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
@@ -409,6 +418,8 @@ function Page() {
                       </Paper>
                     ))}
                   </Stack>
+                ) : isApprovedLoading ? (
+                  <CircularProgress />
                 ) : (
                   <Stack sx={{ my: 4 }} alignItems="center" direction="column" spacing={2} justifyContent="center">
                     <NoConnectionIllustartion />
@@ -648,7 +659,7 @@ function RecentJobCard({ item }: any) {
         Heading,
         HorizontalRule,
         Bold,
-        Link,
+        TipTapLink,
         // other extensions …
       ])
     } catch (error) {

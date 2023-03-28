@@ -9,7 +9,8 @@ import useSWR, { useSWRConfig } from "swr"
 import IconButton from "@mui/material/IconButton"
 import { useTheme, Theme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
-
+import CircularProgress from "@mui/material/CircularProgress"
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import Avatar from "@mui/material/Avatar"
 import TextField from "@mui/material/TextField"
 import AttachmentIcon from "@mui/icons-material/Attachment"
@@ -73,11 +74,15 @@ const ChatLayout = ({ children }: any) => {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
-  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  })
+  const { data: conversations, isLoading: isConversationsLoading } = useSWR(
+    "conversations",
+    messagingService.getAllConversations,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  )
 
   const isNotDefault = router.query?.id
 
@@ -106,6 +111,14 @@ const ChatLayout = ({ children }: any) => {
                   justifyContent="space-between"
                   sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
                 >
+                  <IconButton
+                    sx={{ display: { xs: "inline-block", md: "none" } }}
+                    onClick={() => router.back()}
+                    color="primary"
+                    aria-label="back button"
+                  >
+                    <KeyboardBackspaceIcon />
+                  </IconButton>
                   <Typography sx={{ fontSize: 20 }} color="primary.dark">
                     Message
                   </Typography>
@@ -168,6 +181,8 @@ const ChatLayout = ({ children }: any) => {
                         </Box>
                       )
                     })
+                  ) : isConversationsLoading ? (
+                    <CircularProgress />
                   ) : (
                     <Stack direction="column" justifyContent={"center"} alignItems={"center"} sx={{ height: "100%" }}>
                       <NoConnectionIllustartion />

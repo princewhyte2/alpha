@@ -11,6 +11,8 @@ import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
 import EmailIcon from "@mui/icons-material/Email"
+
+import CancelIcon from "@mui/icons-material/Cancel"
 import InputAdornment from "@mui/material/InputAdornment"
 import Autocomplete from "@mui/material/Autocomplete"
 import DialogContent from "@mui/material/DialogContent"
@@ -46,6 +48,7 @@ import EmployerNavLayout from "../../../components/layouts/employernav"
 import NavLayout from "../../../components/layouts/nav"
 import utilsService from "../../../services/utils"
 import uploadService from "../../../services/upload"
+import { useRouter } from "next/router"
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -116,6 +119,7 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const router = useRouter()
   const [countryId, setCountryId] = useState("160")
   const { mutate } = useSWRConfig()
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
@@ -289,9 +293,23 @@ function Page() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ my: 1, color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
-        Business Information
-      </Typography>
+      <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
+        <Typography variant="h6" sx={{ my: 1, color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
+          Business Information
+        </Typography>
+
+        <IconButton
+          aria-label="close"
+          onClick={() => router.back()}
+          sx={{
+            color: (theme) => theme.palette.primary.main,
+            display: { xs: "inline-block", md: "none" },
+          }}
+        >
+          <CancelIcon fontSize="inherit" />
+        </IconButton>
+      </Stack>
+
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
           {matches && (

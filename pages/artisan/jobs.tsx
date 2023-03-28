@@ -3,6 +3,8 @@ import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
 import Avatar from "@mui/material/Avatar"
+import CircularProgress from "@mui/material/CircularProgress"
+
 import useSWR, { useSWRConfig } from "swr"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -142,7 +144,7 @@ function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [searchTerm, setSearchTerm] = useState("")
-  const { data: jobsList } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs, {
+  const { data: jobsList, isLoading: isJobsLoading } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs, {
     keepPreviousData: true,
   })
   const optimizedFn = useCallback(debounce(setSearchTerm), [])
@@ -224,7 +226,8 @@ function Page() {
                 />
               </Stack>
               <Stack direction="column" spacing={2}>
-                {!jobsList || jobsList.length < 1 ? (
+                {isJobsLoading && <CircularProgress />}
+                {jobsList.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>

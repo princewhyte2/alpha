@@ -14,6 +14,7 @@ import EmailIcon from "@mui/icons-material/Email"
 import InputAdornment from "@mui/material/InputAdornment"
 import Autocomplete from "@mui/material/Autocomplete"
 import Paper from "@mui/material/Paper"
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 
 // import DialogContent from "@mui/material/DialogContent"
 import CircularProgress from "@mui/material/CircularProgress"
@@ -254,6 +255,42 @@ function Page() {
   return (
     <Box sx={{ p: 2 }}>
       <Box sx={{ flexGrow: 1 }}>
+        <Stack
+          sx={{ px: { xs: 0, md: 2 }, py: 2 }}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={1}
+        >
+          <Box>
+            {/* <Typography sx={{ fontSize: 20 }} color="primary.dark">
+                    Jobs
+                  </Typography> */}
+            <Button onClick={() => router.back()} variant="outlined" startIcon={<KeyboardBackspaceIcon />}>
+              Profile
+            </Button>
+          </Box>
+          {/* {matches && (
+                  <TextField
+                    id="search-connections"
+                    onChange={(e) => optimizedFn(e.target.value)}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton aria-label="Search for Jobs" edge="end">
+                            <SearchIcon sx={{ color: "primary.dark" }} />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    label="Search for Jobs"
+                    variant="outlined"
+                  />
+                )}
+                <Button onClick={() => setIsPostJob(true)} variant="contained" startIcon={<CreateNewFolderIcon />}>
+                  Create Job
+                </Button> */}
+        </Stack>
         <Grid container spacing={2}>
           {/* {matches && (
             <Grid item md={2}>

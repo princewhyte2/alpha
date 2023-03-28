@@ -3,6 +3,11 @@ import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Container from "@mui/material/Container"
 import NavLayout from "../../components/layouts/nav"
+
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
+import Button from "@mui/material/Button"
+import Typography from "@mui/material/Typography"
+import Stack from "@mui/material/Stack"
 import { useRouter } from "next/router"
 import useSWR, { useSWRConfig } from "swr"
 import postService from "../../services/post"
@@ -158,6 +163,42 @@ function Page() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container disableGutters maxWidth="md">
+        <Stack
+          sx={{ px: { xs: 0, md: 2 }, py: 2 }}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={1}
+        >
+          <Box>
+            {/* <Typography sx={{ fontSize: 20 }} color="primary.dark">
+                    Jobs
+                  </Typography> */}
+            <Button onClick={() => router.back()} variant="outlined" startIcon={<KeyboardBackspaceIcon />}>
+              Post
+            </Button>
+          </Box>
+          {/* {matches && (
+                  <TextField
+                    id="search-connections"
+                    onChange={(e) => optimizedFn(e.target.value)}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton aria-label="Search for Jobs" edge="end">
+                            <SearchIcon sx={{ color: "primary.dark" }} />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    label="Search for Jobs"
+                    variant="outlined"
+                  />
+                )}
+                <Button onClick={() => setIsPostJob(true)} variant="contained" startIcon={<CreateNewFolderIcon />}>
+                  Create Job
+                </Button> */}
+        </Stack>
         <Grid container sx={{ py: 4 }} spacing={2}>
           <Grid item xs={12}>
             {post && (

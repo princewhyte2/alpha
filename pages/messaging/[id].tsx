@@ -1,7 +1,8 @@
 import Container from "@mui/material/Container"
 import Typography from "@mui/material/Typography"
 import { FilePreviewerThumbnail } from "react-file-previewer"
-
+import CircularProgress from "@mui/material/CircularProgress"
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
@@ -125,7 +126,7 @@ const Messaging = () => {
     const participant = chat?.relationships.participants.find((participant: any) => participant.id !== user?.id)
     return participant
   }, [router.query?.id, conversations, user])
-  const { data: conversation } = useSWR(
+  const { data: conversation, isLoading: isConversationLoading } = useSWR(
     router.query?.id ? `/conversations/${router.query?.id}` : null,
     messagingService.getConversationsById,
     {
@@ -266,6 +267,14 @@ const Messaging = () => {
         justifyContent="space-between"
         sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
       >
+        <IconButton
+          sx={{ display: { xs: "inline-block", md: "none" } }}
+          onClick={() => router.back()}
+          color="primary"
+          aria-label="back button"
+        >
+          <KeyboardBackspaceIcon />
+        </IconButton>
         <Typography sx={{ fontSize: 16 }} color="primary.dark">
           {activeConversationParticipant?.first_name} {activeConversationParticipant?.last_name}
         </Typography>
@@ -286,6 +295,7 @@ const Messaging = () => {
       >
         <Stack sx={{ overflowY: "auto" }} direction="column" spacing={2}>
           {/* <Divider sx={{ color: "#1F204A" }}>yesterday, 29 aug</Divider> */}
+          {isConversationLoading && <CircularProgress />}
           {conversation?.map((item: any) => {
             return (
               <Stack

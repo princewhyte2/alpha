@@ -5,6 +5,8 @@ import Card from "@mui/material/Card"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import Avatar from "@mui/material/Avatar"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
+import CircularProgress from "@mui/material/CircularProgress"
+
 import Collapse from "@mui/material/Collapse"
 import BlockQuote from "@tiptap/extension-blockquote"
 import BulletList from "@tiptap/extension-bullet-list"
@@ -190,7 +192,10 @@ function Page() {
   const { mutate } = useSWRConfig()
   const [editor, setEditor] = useState<any>()
   const [initContent, setInitContent] = useState("")
-  const { data: jobsList } = useSWR(router?.query?.id ? `/jobs/${router?.query?.id}` : null, jobService.getJobById)
+  const { data: jobsList, isLoading: isJobLoading } = useSWR(
+    router?.query?.id ? `/jobs/${router?.query?.id}` : null,
+    jobService.getJobById,
+  )
   const [isLoading, setIsLoading] = useState(false)
 
   const [skills, setSkills] = useState<string[]>([])
@@ -372,12 +377,16 @@ function Page() {
               </Stack>
               <Stack direction="column" spacing={2}>
                 {!jobsList ? (
-                  <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
-                    <NoPostIllustration />
-                    <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
-                      <Typography sx={{ fontSize: 16, color: "#1F204A" }}>There is no job to display.</Typography>
+                  isJobLoading ? (
+                    <CircularProgress />
+                  ) : (
+                    <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
+                      <NoPostIllustration />
+                      <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
+                        <Typography sx={{ fontSize: 16, color: "#1F204A" }}>There is no job to display.</Typography>
+                      </Stack>
                     </Stack>
-                  </Stack>
+                  )
                 ) : (
                   <JobCard
                     item={jobsList}

@@ -1,6 +1,8 @@
 import { ReactElement, useCallback, useState, useRef, FormEvent, useMemo } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
+import CircularProgress from "@mui/material/CircularProgress"
+
 import Card from "@mui/material/Card"
 import Avatar from "@mui/material/Avatar"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
@@ -190,9 +192,13 @@ function Page() {
   const { mutate } = useSWRConfig()
   const [editor, setEditor] = useState<any>()
   const [initContent, setInitContent] = useState("")
-  const { data: jobsList } = useSWR(`/companyjobs?searchTerm=${searchTerm}`, jobService.getCompanyJobs, {
-    keepPreviousData: true,
-  })
+  const { data: jobsList, isLoading: isJobsLoading } = useSWR(
+    `/companyjobs?searchTerm=${searchTerm}`,
+    jobService.getCompanyJobs,
+    {
+      keepPreviousData: true,
+    },
+  )
   const [isLoading, setIsLoading] = useState(false)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   const [skills, setSkills] = useState<string[]>([])
@@ -349,7 +355,8 @@ function Page() {
                 </Button>
               </Stack>
               <Stack direction="column" spacing={2}>
-                {!jobsList || jobsList.length < 1 ? (
+                {isJobsLoading && <CircularProgress />}
+                {jobsList.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>

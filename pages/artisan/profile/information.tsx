@@ -564,17 +564,17 @@ function Page() {
         <Typography variant="h6" sx={{ my: 1, color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
           Profile Information
         </Typography>
-        {/* {!matches && (
+        {!matches && (
           <IconButton
             aria-label="close"
-            onClick={() => router.push("/artisan/feed")}
+            onClick={() => router.back()}
             sx={{
               color: (theme) => theme.palette.primary.main,
             }}
           >
             <CancelIcon fontSize="inherit" />
           </IconButton>
-        )} */}
+        )}
       </Stack>
 
       <Box sx={{ flexGrow: 1 }}>

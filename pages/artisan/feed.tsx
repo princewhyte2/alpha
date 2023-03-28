@@ -201,7 +201,7 @@ function Page() {
     setExpanded(!expanded)
   }
 
-  const { data: jobsList } = useSWR(`/jobs?searchTerm=${""}`, jobService.getAllJobs, {
+  const { data: jobsList, isLoading: isPostLoading } = useSWR(`/jobs?searchTerm=${""}`, jobService.getAllJobs, {
     keepPreviousData: true,
   })
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
@@ -473,7 +473,8 @@ function Page() {
                 </Stack>
               </Paper>
               <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
-                {!posts || posts?.length < 1 ? (
+                {isPostLoading && <CircularProgress />}
+                {posts?.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>

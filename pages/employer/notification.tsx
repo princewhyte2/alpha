@@ -3,6 +3,9 @@ import MessageIcon from "@mui/icons-material/Message"
 import Link from "@mui/material/Link"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme, Theme } from "@mui/material/styles"
+import CircularProgress from "@mui/material/CircularProgress"
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
+
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
@@ -128,11 +131,15 @@ function Page() {
   const router = useRouter()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
-  const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications, {
-    // revalidateIfStale: false,
-    // revalidateOnFocus: false,
-    // revalidateOnReconnect: false,
-  })
+  const { data: notifications, isLoading: isNotificationsLoading } = useSWR(
+    "notifications",
+    notificationsServices.getALlNotifications,
+    {
+      // revalidateIfStale: false,
+      // revalidateOnFocus: false,
+      // revalidateOnReconnect: false,
+    },
+  )
   console.log("user notifications", notifications)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
     revalidateIfStale: false,
@@ -268,10 +275,19 @@ function Page() {
                   width: "100%",
                 }}
               >
+                <IconButton
+                  sx={{ display: { xs: "inline-block", md: "none" } }}
+                  onClick={() => router.back()}
+                  color="primary"
+                  aria-label="back button"
+                >
+                  <KeyboardBackspaceIcon />
+                </IconButton>
                 <Typography sx={{ fontSize: { xs: 16, md: 20 } }} color="primary.dark">
                   Notifications
                 </Typography>
                 <Stack direction="column" spacing={1}>
+                  {isNotificationsLoading && <CircularProgress />}
                   {notifications?.map((item: any) => {
                     if (item.type === "MessageSentNotification") {
                       return (
@@ -301,9 +317,6 @@ function Page() {
                                   {item.data?.sender.first_name} {item.data?.sender.last_name}{" "}
                                 </Link>
                                 sent you a message
-                              </Typography>
-                              <Typography sx={{ fontSize: 13, color: "#667085" }} color="primary.main">
-                                “{item.data?.body}”
                               </Typography>
                             </Stack>
                           </Stack>

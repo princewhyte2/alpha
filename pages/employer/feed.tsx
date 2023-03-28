@@ -181,7 +181,7 @@ function Page() {
   const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   // console.log("path", router?.pathname)
-  const { data: posts } = useSWR("posts", postService.postFetcher)
+  const { data: posts, isLoading: isPostLoading } = useSWR("posts", postService.postFetcher)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
@@ -477,7 +477,8 @@ function Page() {
               </Paper>
 
               <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
-                {!posts || posts?.length < 1 ? (
+                {isPostLoading && <CircularProgress />}
+                {posts?.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>

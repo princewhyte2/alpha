@@ -4,7 +4,10 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme, Theme } from "@mui/material/styles"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
+import CircularProgress from "@mui/material/CircularProgress"
+
 import Card from "@mui/material/Card"
+import Link from "@mui/material/Link"
 import Avatar from "@mui/material/Avatar"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"
@@ -149,7 +152,10 @@ function Page() {
     "unApprovedConnections",
     connectionService.getUnApprovedUserConnections,
   )
-  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+  const { data: approvedConnectionList, isLoading: isApprovedLoading } = useSWR(
+    "approvedConnections",
+    connectionService.getApprovedUserConnections,
+  )
 
   const { data: usersList } = useSWR(
     searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
@@ -308,17 +314,20 @@ function Page() {
                             spacing={1}
                           >
                             <Stack direction="column" spacing={1}>
-                              <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                                {item.first_name} {item.middle_name} {item.last_name}
-                              </Typography>
+                              <Link href={`/profile/${item.id}`} underline="none">
+                                <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                                  {item.first_name} {item.middle_name} {item.last_name}
+                                </Typography>
+                              </Link>
+
                               <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
                                 {item.title}
                               </Typography>
-                              <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
+                              {/* <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
                                 {item.hobbies?.map((skill: string) => (
                                   <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
                                 ))}
-                              </Stack>
+                              </Stack> */}
                             </Stack>
                             <Stack direction="column" alignItems={"flex-end"} spacing={1}>
                               <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
@@ -339,6 +348,8 @@ function Page() {
                       </Paper>
                     ))}
                   </Stack>
+                ) : isApprovedLoading ? (
+                  <CircularProgress />
                 ) : (
                   <Stack sx={{ my: 4 }} alignItems="center" direction="column" spacing={2} justifyContent="center">
                     <NoConnectionIllustartion />

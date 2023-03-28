@@ -12,7 +12,10 @@ import SecurityIcon from "@mui/icons-material/Security"
 import PhoneIcon from "@mui/icons-material/Phone"
 import MailIcon from "@mui/icons-material/Mail"
 import { useRouter } from "next/router"
+import CancelIcon from "@mui/icons-material/Cancel"
 import NavLayout from "../../../../components/layouts/nav"
+import IconButton from "@mui/material/IconButton"
+import Stack from "@mui/material/Stack"
 
 const navItems = [
   {
@@ -33,9 +36,22 @@ function Page() {
   const router = useRouter()
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
-        Password & Security
-      </Typography>
+      <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
+        <Typography variant="h6" sx={{ my: 1, color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
+          Password & Security
+        </Typography>
+
+        <IconButton
+          aria-label="close"
+          onClick={() => router.back()}
+          sx={{
+            color: (theme) => theme.palette.primary.main,
+            display: { xs: "inline-block", md: "none" },
+          }}
+        >
+          <CancelIcon fontSize="inherit" />
+        </IconButton>
+      </Stack>
       <List>
         {navItems.map((item) => (
           <ListItem key={item.name} disablePadding>

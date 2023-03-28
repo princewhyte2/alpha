@@ -225,7 +225,7 @@ function Page() {
         <Typography variant="h6" sx={{ my: 1, color: "primary.dark", fontSize: { xs: 16, md: 20 } }}>
           My Work
         </Typography>
-        {/* {!matches && (
+        {!matches && (
           <IconButton
             aria-label="close"
             onClick={() => router.back()}
@@ -235,7 +235,7 @@ function Page() {
           >
             <CancelIcon fontSize="inherit" />
           </IconButton>
-        )} */}
+        )}
       </Stack>
       <Stack
         direction={{ xs: "column-reverse", md: "row" }}
