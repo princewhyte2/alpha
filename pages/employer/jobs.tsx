@@ -356,7 +356,7 @@ function Page() {
               </Stack>
               <Stack direction="column" spacing={2}>
                 {isJobsLoading && <CircularProgress />}
-                {jobsList.length < 1 ? (
+                {jobsList?.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
