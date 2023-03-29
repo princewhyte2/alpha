@@ -1,11 +1,17 @@
-import { ReactElement, useCallback, useState, useEffect } from "react"
+import { ReactElement, useCallback, useState, useEffect, useRef } from "react"
 import MessageIcon from "@mui/icons-material/Message"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme, Theme } from "@mui/material/styles"
+
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
 import CircularProgress from "@mui/material/CircularProgress"
-
+import { useConfirm } from "material-ui-confirm"
 import Card from "@mui/material/Card"
 import Link from "@mui/material/Link"
 import Avatar from "@mui/material/Avatar"
@@ -28,6 +34,7 @@ import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgres
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 import Paper from "@mui/material/Paper"
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import TextField from "@mui/material/TextField"
 import { styled } from "@mui/material/styles"
 import Chip from "@mui/material/Chip"
@@ -54,6 +61,7 @@ import NoInvitationIllustration from "../../components/icons/NoInvitationIllustr
 import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustration"
 import { useRouter } from "next/router"
 import profileServices from "../../services/profile"
+import messagingService from "../../services/messaging"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -126,6 +134,7 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 }
 
 function Page() {
+  const confirm = useConfirm()
   const router = useRouter()
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
@@ -145,8 +154,6 @@ function Page() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
-
-  console.log("user", user)
 
   const { data: unApprovedConnectionList } = useSWR(
     "unApprovedConnections",
@@ -172,6 +179,8 @@ function Page() {
     },
     [],
   )
+
+  console.log("approved list", approvedConnectionList)
 
   useEffect(() => {
     if (!searchTerm) {
@@ -204,38 +213,115 @@ function Page() {
   )
 
   const rejectConnectionRequest = useCallback(
-    (userId: string) => async () => {
-      try {
-        const response = await connectionService.rejectConnectionRequest(userId)
-        mutate("unApprovedConnections")
-        mutate("approvedConnections")
-        setType("success")
-        setMessage(response.message)
-        setIsError(true)
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
-      }
+    (userId: string) => () => {
+      confirm({ title: "Reject Connection", description: `Are you sure you want to reject this connection request?` })
+        .then(async () => {
+          try {
+            const response = await connectionService.rejectConnectionRequest(userId)
+            mutate("unApprovedConnections")
+            mutate("approvedConnections")
+            setType("success")
+            setMessage(response.message)
+            setIsError(true)
+          } catch (error: any) {
+            setType("error")
+            if (error.response) {
+              setMessage(error.response.data.message)
+            } else if (error.request) {
+              console.log(error.request)
+            } else {
+              console.log("Error", error.message)
+            }
+            setIsError(true)
+          }
+        })
+        .catch(() => {})
     },
     [],
   )
 
-  const handleSendMessage = async (userId: string) => {
-    router.push(`/profile/${userId}`)
-    // const defaultMessage = "we are starting ur converstation"
-    // try {
-    //   const chat = await messagingService.sendMessage("", { receiver_id: userId, message: defaultMessage })
-    //   console.log("chat", chat)
-    // } catch (error) {
-    //   console.log("error", error)
-    // }
+  const unFollowConnection = useCallback(
+    (userId: string, userName: string) => () => {
+      confirm({ description: `Remove ${userName} as a connection` })
+        .then(async () => {
+          /* ... */
+          try {
+            const response = await connectionService.unFollowConnection(userId)
+            mutate("unApprovedConnections")
+            mutate("approvedConnections")
+            setType("success")
+            setMessage(response.message)
+            setIsError(true)
+          } catch (error: any) {
+            setType("error")
+            if (error.response) {
+              setMessage(error.response.data.message)
+            } else if (error.request) {
+              console.log(error.request)
+            } else {
+              console.log("Error", error.message)
+            }
+            setIsError(true)
+          }
+        })
+        .catch((err: any) => {
+          /* ... */
+          console.log("error of prompt", err)
+        })
+    },
+    [],
+  )
+
+  // const handleSendMessage = async (userId: string) => {
+  //   router.push(`/profile/${userId}`)
+
+  // }
+
+  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
+
+  const [open, setOpen] = useState(false)
+  const [chatUserId, setChatUserId] = useState("")
+  const messageInputRef = useRef()
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const hasConversation = (userId: string) => {
+    const conversation = conversations?.find((conversation: any) =>
+      conversation.relationships.participants.find((participant: any) => participant.id === userId),
+    )
+    return conversation?.id
+  }
+
+  const handleSendMessage = async () => {
+    //@ts-ignore
+    const defaultMessage: any = messageInputRef.current?.value
+    if (!defaultMessage) return
+    try {
+      const chat = await messagingService.sendMessage("", { receiver_id: chatUserId, message: defaultMessage })
+      console.log("chat", chat)
+      //@ts-ignore
+      messageInputRef.current.value = ""
+      setChatUserId("")
+      handleClose()
+      console.log("chat", chat)
+    } catch (error) {
+      console.log("error", error)
+    }
+  }
+
+  const handleChat = (userId: string) => {
+    const chatId = hasConversation(userId)
+    if (chatId) {
+      router.push(`/messaging/${chatId}`)
+    } else {
+      handleClickOpen()
+    }
   }
 
   return (
@@ -330,16 +416,32 @@ function Page() {
                               </Stack> */}
                             </Stack>
                             <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                              <IconButton size={matches ? "medium" : "small"} sx={{ mt: -1 }} aria-label="options">
-                                <MoreHorizIcon />
-                              </IconButton>
                               {!matches ? (
-                                <IconButton onClick={() => handleSendMessage(item.id)} size="small" color="primary">
+                                <IconButton
+                                  onClick={unFollowConnection(item.id, `${item.first_name} ${item.last_name}`)}
+                                  size="small"
+                                  color="error"
+                                >
+                                  <DeleteForeverIcon color="error" />
+                                </IconButton>
+                              ) : (
+                                <Button
+                                  size={matches ? "medium" : "small"}
+                                  onClick={unFollowConnection(item.id, `${item.first_name} ${item.last_name}`)}
+                                  sx={{ mt: -1 }}
+                                  color="error"
+                                  variant="outlined"
+                                >
+                                  Delete
+                                </Button>
+                              )}
+                              {!matches ? (
+                                <IconButton onClick={() => handleChat(item.id)} size="small" color="primary">
                                   <MessageIcon />
                                 </IconButton>
                               ) : (
-                                <Button onClick={() => handleSendMessage(item.id)} variant="contained">
-                                  View
+                                <Button onClick={() => handleChat(item.id)} variant="contained">
+                                  Message
                                 </Button>
                               )}
                             </Stack>
@@ -576,6 +678,27 @@ function Page() {
         </Grid>
       </Container>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Start Conversation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Start a conversation with {user?.first_name} {user?.middle_name} {user?.last_name} by sending a message
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="message-quick"
+            label="message"
+            inputRef={messageInputRef}
+            fullWidth
+            variant="standard"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSendMessage}>Send</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

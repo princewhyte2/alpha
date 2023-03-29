@@ -150,8 +150,6 @@ function Page() {
     )
     return conversation?.id
   }, [conversations, user])
-  console.log("conversations", conversations)
-  console.log("has conversation", hasConversation)
   const [open, setOpen] = useState(false)
   const messageInputRef = useRef()
 
@@ -219,7 +217,7 @@ function Page() {
     try {
       const response = await connectionService.sendConnectionRequest(user?.id)
       mutate("unApprovedConnections")
-      // mutate("approvedConnections")
+      mutate("approvedConnections")
       setType("success")
       setMessage(response.message)
       setIsError(true)

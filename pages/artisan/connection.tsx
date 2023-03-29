@@ -1,8 +1,8 @@
-import { ReactElement, useCallback, useState, useEffect, useMemo } from "react"
+import { ReactElement, useCallback, useState, useEffect, useMemo, useRef } from "react"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import MessageIcon from "@mui/icons-material/Message"
 import CircularProgress from "@mui/material/CircularProgress"
-
+import { useConfirm } from "material-ui-confirm"
 import dayjs from "dayjs"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import { generateHTML } from "@tiptap/core"
@@ -10,6 +10,11 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import Link from "@mui/material/Link"
 import updateLocale from "dayjs/plugin/updateLocale"
 import TiptapEditor from "../../components/TiptapEditor"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
 import BlockQuote from "@tiptap/extension-blockquote"
 import BulletList from "@tiptap/extension-bullet-list"
 import Bold from "@tiptap/extension-bold"
@@ -157,6 +162,7 @@ function Page() {
   const [value, setValue] = useState(0)
   const { mutate } = useSWRConfig()
   const [searchTerm, setSearchTerm] = useState("")
+  const confirm = useConfirm()
 
   const { data: jobsList } = useSWR(`/jobs`, jobService.getAllJobs)
 
@@ -227,65 +233,116 @@ function Page() {
   )
 
   const rejectConnectionRequest = useCallback(
-    (userId: string) => async () => {
-      try {
-        const response = await connectionService.rejectConnectionRequest(userId)
-        mutate("unApprovedConnections")
-        mutate("approvedConnections")
-        setType("success")
-        setMessage(response.message)
-        setIsError(true)
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
-      }
+    (userId: string) => () => {
+      confirm({ title: "Reject Connection", description: `Are you sure you want to reject this connection request?` })
+        .then(async () => {
+          try {
+            const response = await connectionService.rejectConnectionRequest(userId)
+            mutate("unApprovedConnections")
+            mutate("approvedConnections")
+            setType("success")
+            setMessage(response.message)
+            setIsError(true)
+          } catch (error: any) {
+            setType("error")
+            if (error.response) {
+              setMessage(error.response.data.message)
+            } else if (error.request) {
+              console.log(error.request)
+            } else {
+              console.log("Error", error.message)
+            }
+            setIsError(true)
+          }
+        })
+        .catch(() => {})
     },
     [],
   )
 
   const unFollowConnection = useCallback(
-    (userId: string) => async () => {
-      try {
-        const response = await connectionService.unFollowConnection(userId)
-        mutate("unApprovedConnections")
-        mutate("approvedConnections")
-        setType("success")
-        setMessage(response.message)
-        setIsError(true)
-      } catch (error: any) {
-        setType("error")
-        if (error.response) {
-          setMessage(error.response.data.message)
-        } else if (error.request) {
-          console.log(error.request)
-        } else {
-          console.log("Error", error.message)
-        }
-        setIsError(true)
-      }
+    (userId: string, userName: string) => () => {
+      confirm({ description: `Remove ${userName} as a connection` })
+        .then(async () => {
+          /* ... */
+          try {
+            const response = await connectionService.unFollowConnection(userId)
+            mutate("unApprovedConnections")
+            mutate("approvedConnections")
+            setType("success")
+            setMessage(response.message)
+            setIsError(true)
+          } catch (error: any) {
+            setType("error")
+            if (error.response) {
+              setMessage(error.response.data.message)
+            } else if (error.request) {
+              console.log(error.request)
+            } else {
+              console.log("Error", error.message)
+            }
+            setIsError(true)
+          }
+        })
+        .catch((err: any) => {
+          /* ... */
+          console.log("error of prompt", err)
+        })
     },
     [],
   )
 
-  const handleSendMessage = async (userId: string) => {
-    router.push(`/profile/${userId}`)
-    // const defaultMessage = "we are starting ur converstation"
-    // try {
-    //   const chat = await messagingService.sendMessage("", { receiver_id: userId, message: defaultMessage })
-    //   console.log("chat", chat)
-    // } catch (error) {
-    //   console.log("error", error)
-    // }
+  // const handleSendMessage = async (userId: string) => {
+  //   router.push(`/profile/${userId}`)
+
+  // }
+
+  const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
+
+  const [open, setOpen] = useState(false)
+  const [chatUserId, setChatUserId] = useState("")
+  const messageInputRef = useRef()
+
+  const handleClickOpen = () => {
+    setOpen(true)
   }
 
-  console.log("approved", approvedConnectionList)
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const hasConversation = (userId: string) => {
+    const conversation = conversations?.find((conversation: any) =>
+      conversation.relationships.participants.find((participant: any) => participant.id === userId),
+    )
+    return conversation?.id
+  }
+
+  const handleSendMessage = async () => {
+    //@ts-ignore
+    const defaultMessage: any = messageInputRef.current?.value
+    if (!defaultMessage) return
+    try {
+      const chat = await messagingService.sendMessage("", { receiver_id: chatUserId, message: defaultMessage })
+      console.log("chat", chat)
+      //@ts-ignore
+      messageInputRef.current.value = ""
+      setChatUserId("")
+      handleClose()
+      console.log("chat", chat)
+    } catch (error) {
+      console.log("error", error)
+    }
+  }
+
+  const handleChat = (userId: string) => {
+    const chatId = hasConversation(userId)
+    if (chatId) {
+      router.push(`/messaging/${chatId}`)
+    } else {
+      handleClickOpen()
+    }
+  }
 
   useEffect(() => {
     if (!searchTerm) {
@@ -389,13 +446,17 @@ function Page() {
                                 <MoreHorizIcon />
                               </IconButton> */}
                               {!matches ? (
-                                <IconButton onClick={unFollowConnection(item.id)} size="small" color="error">
+                                <IconButton
+                                  onClick={unFollowConnection(item.id, `${item.first_name} ${item.last_name}`)}
+                                  size="small"
+                                  color="error"
+                                >
                                   <DeleteForeverIcon color="error" />
                                 </IconButton>
                               ) : (
                                 <Button
                                   size={matches ? "medium" : "small"}
-                                  onClick={unFollowConnection(item.id)}
+                                  onClick={unFollowConnection(item.id, `${item.first_name} ${item.last_name}`)}
                                   sx={{ mt: -1 }}
                                   color="error"
                                   variant="outlined"
@@ -404,12 +465,12 @@ function Page() {
                                 </Button>
                               )}
                               {!matches ? (
-                                <IconButton onClick={() => handleSendMessage(item.id)} size="small" color="primary">
+                                <IconButton onClick={() => handleChat(item.id)} size="small" color="primary">
                                   <MessageIcon />
                                 </IconButton>
                               ) : (
-                                <Button onClick={() => handleSendMessage(item.id)} variant="contained">
-                                  View
+                                <Button onClick={() => handleChat(item.id)} variant="contained">
+                                  Message
                                 </Button>
                               )}
                             </Stack>
@@ -628,6 +689,27 @@ function Page() {
         </Grid>
       </Container>
       <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Start Conversation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Start a conversation with {user?.first_name} {user?.middle_name} {user?.last_name} by sending a message
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="message-quick"
+            label="message"
+            inputRef={messageInputRef}
+            fullWidth
+            variant="standard"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSendMessage}>Send</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
