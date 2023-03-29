@@ -180,7 +180,7 @@ function Page() {
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
-  // console.log("path", router?.pathname)
+  // //console.log("path", router?.pathname)
   const { data: posts, isLoading: isPostLoading } = useSWR("posts", postService.postFetcher)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
     revalidateIfStale: false,
@@ -229,11 +229,11 @@ function Page() {
             text: `Check out this amazing post on workfynder \n "${stripHtml(content)}" \n`,
           })
           .then(() => {
-            console.log("Thanks for sharing!", postId)
+            //console.log("Thanks for sharing!", postId)
           })
           .catch(console.error)
       } else {
-        console.log("no active share")
+        //console.log("no active share")
       }
     },
     [],
@@ -268,9 +268,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {
@@ -295,9 +295,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {
@@ -322,9 +322,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {
@@ -337,15 +337,15 @@ function Page() {
       try {
         const response = await postService.likePost(String(postId))
         mutate("posts")
-        console.log("like", response)
+        //console.log("like", response)
       } catch (error: any) {
         setType("error")
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -358,15 +358,15 @@ function Page() {
       try {
         const response = await postService.unlikePost(String(postId))
         mutate("posts")
-        console.log("like", response)
+        //console.log("like", response)
       } catch (error: any) {
         setType("error")
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -385,9 +385,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     }
@@ -420,9 +420,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -432,7 +432,7 @@ function Page() {
 
   useEffect(() => {
     if (install !== null) {
-      console.log("not null")
+      //console.log("not null")
     }
   }, [install])
 
@@ -589,7 +589,13 @@ function Page() {
                 {files?.map((file) => (
                   <Grid key={file.id} item xs={12} md={4}>
                     <Card sx={{ position: "relative" }}>
-                      <CardMedia sx={{ height: 140 }} image={file.url} title={file.name} />
+                      <CardMedia
+                        loading="lazy"
+                        component="img"
+                        sx={{ height: 140 }}
+                        image={file.url}
+                        title={file.name}
+                      />
 
                       <IconButton
                         onClick={() => setFiles((prev) => prev.filter((item) => item.id !== file.id))}
@@ -708,7 +714,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
     setExpanded(!expanded)
   }, [expanded])
 
-  // console.log("comments", postComments)
+  // //console.log("comments", postComments)
 
   return (
     <Card
@@ -792,7 +798,8 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
             />
           ) : (
             <CardMedia
-              component={"img"}
+              loading="lazy"
+              component="img"
               height="100%"
               image={item.relationships.medias[0].url}
               title={item.relationships.medias[0].name}

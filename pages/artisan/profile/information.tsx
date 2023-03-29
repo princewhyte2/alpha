@@ -200,16 +200,16 @@ function Page() {
       const res = await uploadService.uploadFile(formData)
       const item = res.result.file.id
       const resp = await profileServices.updateUserProfile({ profile_image_id: item } as any)
-      console.log(resp)
+      //console.log(resp)
       mutate("userProfile")
     } catch (error: any) {
       setType("error")
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {
@@ -246,9 +246,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {
@@ -290,9 +290,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       } finally {
@@ -315,7 +315,7 @@ function Page() {
         summary: workSummaryRef.current?.value,
       }
 
-      // console.log("post", data)
+      // //console.log("post", data)
 
       setIsWorkLoading(true)
       try {
@@ -341,9 +341,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       } finally {
@@ -369,9 +369,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     }
@@ -407,9 +407,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -430,9 +430,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -470,7 +470,7 @@ function Page() {
       revalidateOnReconnect: false,
     },
   )
-  // console.log("skills", skills)
+  // //console.log("skills", skills)
 
   const defaultProps = {
     options: occupations,
@@ -506,9 +506,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       } finally {
@@ -538,9 +538,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }

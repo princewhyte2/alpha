@@ -167,13 +167,13 @@ function Page() {
     if (!defaultMessage) return
     try {
       const chat = await messagingService.sendMessage("", { receiver_id: user?.id, message: defaultMessage })
-      console.log("chat", chat)
+      //console.log("chat", chat)
       //@ts-ignore
       messageInputRef.current.value = ""
       handleClose()
-      console.log("chat", chat)
+      //console.log("chat", chat)
     } catch (error) {
-      console.log("error", error)
+      //console.log("error", error)
     }
   }
 
@@ -185,14 +185,14 @@ function Page() {
     }
   }
 
-  console.log("user", user)
+  //console.log("user", user)
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
   //TODO : scale this algorightm later
 
   const isConnection = useMemo(() => {
     return approvedConnectionList?.some((item: any) => item.id === user?.id)
   }, [approvedConnectionList, user])
-  console.log(approvedConnectionList, "list")
+  //console.log(approvedConnectionList, "list")
 
   const { data: occupations } = useSWR(`/occupations`, utilsService.getOccupations, {
     revalidateIfStale: false,
@@ -205,7 +205,7 @@ function Page() {
   const [isError, setIsError] = useState(false)
   const [type, setType] = useState<AlertColor>("error")
 
-  // console.log("skills", skills)
+  // //console.log("skills", skills)
 
   const defaultProps = {
     options: occupations,
@@ -226,9 +226,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {

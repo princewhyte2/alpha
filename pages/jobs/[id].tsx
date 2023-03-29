@@ -202,7 +202,7 @@ function Page() {
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
 
-  // console.log("job", jobsList)
+  // //console.log("job", jobsList)
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -257,9 +257,9 @@ function Page() {
   //       if (error.response) {
   //         setMessage(error.response.data.message)
   //       } else if (error.request) {
-  //         console.log(error.request)
+  //         //console.log(error.request)
   //       } else {
-  //         console.log("Error", error.message)
+  //         //console.log("Error", error.message)
   //       }
   //       setIsError(true)
   //     } finally {
@@ -282,9 +282,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -323,9 +323,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -617,7 +617,7 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
 
   const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
 
-  // console.log("applicants", jobApplicantsList)
+  // //console.log("applicants", jobApplicantsList)
   //error handler
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
@@ -661,7 +661,7 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
     }
   }, [])
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
-  // console.log("user", user)
+  // //console.log("user", user)
   const isAppliedFor = useMemo(() => {
     if (user?.user_type === "employer" || !jobApplicantsList) {
       return false

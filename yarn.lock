@@ -4762,11 +4762,6 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-pwa-install@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/use-pwa-install/-/use-pwa-install-1.0.1.tgz#344139883c89fc60e3d2a51a7a345fb427ef6633"
-  integrity sha512-Gr6x+lT9/hco3o5iz1KETSlo9a0q1Hs44shwGFmL8OqrOj4zjXF4ni+fKqmXVaImTnFG4ndWQfUdZ1ochL4dUg==
-
 use-sync-external-store@1.2.0, use-sync-external-store@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"

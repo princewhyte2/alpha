@@ -79,9 +79,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {
@@ -175,13 +175,13 @@ function Page() {
           maxWidth: "29.68rem",
           width: "100%",
         }}
-        onSubmit={() => console.log("submit")}
+        onSubmit={() => //console.log("submit")}
       >
         <OutlinedInput sx={{ width: "3.5rem", height: "3.5rem", borderRadius: "4px", border: "1px solid #BDBDBD" }} />
         <MuiOtpInput display={"flex"} value={otp} onChange={handleChange} length={6} gap={matches ? 4 : 1} />
         <Typography textAlign="left" sx={{ width: "100%", color: "primary.dark", m: 2, fontSize: { xs: "0.875rem" } }}>
           Didn’t get a verification token?
-          <Button onClick={() => console.log()} variant="text">
+          <Button onClick={() => //console.log()} variant="text">
             Resend Token
           </Button>
         </Typography>

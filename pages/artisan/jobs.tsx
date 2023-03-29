@@ -156,8 +156,8 @@ function Page() {
     revalidateOnReconnect: false,
   })
 
-  console.log("user", user)
-  console.log("jobsList", jobsList)
+  //console.log("user", user)
+  //console.log("jobsList", jobsList)
 
   //error handler
   const [message, setMessage] = useState("An error occured")
@@ -181,9 +181,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -437,7 +437,7 @@ function RecentJobCard({ item }: any) {
       return item?.description
     }
   }, [])
-  // console.log("our com", item)
+  // //console.log("our com", item)
   return (
     <Box key={item.id} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
       <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>

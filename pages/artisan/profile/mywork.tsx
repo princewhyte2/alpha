@@ -114,9 +114,9 @@ function Page() {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     }
@@ -166,9 +166,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       } finally {
@@ -185,15 +185,15 @@ function Page() {
       try {
         const response = await projectService.deleteProject(id)
         mutate("userProjects")
-        console.log("response", response)
+        //console.log("response", response)
       } catch (error: any) {
         setType("error")
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       } finally {

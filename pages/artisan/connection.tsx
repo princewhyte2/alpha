@@ -211,7 +211,7 @@ function Page() {
     (userId: string) => async () => {
       try {
         const response = await connectionService.acceptConnectionRequest(userId)
-        console.log("accept", response)
+        //console.log("accept", response)
         mutate("unApprovedConnections")
         mutate("approvedConnections")
         setType("success")
@@ -222,9 +222,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -248,9 +248,9 @@ function Page() {
             if (error.response) {
               setMessage(error.response.data.message)
             } else if (error.request) {
-              console.log(error.request)
+              //console.log(error.request)
             } else {
-              console.log("Error", error.message)
+              //console.log("Error", error.message)
             }
             setIsError(true)
           }
@@ -277,16 +277,16 @@ function Page() {
             if (error.response) {
               setMessage(error.response.data.message)
             } else if (error.request) {
-              console.log(error.request)
+              //console.log(error.request)
             } else {
-              console.log("Error", error.message)
+              //console.log("Error", error.message)
             }
             setIsError(true)
           }
         })
         .catch((err: any) => {
           /* ... */
-          console.log("error of prompt", err)
+          //console.log("error of prompt", err)
         })
     },
     [],
@@ -324,14 +324,14 @@ function Page() {
     if (!defaultMessage) return
     try {
       const chat = await messagingService.sendMessage("", { receiver_id: chatUserId, message: defaultMessage })
-      console.log("chat", chat)
+      //console.log("chat", chat)
       //@ts-ignore
       messageInputRef.current.value = ""
       setChatUserId("")
       handleClose()
-      console.log("chat", chat)
+      //console.log("chat", chat)
     } catch (error) {
-      console.log("error", error)
+      //console.log("error", error)
     }
   }
 
@@ -748,7 +748,7 @@ function RecentJobCard({ item }: any) {
       return item?.description
     }
   }, [])
-  // console.log("our com", item)
+  // //console.log("our com", item)
   return (
     <Box key={item.id} sx={{ p: 2, backgroundColor: "#F8F9FC" }}>
       <Typography sx={{ fontSize: 14 }} variant="body1" color="primary.main" gutterBottom>

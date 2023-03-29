@@ -44,7 +44,6 @@
     "react-use-pwa-install": "^0.2.4",
     "swr": "^2.0.0",
     "swr-devtools": "^1.2.2",
-    "use-pwa-install": "^1.0.1",
     "zustand": "^4.1.4"
   },
   "devDependencies": {

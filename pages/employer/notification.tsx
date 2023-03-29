@@ -140,14 +140,14 @@ function Page() {
       // revalidateOnReconnect: false,
     },
   )
-  console.log("user notifications", notifications)
+  //console.log("user notifications", notifications)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
 
-  console.log("user", user)
+  //console.log("user", user)
   const [value, setValue] = useState(0)
   const [searchTerm, setSearchTerm] = useState("")
   const { mutate } = useSWRConfig()
@@ -160,7 +160,7 @@ function Page() {
     setValue(newValue)
   }
 
-  //   console.log("user", user)
+  //   //console.log("user", user)
 
   //   const { data: unApprovedConnectionList } = useSWR(
   //     "unApprovedConnections",
@@ -204,9 +204,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -228,9 +228,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -243,9 +243,9 @@ function Page() {
     // const defaultMessage = "we are starting ur converstation"
     // try {
     //   const chat = await messagingService.sendMessage("", { receiver_id: userId, message: defaultMessage })
-    //   console.log("chat", chat)
+    //   //console.log("chat", chat)
     // } catch (error) {
-    //   console.log("error", error)
+    //   //console.log("error", error)
     // }
   }
   const handleReadNotification = (notififcationId: string) => {
@@ -255,7 +255,7 @@ function Page() {
     notificationsServices
       .markReadNotification(notififcationId)
       .then(() => mutate("notifications"))
-      .catch((err) => console.log(err))
+      .catch((err) => //console.log(err))
   }
 
   return (

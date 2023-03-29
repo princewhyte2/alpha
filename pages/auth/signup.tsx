@@ -138,9 +138,9 @@ const SignUp = () => {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     } finally {
@@ -216,21 +216,21 @@ const SignUp = () => {
             router.push(redirect)
           }
         } catch (error) {
-          console.log(error)
+          //console.log(error)
         }
 
         return
       }
       setType("error")
       if (error.response) {
-        console.log("error is here 1", error)
+        //console.log("error is here 1", error)
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
-        console.log("error is here 2", error)
+        //console.log(error.request)
+        //console.log("error is here 2", error)
       } else {
-        console.log("Error", error.message)
-        console.log("error is here 3", error)
+        //console.log("Error", error.message)
+        //console.log("error is here 3", error)
       }
       setIsError(true)
     }
@@ -250,7 +250,7 @@ const SignUp = () => {
 
       // const user = res.user
       // const response = await authService.googleLogin()
-      // console.log("google", response)
+      // //console.log("google", response)
 
       const user = res.result.user
 
@@ -310,7 +310,7 @@ const SignUp = () => {
             router.push(redirect)
           }
         } catch (error) {
-          console.log(error)
+          //console.log(error)
         }
 
         return
@@ -319,9 +319,9 @@ const SignUp = () => {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     }

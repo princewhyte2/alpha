@@ -120,7 +120,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
     setExpanded(!expanded)
   }, [expanded])
 
-  // console.log("comments", postComments)
+  // //console.log("comments", postComments)
 
   return (
     <Card

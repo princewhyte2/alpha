@@ -2,6 +2,7 @@ interface OnboardingData { other_phone_number:string, title?: string, first_name
 
 declare module 'react-file-previewer'
 
+
  interface Qualifications {
         id: number;
         name: string;

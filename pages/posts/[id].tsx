@@ -36,15 +36,15 @@ function Page() {
         }
         await postService.likePost(String(postId))
         mutate(`/posts/${postId}`)
-        // console.log("like", response)
+        // //console.log("like", response)
       } catch (error: any) {
         setType("error")
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -62,11 +62,11 @@ function Page() {
             text: "Check out this amazing post on workfynder",
           })
           .then(() => {
-            console.log("Thanks for sharing!", postId)
+            //console.log("Thanks for sharing!", postId)
           })
           .catch(console.error)
       } else {
-        console.log("no active share")
+        //console.log("no active share")
       }
     },
     [],
@@ -81,15 +81,15 @@ function Page() {
         }
         await postService.unlikePost(String(postId))
         mutate(`/posts/${postId}`)
-        // console.log("like", response)
+        // //console.log("like", response)
       } catch (error: any) {
         setType("error")
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -107,15 +107,15 @@ function Page() {
       // setMessage(response?.message)
       // setType("success")
       // setIsError(true)
-      console.log("comment", response)
+      //console.log("comment", response)
     } catch (error: any) {
       // setType("error")
       // if (error.response) {
       //   setMessage(error.response.data.message)
       // } else if (error.request) {
-      //   console.log(error.request)
+      //   //console.log(error.request)
       // } else {
-      //   console.log("Error", error.message)
+      //   //console.log("Error", error.message)
       // }
       // setIsError(true)
     }
@@ -148,9 +148,9 @@ function Page() {
         // if (error.response) {
         //   setMessage(error.response.data.message)
         // } else if (error.request) {
-        //   console.log(error.request)
+        //   //console.log(error.request)
         // } else {
-        //   console.log("Error", error.message)
+        //   //console.log("Error", error.message)
         // }
         // setIsError(true)
       }
@@ -158,7 +158,7 @@ function Page() {
     [],
   )
 
-  console.log("post", post)
+  //console.log("post", post)
 
   return (
     <Box sx={{ flexGrow: 1 }}>

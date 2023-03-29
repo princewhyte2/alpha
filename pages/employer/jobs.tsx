@@ -205,7 +205,7 @@ function Page() {
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
 
-  console.log("job list", jobsList)
+  //console.log("job list", jobsList)
 
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
@@ -262,9 +262,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       } finally {
@@ -305,9 +305,9 @@ function Page() {
         if (error.response) {
           setMessage(error.response.data.message)
         } else if (error.request) {
-          console.log(error.request)
+          //console.log(error.request)
         } else {
-          console.log("Error", error.message)
+          //console.log("Error", error.message)
         }
         setIsError(true)
       }
@@ -602,9 +602,9 @@ function JobCard({ item, onEdit, onDelete }: any) {
     revalidateOnReconnect: false,
   })
   // const { data: jobApplicantsList } = useSWR(`/jobs/${item?.id}/applications`, jobService.getJobApplicants)
-  // console.log("job item", item)
+  // //console.log("job item", item)
 
-  // console.log("applicants", jobApplicantsList)
+  // //console.log("applicants", jobApplicantsList)
   const router = useRouter()
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

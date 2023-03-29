@@ -187,8 +187,8 @@ const Messaging = () => {
         })
       }
     } catch (error) {
-      console.log({ error })
-      console.log({ message: router.query?.id })
+      //console.log({ error })
+      //console.log({ message: router.query?.id })
     }
   }, [router?.query?.id, conversation, user, scrollToBottomRef])
 
@@ -228,15 +228,15 @@ const Messaging = () => {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setIsError(true)
     }
   }
 
-  console.log("conver", conversation)
+  //console.log("conver", conversation)
 
   const handleSendMessage = async () => {
     const chatMessage = messageInputRef.current?.value
@@ -255,7 +255,7 @@ const Messaging = () => {
       //@ts-ignore
       messageInputRef.current.value = ""
     } catch (error) {
-      console.log(error)
+      //console.log(error)
     }
   }
 

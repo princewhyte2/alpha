@@ -47,9 +47,9 @@ const Verification = () => {
       if (error.response) {
         setMessage(error.response.data.message)
       } else if (error.request) {
-        console.log(error.request)
+        //console.log(error.request)
       } else {
-        console.log("Error", error.message)
+        //console.log("Error", error.message)
       }
       setType("error")
       setIsError(true)
@@ -136,7 +136,7 @@ const Verification = () => {
         >
           Didn’t receive an email or SMS?
           <Button
-            onClick={(): Promise<any> => authService.resendEmailToken().catch((err: any) => console.log(err))}
+            onClick={(): Promise<any> => authService.resendEmailToken().catch((err: any) => //console.log(err))}
             variant="text"
           >
             Retry

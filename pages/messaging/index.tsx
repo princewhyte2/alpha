@@ -64,7 +64,7 @@ const Root = styled("div")(({ theme }) => ({
 const Messaging = () => {
   // const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
   const { data: conversations } = useSWR("conversations", messagingService.getAllConversations)
-  console.log("conversations", conversations)
+  //console.log("conversations", conversations)
 
   // const scrollToBottom = () => {
   //   if (!scrollToBottomRef.current) return
