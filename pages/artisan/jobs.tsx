@@ -227,7 +227,7 @@ function Page() {
               </Stack>
               <Stack direction="column" spacing={2}>
                 {isJobsLoading && <CircularProgress />}
-                {jobsList.length < 1 ? (
+                {jobsList?.length < 1 ? (
                   <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
                     <NoPostIllustration />
                     <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
@@ -454,8 +454,12 @@ function RecentJobCard({ item }: any) {
         }}
       />
       <Stack direction="row" sx={{ mt: 2 }} justifyContent="space-between" alignItems="center" spacing={2}>
-        <Button onClick={() => router.push(`/jobs/${item.id}`)} variant="contained">
-          Apply
+        <Button
+          disabled={dayjs().isAfter(item.closing_at)}
+          onClick={() => router.push(`/jobs/${item.id}`)}
+          variant="contained"
+        >
+          {dayjs().isAfter(item.closing_at) ? "Expired" : "Apply"}
         </Button>
         <Typography sx={{ fontSize: 12, color: "#475467" }}>Closing: {dayjs().to(item.closing_at)}</Typography>
       </Stack>
