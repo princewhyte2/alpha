@@ -4,6 +4,7 @@ import { FilePreviewerThumbnail } from "react-file-previewer"
 import CircularProgress from "@mui/material/CircularProgress"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import Grid from "@mui/material/Grid"
+import FileOpenIcon from "@mui/icons-material/FileOpen"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
 import Stack from "@mui/material/Stack"
@@ -322,7 +323,7 @@ const Messaging = () => {
                   >
                     <Chip
                       variant="outlined"
-                      avatar={<Avatar {...stringAvatar(item.attributes.data[0].file_name)} />}
+                      icon={<FileOpenIcon />}
                       label={item.attributes.data[0].file_name}
                       sx={{
                         height: "100%",
