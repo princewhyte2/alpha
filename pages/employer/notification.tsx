@@ -255,7 +255,7 @@ function Page() {
     notificationsServices
       .markReadNotification(notififcationId)
       .then(() => mutate("notifications"))
-      .catch((err) => //console.log(err))
+      .catch(() => {})
   }
 
   return (
@@ -308,8 +308,8 @@ function Page() {
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
                               sx={{ width: 40, height: 40 }}
-                              alt={user?.relationships?.company?.name}
-                              src={user?.relationships?.company?.logo_image.url}
+                              alt={item.data?.sender.first_name}
+                              src={item.data?.sender?.profile_image?.url}
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
@@ -348,8 +348,8 @@ function Page() {
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
                               sx={{ width: 40, height: 40 }}
-                              alt={user?.relationships?.company?.name}
-                              src={user?.relationships?.company?.logo_image.url}
+                              alt={item.data?.sender.first_name}
+                              src={item.data?.sender?.profile_image?.url}
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>

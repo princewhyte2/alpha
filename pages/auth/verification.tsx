@@ -135,10 +135,7 @@ const Verification = () => {
           sx={{ width: "100%", color: "primary.dark", m: 2, fontSize: { xs: "0.875rem" } }}
         >
           Didn’t receive an email or SMS?
-          <Button
-            onClick={(): Promise<any> => authService.resendEmailToken().catch((err: any) => //console.log(err))}
-            variant="text"
-          >
+          <Button onClick={(): Promise<any> => authService.resendEmailToken().catch(() => {})} variant="text">
             Retry
           </Button>
         </Typography>
