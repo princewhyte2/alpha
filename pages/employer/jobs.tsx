@@ -49,7 +49,7 @@ import { styled } from "@mui/material/styles"
 import Chip from "@mui/material/Chip"
 import useSWR, { useSWRConfig } from "swr"
 import SearchIcon from "@mui/icons-material/Search"
-import { hobbiesList } from "../../utils"
+
 import Autocomplete from "@mui/material/Autocomplete"
 import InputLabel from "@mui/material/InputLabel"
 import { generateHTML } from "@tiptap/core"
@@ -202,19 +202,19 @@ function Page() {
   )
   const [isLoading, setIsLoading] = useState(false)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },)
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
   const [skills, setSkills] = useState<string[]>([])
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
 
-  const {data:skillsList} = useSWR("skillsList",utilsService.getAllSkills, {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },)
+  const { data: skillsList } = useSWR("skillsList", utilsService.getAllSkills, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  })
 
   // console.log("skill list", skillsList)
 
@@ -326,11 +326,10 @@ function Page() {
     [],
   )
 
-   const defaultProps = {
-    options: skillsList,
-    getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
-  }
-
+  const skillsLists = useMemo<string[]>(() => {
+    if (!skillsList) return [""]
+    return skillsList?.map((item: any) => item.name)
+  }, [skillsList])
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -517,8 +516,7 @@ function Page() {
                   fullWidth
                   value={skills}
                   onChange={(_ev, val) => setSkills(val)}
-                  
-                  {...defaultProps}
+                  options={skillsLists}
                   renderInput={(params) => (
                     <TextField {...params} label="Skills Needed" variant="outlined" placeholder="Skills Needed" />
                   )}
