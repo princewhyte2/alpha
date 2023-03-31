@@ -79,6 +79,7 @@ import profileServices from "../../services/profile"
 import NavLayout from "../../components/layouts/nav"
 import TiptapEditor from "../../components/TiptapEditor"
 import connectionService from "../../services/connection"
+import utilsService from "../../services/utils"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -200,12 +201,22 @@ function Page() {
     },
   )
   const [isLoading, setIsLoading] = useState(false)
-  const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
+  const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },)
   const [skills, setSkills] = useState<string[]>([])
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
 
-  //console.log("job list", jobsList)
+  const {data:skillsList} = useSWR("skillsList",utilsService.getAllSkills, {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },)
+
+  // console.log("skill list", skillsList)
 
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
@@ -314,6 +325,12 @@ function Page() {
     },
     [],
   )
+
+   const defaultProps = {
+    options: skillsList,
+    getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
+  }
+
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -500,7 +517,8 @@ function Page() {
                   fullWidth
                   value={skills}
                   onChange={(_ev, val) => setSkills(val)}
-                  options={hobbiesList}
+                  
+                  {...defaultProps}
                   renderInput={(params) => (
                     <TextField {...params} label="Skills Needed" variant="outlined" placeholder="Skills Needed" />
                   )}

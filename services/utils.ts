@@ -5,6 +5,11 @@ const getBusinessSectors = async () => {
     return response.data.result.industries
 }
 
+const getAllSkills =async (params:type) => {
+    const response = await axiosInstance.get('/skills')
+    return response.data.result.skills.data
+}
+
 const getOccupations = async (url:string) => {
     const response = await axiosInstance.get(url)
     return response.data.result.occupations
@@ -21,7 +26,7 @@ const searchUsers = async (url: string) => {
 }
 
 const utilsService = {
-getBusinessSectors,getOccupations,getOccupationsSkill,searchUsers
+getBusinessSectors,getOccupations,getOccupationsSkill,searchUsers,getAllSkills
 }
 
 export default utilsService
