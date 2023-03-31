@@ -5,7 +5,7 @@ const getBusinessSectors = async () => {
     return response.data.result.industries
 }
 
-const getAllSkills =async (params:type) => {
+const getAllSkills =async () => {
     const response = await axiosInstance.get('/skills')
     return response.data.result.skills.data
 }
