@@ -282,7 +282,7 @@ function Page() {
         setIsLoading(false)
       }
     },
-    [user, skills, editor],
+    [user, skills, editor, searchTerm],
   )
 
   const onCloseJobModal = useCallback(() => {
