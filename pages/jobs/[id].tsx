@@ -333,6 +333,8 @@ function Page() {
     [],
   )
 
+  console.log("here is job list", jobsList)
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container disableGutters maxWidth="xl">
@@ -636,7 +638,8 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
     setExpanded(!expanded)
   }, [expanded])
 
-  const content = useMemo(() => {
+  const content: any = useMemo(() => {
+    if (!item?.description) return ""
     try {
       return generateHTML(JSON.parse(item.description), [
         Document,
@@ -659,7 +662,8 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
     } catch (error) {
       return item?.description
     }
-  }, [])
+  }, [item])
+  console.log("item description", item.description)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   // //console.log("user", user)
   const isAppliedFor = useMemo(() => {
@@ -715,14 +719,13 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
         </Stack>
         {/* <Typography sx={{ fontSize: 14, color: "#667085" }}>{item.description}</Typography> */}
         <div
-          onClick={() => setIsShowMore(true)}
           className="ProseMirror"
           dangerouslySetInnerHTML={{
-            __html: isShowMore ? content : htmlTruncate(content, 200, { ellipsis: "... see more" }),
+            __html: content,
           }}
         />
         <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
-          {item.skills.map((skill: string) => (
+          {item.skills?.map((skill: string) => (
             <Chip key={skill} label={skill} />
           ))}
         </Stack>

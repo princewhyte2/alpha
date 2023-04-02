@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography"
 import { FilePreviewerThumbnail } from "react-file-previewer"
 import CircularProgress from "@mui/material/CircularProgress"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
+import LinearProgress from "@mui/material/LinearProgress"
 import Grid from "@mui/material/Grid"
 import FileOpenIcon from "@mui/icons-material/FileOpen"
 import Box from "@mui/material/Box"
@@ -108,6 +109,7 @@ function stringAvatar(name: string) {
 
 const Messaging = () => {
   const { mutate } = useSWRConfig()
+  const [isFileUploading, setIsFileUploading] = useState(false)
   const router = useRouter()
   const scrollToBottomRef = useRef<HTMLDivElement | null>(null)
   const messageInputRef = useRef<HTMLInputElement>()
@@ -198,9 +200,10 @@ const Messaging = () => {
   const [type, setType] = useState<AlertColor>("error")
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return
+    if (!event.target.files?.length) return
 
     try {
+      setIsFileUploading(true)
       const file = event.target.files[0]
       if (!file) return
       const formData = new FormData()
@@ -234,6 +237,8 @@ const Messaging = () => {
         //console.log("Error", error.message)
       }
       setIsError(true)
+    } finally {
+      setIsFileUploading(false)
     }
   }
 
@@ -357,6 +362,13 @@ const Messaging = () => {
               </Stack>
             )
           })}
+          {isFileUploading && (
+            <Stack sx={{ maxWidth: "80%" }} direction={"row"} justifyContent={"flex-end"}>
+              <Box>
+                <CircularProgress />
+              </Box>
+            </Stack>
+          )}
           <div style={{ float: "left", clear: "both", height: "60px" }} ref={scrollToBottomRef}></div>
         </Stack>
       </Box>

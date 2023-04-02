@@ -209,12 +209,44 @@ function Page() {
   const [skills, setSkills] = useState<string[]>([])
   const [jobDetails, setJobDetails] = useState<any>()
   const [isPostJob, setIsPostJob] = useState(false)
+  const [occupationId, setOccupationId] = useState(undefined)
 
-  const { data: skillsList } = useSWR("skillsList", utilsService.getAllSkills, {
+  // const { data: skillsList } = useSWR("skillsList", utilsService.getAllSkills, {
+  //   revalidateIfStale: false,
+  //   revalidateOnFocus: false,
+  //   revalidateOnReconnect: false,
+  // })
+
+  const { data: occupations } = useSWR(`/occupations`, utilsService.getOccupations, {
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   })
+
+  const [userOccupation, setUserOccupation] = useState<
+    | {
+        id: number
+        name: string
+        active: number
+        industry_id: number
+      }
+    | any
+  >({ id: 0, name: "", active: 0, industry_id: 0 })
+
+  const defaultProps = {
+    options: occupations,
+    getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
+  }
+
+  const { data: skillsList, error: skillsError } = useSWR(
+    userOccupation?.id ? `/occupations/${userOccupation?.id}/skills` : null,
+    utilsService.getOccupationsSkill,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  )
 
   // console.log("skill list", skillsList)
 
@@ -510,7 +542,39 @@ function Page() {
                   required
                 /> */}
               </Grid>
-              <Grid item xs={12} md={8}>
+              {occupations && (
+                <Grid item xs={12}>
+                  <Autocomplete
+                    fullWidth
+                    value={userOccupation}
+                    {...defaultProps}
+                    onChange={(_ev, val) => setUserOccupation(val)}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Ocupation" variant="outlined" placeholder="Select occupation" />
+                    )}
+                  />
+                </Grid>
+              )}
+              {userOccupation?.id && !skillsError && !skillsList ? (
+                <Grid item xs={12}>
+                  <CircularProgress />
+                </Grid>
+              ) : null}
+              {skillsList && (
+                <Grid item xs={12}>
+                  <Autocomplete
+                    multiple
+                    fullWidth
+                    value={skills}
+                    onChange={(_ev, val) => setSkills(val)}
+                    options={skillsLists}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Skills Needed" variant="outlined" placeholder="Skills Needed" />
+                    )}
+                  />
+                </Grid>
+              )}
+              {/* <Grid item xs={12} md={8}>
                 <Autocomplete
                   multiple
                   fullWidth
@@ -521,7 +585,7 @@ function Page() {
                     <TextField {...params} label="Skills Needed" variant="outlined" placeholder="Skills Needed" />
                   )}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} md={8}>
                 <TextField
                   fullWidth

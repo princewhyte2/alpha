@@ -308,13 +308,13 @@ function Page() {
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
                               sx={{ width: 40, height: 40 }}
-                              alt={item.data?.sender.first_name}
+                              alt={item.data?.sender?.first_name}
                               src={item.data?.sender?.profile_image?.url}
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href="#">
-                                  {item.data?.sender.first_name} {item.data?.sender.last_name}{" "}
+                                  {item.data?.sender?.first_name} {item.data?.sender?.last_name}{" "}
                                 </Link>
                                 sent you a message
                               </Typography>
@@ -325,7 +325,7 @@ function Page() {
                             onClick={() => router.push(`/messaging/${item.data?.conversation_id}`)}
                             variant="text"
                           >
-                            View Conversation
+                            View
                           </Button>
                         </Stack>
                       )
@@ -348,7 +348,7 @@ function Page() {
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
                               sx={{ width: 40, height: 40 }}
-                              alt={item.data?.sender.first_name}
+                              alt={item.data?.sender?.first_name}
                               src={item.data?.sender?.profile_image?.url}
                             />
                             <Stack direction={"column"} spacing={1}>
@@ -362,7 +362,7 @@ function Page() {
                           </Stack>
 
                           <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
-                            View connection
+                            View
                           </Button>
                         </Stack>
                       )
