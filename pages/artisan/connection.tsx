@@ -207,6 +207,15 @@ function Page() {
     [],
   )
 
+  const latestJobs = useMemo(() => {
+    const newjobs = jobsList
+      .filter((job: any) => !dayjs().isAfter(job.closing_at))
+      .sort((jobA: any, jobB: any) => new Date(jobB.created_at).getTime() - new Date(jobA.created_at).getTime())
+      .slice(0, 2) // get the latest 2 jobs
+
+    return newjobs
+  }, [jobsList])
+
   const acceptConnectionRequest = useCallback(
     (userId: string) => async () => {
       try {
@@ -675,7 +684,7 @@ function Page() {
                     Recent Jobs Fitting your profile
                   </Typography>
                   <Stack spacing={2}>
-                    {jobsList?.slice(-2).map((item: any) => {
+                    {latestJobs?.map((item: any) => {
                       return <RecentJobCard key={item.id} item={item} />
                     })}
                     <Button onClick={() => router.push("/artisan/jobs")} variant="text">
