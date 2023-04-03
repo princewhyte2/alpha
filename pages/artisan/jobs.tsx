@@ -158,7 +158,7 @@ function Page() {
 
   const latestJobs = useMemo(() => {
     const newjobs = jobsList
-      .filter((job: any) => !dayjs().isAfter(job.closing_at))
+      ?.filter((job: any) => !dayjs().isAfter(job.closing_at))
       .sort((jobA: any, jobB: any) => new Date(jobB.created_at).getTime() - new Date(jobA.created_at).getTime())
       .slice(0, 2) // get the latest 2 jobs
 
