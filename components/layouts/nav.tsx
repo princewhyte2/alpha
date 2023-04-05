@@ -1,5 +1,5 @@
 import * as React from "react"
-
+import SearchIcon from "@mui/icons-material/Search"
 import Link from "@mui/material/Link"
 import AppBar from "@mui/material/AppBar"
 import Box from "@mui/material/Box"
@@ -16,21 +16,24 @@ import ExpandMore from "@mui/icons-material/ExpandMore"
 import CircularProgress from "@mui/material/CircularProgress"
 import InputAdornment from "@mui/material/InputAdornment"
 import TextField from "@mui/material/TextField"
+import Menu from "@mui/material/Menu"
 import Typography from "@mui/material/Typography"
 import Collapse from "@mui/material/Collapse"
 import Grid from "@mui/material/Grid"
 import Container from "@mui/material/Container"
 import useSWR, { useSWRConfig } from "swr"
-import { styled } from "@mui/material/styles"
+import { styled, alpha } from "@mui/material/styles"
 import Badge from "@mui/material/Badge"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
 import useScrollTrigger from "@mui/material/useScrollTrigger"
 // import Badge from "@mui/material/Badge"
+import InputBase from "@mui/material/InputBase"
 import Cookies from "js-cookie"
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import Avatar from "@mui/material/Avatar"
 import MenuLine from "../icons/MenuLine"
 import { useRouter } from "next/router"
+import MoreIcon from "@mui/icons-material/MoreVert"
 import profileServices from "../../services/profile"
 import Button from "@mui/material/Button"
 import Dialog from "@mui/material/Dialog"
@@ -77,6 +80,46 @@ const profileNav = [
     route: "/artisan/profile/referral",
   },
 ]
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(3),
+    width: "auto",
+  },
+}))
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}))
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: "inherit",
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "20ch",
+    },
+  },
+}))
 
 function ElevationScroll(props: Props) {
   const { children, window } = props
@@ -209,8 +252,6 @@ export default function NavLayout(props: Props) {
 
   // const [countryId, setCountryId] = React.useState("160")
   const { mutate } = useSWRConfig()
-  // const { data: countryList } = useSWR("countries", locationService.countriesFetcher)
-  // const { data: statesList } = useSWR(`country_id=${countryId}`, locationService.statesFetcher)
 
   const handleClick = React.useCallback(() => {
     setOpen(!open)
@@ -341,11 +382,6 @@ export default function NavLayout(props: Props) {
               onClick={(e: any) => {
                 e.stopPropagation()
                 onLogout()
-                // //console.log("logout")
-                // Cookies.remove("access_token")
-                //  window.location.reload(true);
-                // @ts-ignore
-                // window?.location?.reload(true)
               }}
               sx={{ width: "100%" }}
               color="error"
@@ -439,6 +475,79 @@ export default function NavLayout(props: Props) {
     return unread?.length || 0
   }, [notifications])
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null)
+
+  const isMenuOpen = Boolean(anchorEl)
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+    handleMobileMenuClose()
+  }
+
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMobileMoreAnchorEl(event.currentTarget)
+  }
+
+  const mobileMenuId = "primary-search-account-menu-mobile"
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem>
+        <IconButton
+          onClick={() => router.push(`/${user.user_type}/notification`)}
+          size="large"
+          aria-label="new notifications"
+          sx={{ color: "primary.main" }}
+        >
+          <Badge badgeContent={unreadNotification} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Notifications</p>
+      </MenuItem>
+      <MenuItem onClick={goToProfile}>
+        <IconButton
+          size="small"
+          onClick={goToProfile}
+          aria-label="account of current user"
+          aria-controls="primary-search-account-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          {user?.user_type === "artisan" ? (
+            <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
+          ) : (
+            <Avatar alt={`${user?.relationships.company?.name}`} src={user?.relationships.company?.logo_image?.url} />
+          )}
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+    </Menu>
+  )
+
   return (
     <Box sx={{ display: "flex" }}>
       <Container disableGutters maxWidth="xl">
@@ -455,11 +564,18 @@ export default function NavLayout(props: Props) {
                 >
                   <MenuLine />
                 </IconButton>
-                <Link href="/" underline="none">
+
+                <Link sx={{ display: { xs: "none", md: "inline-block" } }} href="/" underline="none">
                   <Box sx={{ height: { xs: "1.5rem", sm: "3.2rem" }, width: { xs: "1.7rem", sm: "3.2rem" } }}>
                     <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
                   </Box>
                 </Link>
+                <Search>
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase placeholder="Search…" inputProps={{ "aria-label": "search" }} />
+                </Search>
 
                 {user &&
                   (user?.user_type === "artisan" ? (
@@ -506,54 +622,61 @@ export default function NavLayout(props: Props) {
                         Sign up
                       </Button>
                     </>
-                  ) : user?.user_type === "artisan" ? (
-                    <>
-                      <IconButton
-                        onClick={() => router.push(`/${user.user_type}/notification`)}
-                        size="large"
-                        sx={{ color: "primary.main" }}
-                        aria-label="new notifications"
-                        color="inherit"
-                      >
-                        <NotificationsIcon />
-                        {unreadNotification > 0 && <Badge badgeContent={unreadNotification} color="error"></Badge>}
-                      </IconButton>
-                      <IconButton onClick={goToProfile}>
-                        <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
-                      </IconButton>
-                    </>
                   ) : (
                     <>
-                      <IconButton
-                        onClick={() => router.push(`/${user.user_type}/notification`)}
-                        size="large"
-                        sx={{ color: "primary.main" }}
-                        aria-label="new notifications"
-                        color="inherit"
-                      >
-                        <NotificationsIcon />
-                        {unreadNotification > 0 && <Badge badgeContent={unreadNotification} color="error"></Badge>}
-                      </IconButton>
-                      <IconButton onClick={goToProfile}>
-                        <Avatar
-                          alt={`${user?.relationships.company?.name}`}
-                          src={user?.relationships.company?.logo_image?.url}
-                        />
-                      </IconButton>
+                      <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                        <IconButton
+                          onClick={() => router.push(`/${user.user_type}/notification`)}
+                          size="large"
+                          aria-label="new notifications"
+                          sx={{ color: "primary.main" }}
+                        >
+                          <Badge badgeContent={unreadNotification} color="error">
+                            <NotificationsIcon />
+                          </Badge>
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={goToProfile}
+                          aria-label="account of current user"
+                          aria-controls="primary-search-account-menu"
+                          aria-haspopup="true"
+                          color="inherit"
+                        >
+                          {user?.user_type === "artisan" ? (
+                            <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
+                          ) : (
+                            <Avatar
+                              alt={`${user?.relationships.company?.name}`}
+                              src={user?.relationships.company?.logo_image?.url}
+                            />
+                          )}
+                        </IconButton>
+                        <Button
+                          startIcon={<LogoutIcon />}
+                          onClick={() => {
+                            onLogout()
+                          }}
+                          color="error"
+                          variant="outlined"
+                        >
+                          Logout
+                        </Button>
+                      </Box>
+                      <Box sx={{ display: { xs: "flex", md: "none" } }}>
+                        <IconButton
+                          size="large"
+                          aria-label="show more"
+                          aria-controls={mobileMenuId}
+                          aria-haspopup="true"
+                          onClick={handleMobileMenuOpen}
+                          color="inherit"
+                        >
+                          <MoreIcon />
+                        </IconButton>
+                        {renderMobileMenu}
+                      </Box>
                     </>
-                  )}
-                  {user && (
-                    <Button
-                      sx={{ display: { xs: "none", md: "inline-flex" } }}
-                      startIcon={<LogoutIcon />}
-                      onClick={() => {
-                        onLogout()
-                      }}
-                      color="error"
-                      variant="outlined"
-                    >
-                      Logout
-                    </Button>
                   )}
                 </Box>
               </Toolbar>

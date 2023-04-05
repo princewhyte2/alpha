@@ -134,13 +134,11 @@ function Page() {
                 {/* </span> */} <br /> for Artisans
               </Typography>
               <Typography sx={{ m: 0, fontSize: { xs: 16, md: 20 }, fontWeight: 450, color: "#475467" }}>
-                Ipsum eget rhoncus integer varius quam dignissim sit. Fusce sed erat gravida dui eget id faucibus
-                ornare. Adipiscing sed sem pharetra quam
+                Join the world’s fastest growing community of artisans. Connect with employers to find work. Gain access
+                to quality artisan talent near you.
               </Typography>
               <Stack sx={{ flexWrap: "wrap", gap: 2 }} alignItems={"center"} direction="row">
                 <Button onClick={() => router.push("/auth/login")} variant="contained">
-                  
-                
                   Get Started
                 </Button>
                 <Typography sx={{ m: 0, fontSize: 16, fontWeight: 500 }} color="primary.dark">
@@ -162,10 +160,10 @@ function Page() {
           color="primary.dark"
           gutterBottom
         >
-          Eu arcu volutpat risus nunc mi varius non et dui. Cursus semper quis eget
+          Browse talents by category
         </Typography>
         <Typography textAlign={"center"} sx={{ fontSize: { xs: 14, md: 20 }, fontWeight: 450 }} color="primary.dark">
-          Eu arcu volutpat risus nunc mi varius non et dui. Cursus semper quis eget
+          Find the right talent to work with for your home or business
         </Typography>
         <Grid sx={{ pt: 6, pl: { xs: 0, md: 2 }, pr: { xs: 0, md: 6 } }} container spacing={2}>
           {skillsOne.map((item: string) => (
@@ -193,8 +191,7 @@ function Page() {
                 amount of skilled artisans
               </Typography>
               <Typography sx={{ fontSize: { xs: 14, md: 18, lineHeight: "140%" }, fontWeight: 450, color: "#F8F9FC" }}>
-                Feugiat amet sit nisi et non tellus sit. Augue ullamcorper ridiculus at est ullamcorper. Phasellus velit
-                enim volutpat nibh ultrices orci nec in. Phasellus velit enim volutpat nibh ultrices orci nec in.
+                Find, connect and hire talented artisans close to you.{" "}
               </Typography>
               <Box style={{ width: "100%" }}>
                 <Grid sx={{ pt: 2 }} container spacing={1}>
@@ -273,8 +270,8 @@ function Page() {
                 textAlign={"right"}
                 sx={{ fontSize: { xs: 14, md: 18, lineHeight: "140%" }, fontWeight: 450, color: "#F8F9FC" }}
               >
-                Feugiat amet sit nisi et non tellus sit. Augue ullamcorper ridiculus at est ullamcorper. Phasellus velit
-                enim volutpat nibh ultrices orci nec in. Phasellus velit enim volutpat nibh ultrices orci nec in.
+                Find great work with employers close to you. Be a part of a thriving community of artisans as you grow
+                your business or career
               </Typography>
               <Box style={{ width: "100%" }}>
                 <Grid sx={{ pt: 2 }} container spacing={2}>
@@ -336,10 +333,30 @@ function Page() {
               <Typography sx={{ fontSize: { xs: 24, md: 48 }, fontWeight: 500, color: "#1F204A", lineHeight: "140%" }}>
                 Contact Us
               </Typography>
-              <Typography sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}>
-                Consectetur ut non ut commodo malesuada scelerisque in nulla neque. Magna dignissim in neque congue
-                aliquet blandit neque id.
-              </Typography>
+              <ol>
+                <li>
+                  <Typography
+                    sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}
+                  >
+                    Got a question? We are here to answer any and every question you might have.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography
+                    sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}
+                  >
+                    Want to get in touch? Fill in your details and we’ll respond to any question you might have
+                  </Typography>
+                </li>
+                <li>
+                  <Typography
+                    sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}
+                  >
+                    Do you have questions about Workfynder? We are here to help. Fill in your details and we’ll get in
+                    touch with you immediately.
+                  </Typography>
+                </li>
+              </ol>
             </Stack>
           </Grid>
           <Grid item xs={12} md={7}>
@@ -416,9 +433,8 @@ function Page() {
               </Box>
             </Link>
             <Typography sx={{ fontSize: { xs: 13, md: 16 }, fontWeight: 450, color: "#5E5E5E", lineHeight: "140%" }}>
-              Enim egestas arcu tortor vestibulum amet pharetra pellentesque mattis. Quisque metus ipsum morbi tincidunt
-              diam sed purus. Sed elementum ut consequat quis etiam pharetra sagittis. Ullamcorper vestibulum sagittis
-              nibh luctus non nulla gravida.
+              Workfynder is a community of artisans that gives you access to employers in need of your talent and
+              services.
             </Typography>
             <Stack direction={"row"} spacing={2}>
               <Button onClick={() => router.push("/auth/signup")} fullWidth={!matches} variant="contained">
