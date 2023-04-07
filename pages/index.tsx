@@ -340,30 +340,10 @@ function Page() {
               <Typography sx={{ fontSize: { xs: 24, md: 48 }, fontWeight: 500, color: "#1F204A", lineHeight: "140%" }}>
                 Contact Us
               </Typography>
-              <ol>
-                <li>
-                  <Typography
-                    sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}
-                  >
-                    Got a question? We are here to answer any and every question you might have.
-                  </Typography>
-                </li>
-                <li>
-                  <Typography
-                    sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}
-                  >
-                    Want to get in touch? Fill in your details and we’ll respond to any question you might have
-                  </Typography>
-                </li>
-                <li>
-                  <Typography
-                    sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}
-                  >
-                    Do you have questions about Workfynder? We are here to help. Fill in your details and we’ll get in
-                    touch with you immediately.
-                  </Typography>
-                </li>
-              </ol>
+              <Typography sx={{ fontSize: { xs: 14, md: 18 }, fontWeight: 450, color: "#1F204A", lineHeight: "140%" }}>
+                Do you have questions about Workfynder? We are here to help. Fill in your details and we’ll get in touch
+                with you immediately.
+              </Typography>
             </Stack>
           </Grid>
           <Grid item xs={12} md={7}>
