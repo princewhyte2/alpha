@@ -47,6 +47,7 @@ import SkillIcon from "../components/icons/SkillIcon"
 import FacebookIcon from "../components/icons/Facebook"
 import GoogleIcon from "../components/icons/Google"
 import { useRouter } from "next/router"
+import { useArtisanSearch } from "../store"
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
@@ -99,6 +100,8 @@ function Page() {
   const handleStepChange = (step: number) => {
     setActiveStep(step)
   }
+
+  const setSearchTerm = useArtisanSearch((state: any) => state.setSearchTerm)
 
   return (
     <Box sx={{ flexGrow: 1, background: "#FFFFFF" }}>
@@ -168,14 +171,18 @@ function Page() {
         <Grid sx={{ pt: 6, pl: { xs: 0, md: 2 }, pr: { xs: 0, md: 6 } }} container spacing={2}>
           {skillsOne.map((item: string) => (
             <Grid key={item} item xs={6} md={2}>
-              <Button sx={{ backgroundColor: "#E7E7F9", width: "100%" }}>{item}</Button>
+              <Button onClick={() => setSearchTerm(item)} sx={{ backgroundColor: "#E7E7F9", width: "100%" }}>
+                {item}
+              </Button>
             </Grid>
           ))}
         </Grid>
         <Grid sx={{ pt: 2, pl: { xs: 0, md: 6 }, pr: { xs: 0, md: 2 } }} container spacing={2}>
           {skillsTwo.map((item: string) => (
             <Grid key={item} item xs={6} md={2}>
-              <Button sx={{ backgroundColor: "#E7E7F9", width: "100%" }}>{item}</Button>
+              <Button onClick={() => setSearchTerm(item)} sx={{ backgroundColor: "#E7E7F9", width: "100%" }}>
+                {item}
+              </Button>
             </Grid>
           ))}
         </Grid>

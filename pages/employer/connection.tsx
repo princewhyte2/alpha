@@ -62,6 +62,7 @@ import NoConnectionIllustartion from "../../components/icons/NoConnectionIllustr
 import { useRouter } from "next/router"
 import profileServices from "../../services/profile"
 import messagingService from "../../services/messaging"
+import useDebounce from "../../hooks/useDebounce"
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean
@@ -71,19 +72,6 @@ interface TabPanelProps {
   children?: React.ReactNode
   index: number
   value: number
-}
-
-const debounce = (func: any) => {
-  let timer: any
-  return function (...args: any) {
-    // @ts-ignore
-    const context = this
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      timer = null
-      func.apply(context, args)
-    }, 500)
-  }
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -164,15 +152,16 @@ function Page() {
     connectionService.getApprovedUserConnections,
   )
 
+  const debouncedSearch = useDebounce(searchTerm, 1000)
+
   const { data: usersList } = useSWR(
-    searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
+    debouncedSearch ? `/search/artisans/employers?searchTerm=${debouncedSearch}` : null,
     utilsService.searchUsers,
     {
       keepPreviousData: true,
     },
   )
 
-  const optimizedFn = useCallback(debounce(setSearchTerm), [])
   const sendConnectionRequest = useCallback(
     (userId: string) => () => {
       router.push(`/profile/${userId}`)
@@ -355,7 +344,7 @@ function Page() {
                   sx={{ width: "100%" }}
                   id="search-connections"
                   onChange={(e) => {
-                    optimizedFn(e.target.value)
+                    setSearchTerm(e.target.value)
                     setValue(2)
                   }}
                   InputProps={{

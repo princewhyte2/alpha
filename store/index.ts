@@ -17,3 +17,10 @@ export const useReset = create((set) => ({
         ...state, reset:obj
     }))
 }))
+
+export const useArtisanSearch = create((set) => ({
+    searchTerm:'',
+    setSearchTerm: (term: string) => set((state: any) => ({
+        ...state,searchTerm:term
+    }))
+}))

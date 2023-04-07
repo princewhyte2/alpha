@@ -82,6 +82,7 @@ import messagingService from "../../services/messaging"
 import htmlTruncate from "../../lib/htmlTruncate"
 import jobService from "../../services/job"
 import profileServices from "../../services/profile"
+import useDebounce from "../../hooks/useDebounce"
 
 dayjs.extend(relativeTime)
 
@@ -142,19 +143,6 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   )
 }
 
-const debounce = (func: any) => {
-  let timer: any
-  return function (...args: any) {
-    // @ts-ignore
-    const context = this
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      timer = null
-      func.apply(context, args)
-    }, 500)
-  }
-}
-
 function Page() {
   const router = useRouter()
   const theme = useTheme()
@@ -180,6 +168,8 @@ function Page() {
     setValue(newValue)
   }
 
+  const debouncedSearch = useDebounce(searchTerm, 1000)
+
   const { data: unApprovedConnectionList } = useSWR(
     "unApprovedConnections",
     connectionService.getUnApprovedUserConnections,
@@ -191,14 +181,14 @@ function Page() {
   // const { data: chats } = useSWR("chats", messagingService.getAllConversations)
 
   const { data: usersList } = useSWR(
-    searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
+    debouncedSearch ? `/search/artisans/employers?searchTerm=${debouncedSearch}` : null,
     utilsService.searchUsers,
     {
       keepPreviousData: true,
     },
   )
 
-  const optimizedFn = useCallback(debounce(setSearchTerm), [])
+  // const setSearchTerm = useCallback(debounce(setSearchTerm), [])
 
   const sendConnectionRequest = useCallback(
     (userId: string) => () => {
@@ -390,7 +380,7 @@ function Page() {
                   sx={{ width: "100%" }}
                   id="search-connections"
                   onChange={(e) => {
-                    optimizedFn(e.target.value)
+                    setSearchTerm(e.target.value)
                     setValue(2)
                   }}
                   InputProps={{

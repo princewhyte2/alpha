@@ -65,6 +65,7 @@ import htmlTruncate from "../../lib/htmlTruncate"
 import Router, { useRouter } from "next/router"
 import profileServices from "../../services/profile"
 import connectionService from "../../services/connection"
+import useDebounce from "../../hooks/useDebounce"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -124,19 +125,6 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   )
 }
 
-const debounce = (func: any) => {
-  let timer: any
-  return function (...args: any) {
-    // @ts-ignore
-    const context = this
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      timer = null
-      func.apply(context, args)
-    }, 500)
-  }
-}
-
 function Page() {
   const [value, setValue] = useState(0)
   const { mutate } = useSWRConfig()
@@ -144,10 +132,16 @@ function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [searchTerm, setSearchTerm] = useState("")
-  const { data: jobsList, isLoading: isJobsLoading } = useSWR(`/jobs?searchTerm=${searchTerm}`, jobService.getAllJobs, {
-    keepPreviousData: true,
-  })
-  const optimizedFn = useCallback(debounce(setSearchTerm), [])
+  const debouncedSearch = useDebounce(searchTerm, 2000)
+  const { data: jobsList, isLoading: isJobsLoading } = useSWR(
+    `/jobs?searchTerm=${debouncedSearch}`,
+    jobService.getAllJobs,
+    {
+      keepPreviousData: true,
+    },
+  )
+  // const setSearchTerm = useCallback(debounce(setSearchTerm), [])
+
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher, {
@@ -217,7 +211,7 @@ function Page() {
                 <TextField
                   sx={{ width: "100%" }}
                   id="search-connections"
-                  onChange={(e) => optimizedFn(e.target.value)}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">

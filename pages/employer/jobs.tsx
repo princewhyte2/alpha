@@ -80,6 +80,7 @@ import NavLayout from "../../components/layouts/nav"
 import TiptapEditor from "../../components/TiptapEditor"
 import connectionService from "../../services/connection"
 import utilsService from "../../services/utils"
+import useDebounce from "../../hooks/useDebounce"
 
 dayjs.extend(relativeTime)
 interface ExpandMoreProps extends IconButtonProps {
@@ -90,19 +91,6 @@ interface TabPanelProps {
   children?: React.ReactNode
   index: number
   value: number
-}
-
-const debounce = (func: any) => {
-  let timer: any
-  return function (...args: any) {
-    // @ts-ignore
-    const context = this
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      timer = null
-      func.apply(context, args)
-    }, 500)
-  }
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -193,8 +181,9 @@ function Page() {
   const { mutate } = useSWRConfig()
   const [editor, setEditor] = useState<any>()
   const [initContent, setInitContent] = useState("")
+  const debouncedSearch = useDebounce(searchTerm, 2000)
   const { data: jobsList, isLoading: isJobsLoading } = useSWR(
-    `/companyjobs?searchTerm=${searchTerm}`,
+    `/companyjobs?searchTerm=${debouncedSearch}`,
     jobService.getCompanyJobs,
     {
       keepPreviousData: true,
@@ -260,8 +249,6 @@ function Page() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
-
-  const optimizedFn = useCallback(debounce(setSearchTerm), [])
 
   const jobTitleRef = useRef<HTMLInputElement>()
   // const jobDescriptionRef = useRef<HTMLInputElement>()
@@ -384,7 +371,7 @@ function Page() {
                 {matches && (
                   <TextField
                     id="search-connections"
-                    onChange={(e) => optimizedFn(e.target.value)}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">

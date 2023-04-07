@@ -91,19 +91,6 @@ interface TabPanelProps {
   value: number
 }
 
-const debounce = (func: any) => {
-  let timer: any
-  return function (...args: any) {
-    // @ts-ignore
-    const context = this
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      timer = null
-      func.apply(context, args)
-    }, 500)
-  }
-}
-
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
 
@@ -213,62 +200,6 @@ function Page() {
     setValue(newValue)
   }
 
-  const optimizedFn = useCallback(debounce(setSearchTerm), [])
-
-  const jobTitleRef = useRef<HTMLInputElement>()
-  // const jobDescriptionRef = useRef<HTMLInputElement>()
-  const jobLocationRef = useRef<HTMLInputElement>()
-  const jobDurationRef = useRef<HTMLInputElement>()
-  const genderRef = useRef<HTMLInputElement>()
-  const closingDateRef = useRef<HTMLInputElement>()
-
-  // const handlePostJob = useCallback(
-  //   async (e: FormEvent<HTMLFormElement>) => {
-  //     e.preventDefault()
-  //     const data = {
-  //       company_id: user?.relationships.company.id,
-  //       user_id: user?.id,
-  //       title: jobTitleRef.current?.value,
-  //       description: JSON.stringify(editor.getJSON()),
-  //       location: jobLocationRef.current?.value,
-  //       duration: jobDurationRef.current?.value,
-  //       preferred_gender: genderRef.current?.value,
-  //       closing_at: closingDateRef.current?.value,
-  //       skills,
-  //     }
-  //     setIsLoading(true)
-  //     try {
-  //       if (jobDetails) {
-  //         const response = await jobService.updateJob(String(jobDetails.id), data)
-  //         mutate(`/jobs?searchTerm=${searchTerm}`)
-  //         setMessage(response?.message)
-  //         setType("success")
-  //         setIsError(true)
-  //       } else {
-  //         const response = await jobService.postJob(data)
-  //         mutate(`/jobs?searchTerm=${searchTerm}`)
-  //         setMessage(response?.message)
-  //         setType("success")
-  //         setIsError(true)
-  //       }
-  //       onCloseJobModal()
-  //     } catch (error: any) {
-  //       setType("error")
-  //       if (error.response) {
-  //         setMessage(error.response.data.message)
-  //       } else if (error.request) {
-  //         //console.log(error.request)
-  //       } else {
-  //         //console.log("Error", error.message)
-  //       }
-  //       setIsError(true)
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   },
-  //   [user, skills, editor],
-  // )
-
   const handleJobApplication = useCallback(
     (jobId: string) => async () => {
       try {
@@ -332,8 +263,6 @@ function Page() {
     },
     [],
   )
-
-  console.log("here is job list", jobsList)
 
   return (
     <Box sx={{ flexGrow: 1 }}>

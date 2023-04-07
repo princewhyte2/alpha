@@ -44,8 +44,8 @@
     },
 
     {
-      "src": "mstile-150x150.png",
-      "sizes": "150x150",
+      "src": "android-launchericon-144-144.png",
+      "sizes": "144x144",
       "type": "image/png"
     },
     {

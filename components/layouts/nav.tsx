@@ -17,6 +17,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import InputAdornment from "@mui/material/InputAdornment"
 import TextField from "@mui/material/TextField"
 import Menu from "@mui/material/Menu"
+import CloseIcon from "@mui/icons-material/Close"
 import Typography from "@mui/material/Typography"
 import Collapse from "@mui/material/Collapse"
 import Grid from "@mui/material/Grid"
@@ -27,6 +28,11 @@ import Badge from "@mui/material/Badge"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
 import useScrollTrigger from "@mui/material/useScrollTrigger"
 // import Badge from "@mui/material/Badge"
+import { useTheme, Theme } from "@mui/material/styles"
+import useMediaQuery from "@mui/material/useMediaQuery"
+import Paper from "@mui/material/Paper"
+import Chip from "@mui/material/Chip"
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"
 import InputBase from "@mui/material/InputBase"
 import Cookies from "js-cookie"
 import NotificationsIcon from "@mui/icons-material/Notifications"
@@ -51,6 +57,8 @@ import uploadService from "../../services/upload"
 import LogoutIcon from "@mui/icons-material/Logout"
 import { ErrorComponent } from "../alert"
 import notificationsServices from "../../services/notifications"
+import { useArtisanSearch } from "../../store"
+import useDebounce from "../../hooks/useDebounce"
 
 interface Props {
   /**
@@ -59,6 +67,7 @@ interface Props {
    */
   children: React.ReactNode | React.ReactElement
   window?: () => Window
+  onClose?: any
 }
 
 const drawerWidth = 240
@@ -206,11 +215,25 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }))
 
 function BootstrapDialogTitle(props: DialogTitleProps) {
-  const { children, ...other } = props
+  const { children, onClose, ...other } = props
 
   return (
     <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
       {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.primary.main,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
     </DialogTitle>
   )
 }
@@ -224,6 +247,8 @@ const onLogout = () => {
 }
 
 export default function NavLayout(props: Props) {
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.up("md"))
   const { data: user, error } = useSWR(
     Cookies.get("access_token") ? "userProfile" : null,
     profileServices.profileFetcher,
@@ -548,6 +573,26 @@ export default function NavLayout(props: Props) {
     </Menu>
   )
 
+  const searchTerm: string = useArtisanSearch((state: any) => state.searchTerm)
+  const setSearchTerm = useArtisanSearch((state: any) => state.setSearchTerm)
+
+  const debouncedSearch = useDebounce(searchTerm, 1000)
+
+  const sendConnectionRequest = React.useCallback(
+    (userId: string) => () => {
+      router.push(`/profile/${userId}`)
+    },
+    [],
+  )
+
+  const { data: usersList } = useSWR(
+    debouncedSearch ? `/search/artisans/employers?searchTerm=${debouncedSearch}` : null,
+    utilsService.searchUsers,
+    // {
+    //   keepPreviousData: true,
+    // },
+  )
+
   return (
     <Box sx={{ display: "flex" }}>
       <Container disableGutters maxWidth="xl">
@@ -574,7 +619,14 @@ export default function NavLayout(props: Props) {
                   <SearchIconWrapper>
                     <SearchIcon />
                   </SearchIconWrapper>
-                  <StyledInputBase placeholder="Search…" inputProps={{ "aria-label": "search" }} />
+                  <StyledInputBase
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value)
+                    }}
+                    value={searchTerm}
+                    placeholder="Search…"
+                    inputProps={{ "aria-label": "search" }}
+                  />
                 </Search>
 
                 {user &&
@@ -740,6 +792,104 @@ export default function NavLayout(props: Props) {
             </Grid>
           </Grid>
         </Box>
+        <BootstrapDialog
+          PaperProps={{ style: { margin: 8 } }}
+          open={Boolean(debouncedSearch)}
+          fullWidth
+          aria-labelledby="workhistory-modal-title"
+          aria-describedby="workhistory-modal-description"
+        >
+          <BootstrapDialogTitle
+            id="title-work-history"
+            onClose={() => {
+              setSearchTerm("")
+            }}
+          >
+            <TextField
+              fullWidth
+              required
+              id="search-show"
+              value={searchTerm}
+              placeholder="Search occupation,artisan ..."
+              label="Search occupation,artisan ..."
+              variant="outlined"
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton aria-label="Search for artisans.." edge="start">
+                      <SearchIcon sx={{ color: "primary.dark" }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </BootstrapDialogTitle>
+          <DialogContent>
+            <Typography sx={{ fontSize: { xs: 14, md: 16 }, color: "#1F204A", mb: 2 }}>
+              Search result for “{searchTerm}”
+            </Typography>
+            <Stack direction="column" spacing={1}>
+              {usersList?.map((item: any) => (
+                <Paper
+                  key={item.id}
+                  elevation={1}
+                  sx={{
+                    p: 2,
+                    boxShadow:
+                      " 0px 0px 1px rgba(66, 71, 76, 0.32), 0px 4px 8px rgba(66, 71, 76, 0.06), 0px 8px 48px #EEEEEE",
+                    borderRadius: "8px",
+                    width: "100%",
+                  }}
+                >
+                  <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
+                    <Avatar
+                      alt={item.first_name}
+                      src={item.relationships.profile_image?.url}
+                      sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
+                    />
+                    <Stack
+                      sx={{ flexGrow: 1 }}
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      spacing={1}
+                    >
+                      <Stack direction="column" spacing={1}>
+                        <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                          {item.first_name} {item.middle_name} {item.last_name}
+                        </Typography>
+                        <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>{item.title}</Typography>
+                        <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                          {item.relationships?.skills.map((skill: any) => (
+                            <Chip key={skill.id} size={matches ? "medium" : "small"} label={skill.name} />
+                          ))}
+                        </Stack>
+                      </Stack>
+                      <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                        {!matches ? (
+                          <IconButton onClick={sendConnectionRequest(item.id)} color="primary" aria-label="options">
+                            <PersonAddAlt1Icon />
+                          </IconButton>
+                        ) : (
+                          <Button
+                            size={matches ? "medium" : "small"}
+                            onClick={sendConnectionRequest(item.id)}
+                            variant="contained"
+                          >
+                            View
+                          </Button>
+                        )}
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                </Paper>
+              ))}
+            </Stack>
+          </DialogContent>
+        </BootstrapDialog>
         <BootstrapDialog
           PaperProps={{ style: { margin: 8 } }}
           open={Boolean(user && user?.user_type === "employer" && !user?.has_created_company)}
