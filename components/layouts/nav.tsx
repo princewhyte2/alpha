@@ -59,6 +59,7 @@ import { ErrorComponent } from "../alert"
 import notificationsServices from "../../services/notifications"
 import { useArtisanSearch } from "../../store"
 import useDebounce from "../../hooks/useDebounce"
+import connectionService from "../../services/connection"
 
 interface Props {
   /**
@@ -578,11 +579,22 @@ export default function NavLayout(props: Props) {
 
   const debouncedSearch = useDebounce(searchTerm, 1000)
 
-  const sendConnectionRequest = React.useCallback(
+  const onViewConnection = React.useCallback(
     (userId: string) => () => {
       router.push(`/profile/${userId}`)
+      setSearchTerm("")
     },
     [],
+  )
+
+  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+  //TODO : scale this algorightm later
+
+  const isConnection = React.useCallback(
+    (userId: string) => {
+      return approvedConnectionList?.some((item: any) => item.id == userId)
+    },
+    [approvedConnectionList],
   )
 
   const { data: usersList } = useSWR(
@@ -591,6 +603,34 @@ export default function NavLayout(props: Props) {
     // {
     //   keepPreviousData: true,
     // },
+  )
+
+  const sendConnectionRequest = React.useCallback(
+    async (userId: string) => {
+      if (!user) {
+        router.push("/auth/login")
+        return
+      }
+      try {
+        const response = await connectionService.sendConnectionRequest(userId)
+        mutate("unApprovedConnections")
+        mutate("approvedConnections")
+        setType("success")
+        setMessage(response.message)
+        setIsError(true)
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          //console.log(error.request)
+        } else {
+          //console.log("Error", error.message)
+        }
+        setIsError(true)
+      }
+    },
+    [user],
   )
 
   return (
@@ -844,7 +884,13 @@ export default function NavLayout(props: Props) {
                     width: "100%",
                   }}
                 >
-                  <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
+                  <Stack
+                    onClick={onViewConnection(item.id)}
+                    direction="row"
+                    alignItems={{ xs: "start", md: "center" }}
+                    spacing={{ xs: 1, md: 3 }}
+                    sx={{ cursor: "pointer" }}
+                  >
                     <Avatar
                       alt={item.first_name}
                       src={item.relationships.profile_image?.url}
@@ -862,27 +908,39 @@ export default function NavLayout(props: Props) {
                           {item.first_name} {item.middle_name} {item.last_name}
                         </Typography>
                         <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>{item.title}</Typography>
-                        <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                        {/* <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
                           {item.relationships?.skills.map((skill: any) => (
                             <Chip key={skill.id} size={matches ? "medium" : "small"} label={skill.name} />
                           ))}
+                        </Stack> */}
+                      </Stack>
+                      {!isConnection(item.id) && (
+                        <Stack direction="column" alignItems={"flex-end"} spacing={1}>
+                          {!matches ? (
+                            <IconButton
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                sendConnectionRequest(item.id)
+                              }}
+                              color="primary"
+                              aria-label="options"
+                            >
+                              <PersonAddAlt1Icon />
+                            </IconButton>
+                          ) : (
+                            <Button
+                              size={matches ? "medium" : "small"}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                sendConnectionRequest(item.id)
+                              }}
+                              variant="contained"
+                            >
+                              Connect
+                            </Button>
+                          )}
                         </Stack>
-                      </Stack>
-                      <Stack direction="column" alignItems={"flex-end"} spacing={1}>
-                        {!matches ? (
-                          <IconButton onClick={sendConnectionRequest(item.id)} color="primary" aria-label="options">
-                            <PersonAddAlt1Icon />
-                          </IconButton>
-                        ) : (
-                          <Button
-                            size={matches ? "medium" : "small"}
-                            onClick={sendConnectionRequest(item.id)}
-                            variant="contained"
-                          >
-                            View
-                          </Button>
-                        )}
-                      </Stack>
+                      )}
                     </Stack>
                   </Stack>
                 </Paper>
