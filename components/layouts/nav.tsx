@@ -541,7 +541,7 @@ export default function NavLayout(props: Props) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      <MenuItem onClick={() => router.push(`/${user.user_type}/notification`)}>
         <IconButton
           onClick={() => router.push(`/${user.user_type}/notification`)}
           size="large"

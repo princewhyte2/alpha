@@ -269,6 +269,7 @@ function Page() {
         duration: jobDurationRef.current?.value,
         preferred_gender: genderRef.current?.value,
         closing_at: closingDateRef.current?.value,
+        occupation_id: userOccupation?.id,
         skills,
       }
       setIsLoading(true)
@@ -301,11 +302,12 @@ function Page() {
         setIsLoading(false)
       }
     },
-    [user, skills, editor, searchTerm],
+    [user, skills, editor, searchTerm, userOccupation],
   )
 
   const onCloseJobModal = useCallback(() => {
     setJobDetails(undefined)
+    setUserOccupation({ id: 0, name: "", active: 0, industry_id: 0 })
     setInitContent("")
     editor?.commands?.clearContent(true)
     setIsPostJob(false)
@@ -315,8 +317,10 @@ function Page() {
   const handleEdit = useCallback(
     (jobItem: any) => () => {
       setSkills(jobItem.skills)
+      setUserOccupation(jobItem.occupation)
       setInitContent(JSON.parse(jobItem.description))
       setJobDetails(jobItem)
+      // console.log("job item", jobItem)
       setIsPostJob(true)
     },
     [],
