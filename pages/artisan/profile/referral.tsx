@@ -49,7 +49,7 @@ function Page() {
       </Stack>
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
         <Typography variant="body1" sx={{ my: 1, color: "primary.dark" }}>
-          Tortor vitae porttitor purus nibh Tortor vitae porttitor purus nibh.
+          Earn cash and point rewards when you refer people to Workfynder.
         </Typography>
       </Stack>
       <Box

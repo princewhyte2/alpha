@@ -244,7 +244,7 @@ function Page() {
         spacing={2}
       >
         <Typography variant="body1" sx={{ my: 1, color: "primary.dark", textAlign: "center" }}>
-          You can add projects you have worked on here. This can help boast your profile
+          You can add projects you have worked on here. This can help boost your profile
         </Typography>
         <Button onClick={() => setIsAddNewProject(true)} variant="text" startIcon={<AddIcon />}>
           Add Project

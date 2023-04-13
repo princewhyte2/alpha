@@ -279,6 +279,8 @@ function Page() {
                       return (
                         <Stack
                           key={item.id}
+                          onMouseEnter={() => handleReadNotification(item.id)}
+                          onClick={() => router.push(`/messaging/${item.data?.conversation_id}`)}
                           sx={{
                             px: 2,
                             py: 3,
@@ -288,7 +290,6 @@ function Page() {
                             backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
-                          onMouseEnter={() => handleReadNotification(item.id)}
                           // spacing={2
                         >
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
@@ -299,7 +300,7 @@ function Page() {
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
-                                <Link underline="none" href="#">
+                                <Link underline="none" href={`/messaging/${item.data?.conversation_id}`}>
                                   {item.data?.sender?.first_name} {item.data?.sender?.last_name}{" "}
                                 </Link>
                                 sent you a message
@@ -307,18 +308,133 @@ function Page() {
                             </Stack>
                           </Stack>
 
-                          <Button
+                          {/* <Button
                             onClick={() => router.push(`/messaging/${item.data?.conversation_id}`)}
                             variant="text"
                           >
                             View
-                          </Button>
+                          </Button> */}
                         </Stack>
                       )
                     } else if (item.type === "SendConnectionRequestNotification") {
                       return (
                         <Stack
                           key={item.id}
+                          onMouseEnter={() => handleReadNotification(item.id)}
+                          onClick={() => router.push(`/employer/connection`)}
+                          sx={{
+                            px: 2,
+                            py: 3,
+                            borderBottom: "0.2px solid #3E4095",
+                            flexWrap: "wrap",
+                            gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
+                          }}
+                          direction={"row"}
+                          // spacing={2
+                        >
+                          <Stack alignItems={"center"} direction={"row"} spacing={2}>
+                            <Avatar
+                              sx={{ width: 40, height: 40 }}
+                              alt={item.data?.sender?.first_name}
+                              src={item.data?.sender?.profile_image?.url}
+                            />
+                            <Stack direction={"column"} spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                                <Link underline="none" href={`/employer/connection`}>
+                                  {item.data?.name}{" "}
+                                </Link>
+                                sent you a connection request
+                              </Typography>
+                            </Stack>
+                          </Stack>
+
+                          {/* <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
+                            View
+                          </Button> */}
+                        </Stack>
+                      )
+                    } else if (item.type === "NewJobApplicationNotification") {
+                      return (
+                        <Stack
+                          key={item.id}
+                          onMouseEnter={() => handleReadNotification(item.id)}
+                          onClick={() => router.push(`/jobs/${item.data?.vacancy?.id}`)}
+                          sx={{
+                            px: 2,
+                            py: 3,
+                            borderBottom: "0.2px solid #3E4095",
+                            flexWrap: "wrap",
+                            gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
+                          }}
+                          direction={"row"}
+                          // spacing={2
+                        >
+                          <Stack alignItems={"center"} direction={"row"} spacing={2}>
+                            <Avatar
+                              sx={{ width: 40, height: 40 }}
+                              alt={item.data?.sender?.first_name}
+                              src={item.data?.sender?.profile_image?.url}
+                            />
+                            <Stack direction={"column"} spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                                <Link underline="none" href={`/jobs/${item.data?.vacancy?.id}`}>
+                                  {item.data?.name}{" "}
+                                </Link>
+                                Applied to your Job
+                              </Typography>
+                            </Stack>
+                          </Stack>
+
+                          {/* <Button onClick={() => router.push(`/jobs/${item.data?.vacancy?.id}`)} variant="contained">
+                            View
+                          </Button> */}
+                        </Stack>
+                      )
+                    } else if (item.type === "NewCommentNotification") {
+                      return (
+                        <Stack
+                          key={item.id}
+                          onMouseEnter={() => handleReadNotification(item.id)}
+                          onClick={() => router.push(`/posts/${item.data?.post?.id}`)}
+                          sx={{
+                            px: 2,
+                            py: 3,
+                            borderBottom: "0.2px solid #3E4095",
+                            flexWrap: "wrap",
+                            gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
+                          }}
+                          direction={"row"}
+                          // spacing={2
+                        >
+                          <Stack alignItems={"center"} direction={"row"} spacing={2}>
+                            <Avatar
+                              sx={{ width: 40, height: 40 }}
+                              alt={item.data?.sender?.first_name}
+                              src={item.data?.sender?.profile_image?.url}
+                            />
+                            <Stack direction={"column"} spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                                <Link underline="none" href={`/posts/${item.data?.post?.id}`}>
+                                  {item.data?.name}{" "}
+                                </Link>
+                                commented on post
+                              </Typography>
+                            </Stack>
+                          </Stack>
+
+                          {/* <Button onClick={() => router.push(`/posts/${item.data?.post?.id}`)} variant="contained">
+                            View
+                          </Button> */}
+                        </Stack>
+                      )
+                    } else if (item.type === "NewPostNotification") {
+                      return (
+                        <Stack
+                          key={item.id}
+                          onClick={() => router.push(`/posts/${item.data?.post?.id}`)}
                           onMouseEnter={() => handleReadNotification(item.id)}
                           sx={{
                             px: 2,
@@ -339,7 +455,45 @@ function Page() {
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
-                                <Link underline="none" href="#">
+                                <Link underline="none" href={`/posts/${item.data?.post?.id}`}>
+                                  {item.data?.name}{" "}
+                                </Link>
+                                created a post
+                              </Typography>
+                            </Stack>
+                          </Stack>
+
+                          {/* <Button onClick={() => router.push(`/posts/${item.data?.post?.id}`)} variant="contained">
+                            View
+                          </Button> */}
+                        </Stack>
+                      )
+                    } else if (item.type === "NewConnectionRequestNotification") {
+                      return (
+                        <Stack
+                          key={item.id}
+                          onClick={() => router.push(`/employer/connection`)}
+                          onMouseEnter={() => handleReadNotification(item.id)}
+                          sx={{
+                            px: 2,
+                            py: 3,
+                            borderBottom: "0.2px solid #3E4095",
+                            flexWrap: "wrap",
+                            gap: 4,
+                            backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
+                          }}
+                          direction={"row"}
+                          // spacing={2
+                        >
+                          <Stack alignItems={"center"} direction={"row"} spacing={2}>
+                            <Avatar
+                              sx={{ width: 40, height: 40 }}
+                              alt={item.data?.sender?.first_name}
+                              src={item.data?.sender?.profile_image?.url}
+                            />
+                            <Stack direction={"column"} spacing={1}>
+                              <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                                <Link underline="none" href={`/employer/connection`}>
                                   {item.data?.name}{" "}
                                 </Link>
                                 sent you a connection request
@@ -347,9 +501,9 @@ function Page() {
                             </Stack>
                           </Stack>
 
-                          <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
+                          {/* <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
                             View
-                          </Button>
+                          </Button> */}
                         </Stack>
                       )
                     }

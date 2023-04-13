@@ -2,7 +2,7 @@ import "../styles/globals.css"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { SWRDevTools } from "swr-devtools"
-
+import { SWRConfig } from "swr"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import { useAuth } from "../store"
 import CssBaseline from "@mui/material/CssBaseline"
@@ -56,7 +56,12 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
   }
 
   return (
-    <SWRDevTools>
+    <SWRConfig
+      value={{
+        dedupingInterval: 5000,
+        errorRetryCount: 2,
+      }}
+    >
       <Head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -87,6 +92,6 @@ export default function MyApp({ Component, pageProps }: { Component: NextApplica
               <Component {...pageProps} />,
             )}
       </ThemeProvider>
-    </SWRDevTools>
+    </SWRConfig>
   )
 }

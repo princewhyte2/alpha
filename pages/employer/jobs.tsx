@@ -541,7 +541,7 @@ function Page() {
                     {...defaultProps}
                     onChange={(_ev, val) => setUserOccupation(val)}
                     renderInput={(params) => (
-                      <TextField {...params} label="Ocupation" variant="outlined" placeholder="Select occupation" />
+                      <TextField {...params} label="Occupation" variant="outlined" placeholder="Select occupation" />
                     )}
                   />
                 </Grid>

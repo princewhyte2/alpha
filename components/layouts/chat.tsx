@@ -142,17 +142,17 @@ const ChatLayout = ({ children }: any) => {
                             spacing={2}
                             sx={{ p: 2, borderBottom: "1px solid #F4F4F4" }}
                           >
-                            <StyledBadge
+                            {/* <StyledBadge
                               overlap="circular"
                               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                               variant="dot"
-                            >
-                              <Avatar
-                                sx={{ width: 56, height: 56 }}
-                                alt={receipient.first_name}
-                                src={receipient.profile_image?.url}
-                              />
-                            </StyledBadge>
+                            > */}
+                            <Avatar
+                              sx={{ width: 56, height: 56 }}
+                              alt={receipient.first_name}
+                              src={receipient.profile_image?.url}
+                            />
+                            {/* </StyledBadge> */}
                             <Stack
                               sx={{ flexGrow: 1 }}
                               direction="row"

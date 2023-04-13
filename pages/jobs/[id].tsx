@@ -171,6 +171,7 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
   )
 }
 function Page() {
+  const { data: appUser } = useSWR("userProfile", profileServices.profileFetcher)
   const [value, setValue] = useState(0)
   const [searchTerm, setSearchTerm] = useState("")
   const theme = useTheme()
@@ -281,7 +282,13 @@ function Page() {
                   {/* <Typography sx={{ fontSize: 20 }} color="primary.dark">
                     Jobs
                   </Typography> */}
-                  <Button onClick={() => router.back()} variant="outlined" startIcon={<KeyboardBackspaceIcon />}>
+                  <Button
+                    onClick={() => {
+                      router.push(`/${appUser?.user_type}/jobs`)
+                    }}
+                    variant="outlined"
+                    startIcon={<KeyboardBackspaceIcon />}
+                  >
                     Jobs
                   </Button>
                 </Box>

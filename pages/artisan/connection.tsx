@@ -328,6 +328,7 @@ function Page() {
       messageInputRef.current.value = ""
       setChatUserId("")
       handleClose()
+      router.push("/messaging")
       //console.log("chat", chat)
     } catch (error) {
       //console.log("error", error)
@@ -339,6 +340,7 @@ function Page() {
     if (chatId) {
       router.push(`/messaging/${chatId}`)
     } else {
+      setChatUserId(userId)
       handleClickOpen()
     }
   }

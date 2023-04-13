@@ -14,6 +14,7 @@ import postService from "../../services/post"
 import PostCard from "../../components/posts/card"
 import profileServices from "../../services/profile"
 import { ErrorComponent } from "../../components/alert"
+import NoPostIllustration from "../../components/icons/NoPostIllustration"
 
 function Page() {
   const router = useRouter()
@@ -26,7 +27,7 @@ function Page() {
   const postId = router.query.id as string
   const { data: appUser } = useSWR("userProfile", profileServices.profileFetcher)
 
-  const { data: post } = useSWR(postId ? `/posts/${postId}` : null, postService.getSinglePost)
+  const { data: post, error: postError } = useSWR(postId ? `/posts/${postId}` : null, postService.getSinglePost)
   const handleLike = useCallback(
     (postId: number) => async () => {
       try {
@@ -174,7 +175,11 @@ function Page() {
             {/* <Typography sx={{ fontSize: 20 }} color="primary.dark">
                     Jobs
                   </Typography> */}
-            <Button onClick={() => router.back()} variant="outlined" startIcon={<KeyboardBackspaceIcon />}>
+            <Button
+              onClick={() => router.push(`/${appUser?.user_type}/feed`)}
+              variant="outlined"
+              startIcon={<KeyboardBackspaceIcon />}
+            >
               Post
             </Button>
           </Box>
@@ -212,6 +217,17 @@ function Page() {
                 onSharePost={handlePostShare}
                 isFullPage={true}
               />
+            )}
+            {postError && (
+              <Stack direction="column" alignItems={"center"} justifyContent={"center"} spacing={2}>
+                <NoPostIllustration />
+                <Stack sx={{ p: 4 }} alignItems={"center"} justifyContent={"center"} spacing={1}>
+                  <Typography sx={{ fontSize: 16, color: "#1F204A" }}>There is no post to display.</Typography>
+                  <Typography textAlign={"center"} sx={{ fontSize: 16, color: "#1F204A" }}>
+                    You can also connect with other artisans to see their post.
+                  </Typography>
+                </Stack>
+              </Stack>
             )}
           </Grid>
         </Grid>
