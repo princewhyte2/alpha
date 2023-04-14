@@ -5,7 +5,8 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme, Theme } from "@mui/material/styles"
 import CircularProgress from "@mui/material/CircularProgress"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
-
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
@@ -82,7 +83,7 @@ function TabPanel(props: TabPanelProps) {
     </div>
   )
 }
-
+dayjs.extend(relativeTime)
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -244,6 +245,8 @@ function Page() {
       .catch(() => {})
   }
 
+  console.log("user notification", notifications)
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container disableGutters maxWidth="xl">
@@ -307,6 +310,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
 
                           {/* <Button
                             onClick={() => router.push(`/messaging/${item.data?.conversation_id}`)}
@@ -348,6 +354,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
 
                           {/* <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
                             View
@@ -387,6 +396,10 @@ function Page() {
                             </Stack>
                           </Stack>
 
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
+
                           {/* <Button onClick={() => router.push(`/jobs/${item.data?.vacancy?.id}`)} variant="contained">
                             View
                           </Button> */}
@@ -424,6 +437,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
 
                           {/* <Button onClick={() => router.push(`/posts/${item.data?.post?.id}`)} variant="contained">
                             View
@@ -462,7 +478,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
-
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
                           {/* <Button onClick={() => router.push(`/posts/${item.data?.post?.id}`)} variant="contained">
                             View
                           </Button> */}
@@ -500,6 +518,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
 
                           {/* <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
                             View

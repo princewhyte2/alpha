@@ -351,6 +351,8 @@ function Page() {
     }
   }, [searchTerm])
 
+  // console.log("connection list", approvedConnectionList)
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Container disableGutters maxWidth="xl">

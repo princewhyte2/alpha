@@ -490,9 +490,9 @@ function Page() {
                   <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
                     {user?.email}
                   </Typography>
-                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
+                  {/* <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
                     {user?.phone_number} {user?.other_phone_number}
-                  </Typography>
+                  </Typography> */}
                   <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
                     {user?.relationships?.state?.name} {user?.relationships?.country?.name}
                   </Typography>

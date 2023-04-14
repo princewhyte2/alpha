@@ -355,6 +355,9 @@ function Page() {
                           >
                             View
                           </Button> */}
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
                         </Stack>
                       )
                     } else if (item.type === "SendConnectionRequestNotification") {
@@ -389,7 +392,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
-
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
                           {/* <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
                             View
                           </Button> */}
@@ -427,6 +432,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
 
                           {/* <Button onClick={() => router.push(`/jobs/${item.data?.vacancy?.id}`)} variant="contained">
                             View
@@ -465,6 +473,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
 
                           {/* <Button onClick={() => router.push(`/posts/${item.data?.post?.id}`)} variant="contained">
                             View
@@ -503,7 +514,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
-
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
                           {/* <Button onClick={() => router.push(`/posts/${item.data?.post?.id}`)} variant="contained">
                             View
                           </Button> */}
@@ -541,7 +554,9 @@ function Page() {
                               </Typography>
                             </Stack>
                           </Stack>
-
+                          <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
+                            {dayjs(item?.created_at).fromNow()}
+                          </Typography>
                           {/* <Button onClick={() => router.push(`/artisan/connection`)} variant="contained">
                             View
                           </Button> */}

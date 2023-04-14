@@ -90,6 +90,8 @@ const ChatLayout = ({ children }: any) => {
     router.push(`/${user.user_type}/connection`)
   }
 
+  console.log("conversations", conversations)
+
   return (
     <Container disableGutters={matches ? false : true} maxWidth="xl">
       <Box sx={{ flexGrow: 1, pt: { xs: 1, md: 2 } }}>
