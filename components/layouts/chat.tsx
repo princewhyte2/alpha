@@ -152,7 +152,9 @@ const ChatLayout = ({ children }: any) => {
                             <Avatar
                               sx={{ width: 56, height: 56 }}
                               alt={receipient.first_name}
-                              src={receipient.profile_image?.url}
+                              src={
+                                receipient.company ? receipient.company?.logo_image?.url : receipient.profile_image?.url
+                              }
                             />
                             {/* </StyledBadge> */}
                             <Stack
