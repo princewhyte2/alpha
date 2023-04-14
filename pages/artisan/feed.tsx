@@ -678,13 +678,16 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [expanded, setExpanded] = useState(false)
   const theme = useTheme()
+  const router = useRouter()
   // const { mutate } = useSWRConfig()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+  const handleClose = (event: any) => {
+    event.stopPropagation()
     setAnchorEl(null)
   }
   // const {mutate} = useSWRConfig()
@@ -747,6 +750,8 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
       }}
     >
       <CardHeader
+        sx={{ cursor: "pointer" }}
+        onClick={() => router.push(`/profile/${item.relationships?.created_by?.id}`)}
         avatar={
           <Avatar
             sx={{ bgcolor: red[500], height: { xs: 40, md: 52 }, width: { xs: 40, md: 52 } }}
@@ -778,8 +783,22 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                     "aria-labelledby": "basic-button",
                   }}
                 >
-                  <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
-                  <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
+                  <MenuItem
+                    onClick={(e: any) => {
+                      e.stopPropagation()
+                      onEdit(item)
+                    }}
+                  >
+                    Edit
+                  </MenuItem>
+                  <MenuItem
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete(item.id)
+                    }}
+                  >
+                    Delete
+                  </MenuItem>
                 </Menu>
               </div>
             )}

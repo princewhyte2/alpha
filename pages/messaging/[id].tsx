@@ -5,6 +5,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import LinearProgress from "@mui/material/LinearProgress"
 import Grid from "@mui/material/Grid"
+import Link from "@mui/material/Link"
 import FileOpenIcon from "@mui/icons-material/FileOpen"
 import Box from "@mui/material/Box"
 import Paper from "@mui/material/Paper"
@@ -281,9 +282,12 @@ const Messaging = () => {
         >
           <KeyboardBackspaceIcon />
         </IconButton>
-        <Typography sx={{ fontSize: 16 }} color="primary.dark">
-          {activeConversationParticipant?.first_name} {activeConversationParticipant?.last_name}
-        </Typography>
+        <Link href={`/profile/${activeConversationParticipant?.id}`} underline="none">
+          <Typography sx={{ fontSize: 16 }} color="primary.dark">
+            {activeConversationParticipant?.first_name} {activeConversationParticipant?.last_name}
+          </Typography>
+        </Link>
+
         <Typography sx={{ fontSize: 12 }} color="primary.dark">
           {/* last online: 4 hours ago removed*/}
         </Typography>

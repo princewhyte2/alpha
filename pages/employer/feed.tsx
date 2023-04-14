@@ -5,6 +5,7 @@ import Snackbar from "@mui/material/Snackbar"
 import { usePWAInstall } from "react-use-pwa-install"
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
+
 import CircularProgress from "@mui/material/CircularProgress"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
 import TheatersIcon from "@mui/icons-material/Theaters"
@@ -657,13 +658,8 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
   const theme = useTheme()
   // const { mutate } = useSWRConfig()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
+  const router = useRouter()
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
   // const {mutate} = useSWRConfig()
   const { data: appUser } = useSWR("userProfile", profileServices.profileFetcher, {
     dedupingInterval: 10000,
@@ -716,6 +712,15 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
 
   // //console.log("comments", postComments)
 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = (event: any) => {
+    event.stopPropagation()
+    setAnchorEl(null)
+  }
+
   return (
     <Card
       key={item.id}
@@ -725,6 +730,8 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
       }}
     >
       <CardHeader
+        sx={{ cursor: "pointer" }}
+        onClick={() => router.push(`/profile/${item.relationships?.created_by?.id}`)}
         avatar={
           <Avatar
             sx={{ bgcolor: red[500], height: { xs: 40, md: 52 }, width: { xs: 40, md: 52 } }}
@@ -756,8 +763,22 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                     "aria-labelledby": "basic-button",
                   }}
                 >
-                  <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
-                  <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
+                  <MenuItem
+                    onClick={(e: any) => {
+                      e.stopPropagation()
+                      onEdit(item)
+                    }}
+                  >
+                    Edit
+                  </MenuItem>
+                  <MenuItem
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete(item.id)
+                    }}
+                  >
+                    Delete
+                  </MenuItem>
                 </Menu>
               </div>
             )}
