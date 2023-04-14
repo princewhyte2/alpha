@@ -90,7 +90,7 @@ const ChatLayout = ({ children }: any) => {
     router.push(`/${user.user_type}/connection`)
   }
 
-  console.log("conversations", conversations)
+  // console.log("conversations", conversations)
 
   return (
     <Container disableGutters={matches ? false : true} maxWidth="xl">
@@ -166,7 +166,9 @@ const ChatLayout = ({ children }: any) => {
                             >
                               <Box sx={{ width: "100%", overflow: "hidden" }}>
                                 <Typography noWrap sx={{ fontSize: 14 }} color="primary.dark">
-                                  {receipient.first_name} {receipient.last_name}
+                                  {receipient.company
+                                    ? `${receipient.company?.name}`
+                                    : `${receipient.first_name} ${receipient.last_name}`}
                                 </Typography>
                                 <Typography className="textTwoLines" sx={{ fontSize: 10 }} color="primary.dark">
                                   {item.relationships?.last_message?.body}
