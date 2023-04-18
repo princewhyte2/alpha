@@ -289,8 +289,6 @@ function Page() {
     [user, logo],
   )
 
-  // //console.log("profile", user)
-
   return (
     <Box sx={{ p: 2 }}>
       <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>

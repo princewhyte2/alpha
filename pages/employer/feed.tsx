@@ -720,7 +720,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
     event.stopPropagation()
     setAnchorEl(null)
   }
-
+  console.log("item", item)
   return (
     <Card
       key={item.id}

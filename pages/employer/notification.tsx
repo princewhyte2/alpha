@@ -293,7 +293,8 @@ function Page() {
                             backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
-                          // spacing={2
+                          alignItems={"center"}
+                          justifyContent="space-between"
                         >
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
@@ -378,7 +379,8 @@ function Page() {
                             backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
-                          // spacing={2
+                          alignItems={"center"}
+                          justifyContent="space-between"
                         >
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
@@ -420,7 +422,8 @@ function Page() {
                             backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
-                          // spacing={2
+                          alignItems={"center"}
+                          justifyContent="space-between"
                         >
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
@@ -461,7 +464,8 @@ function Page() {
                             backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
-                          // spacing={2
+                          alignItems={"center"}
+                          justifyContent="space-between"
                         >
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
@@ -501,7 +505,8 @@ function Page() {
                             backgroundColor: item.read_at ? "#FFF" : "#F8F9FC",
                           }}
                           direction={"row"}
-                          // spacing={2
+                          alignItems={"center"}
+                          justifyContent="space-between"
                         >
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar

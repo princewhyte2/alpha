@@ -740,6 +740,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
   }, [expanded])
 
   // //console.log("comments", postComments)
+  console.log("item", item)
 
   return (
     <Card

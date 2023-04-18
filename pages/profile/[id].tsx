@@ -250,6 +250,8 @@ function Page() {
     setProjectData(undefined)
   }, [])
 
+  console.log("this is the user", user)
+
   return (
     <Box sx={{ p: 2 }}>
       <Box sx={{ flexGrow: 1 }}>
@@ -261,454 +263,414 @@ function Page() {
           spacing={1}
         >
           <Box>
-            {/* <Typography sx={{ fontSize: 20 }} color="primary.dark">
-                    Jobs
-                  </Typography> */}
             <Button onClick={() => router.back()} variant="outlined" startIcon={<KeyboardBackspaceIcon />}>
               Profile
             </Button>
           </Box>
-          {/* {matches && (
-                  <TextField
-                    id="search-connections"
-                    onChange={(e) => optimizedFn(e.target.value)}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton aria-label="Search for Jobs" edge="end">
-                            <SearchIcon sx={{ color: "primary.dark" }} />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                    label="Search for Jobs"
-                    variant="outlined"
-                  />
-                )}
-                <Button onClick={() => setIsPostJob(true)} variant="contained" startIcon={<CreateNewFolderIcon />}>
-                  Create Job
-                </Button> */}
         </Stack>
         <Grid container spacing={2}>
-          {/* {matches && (
-            <Grid item md={2}>
-              <Badge overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
+          {user?.user_type === "employer" ? (
+            <>
+              <Grid item md={3}>
                 <Avatar
                   sx={{ width: "140px", height: "140px" }}
-                  alt={`${user?.first_name} ${user?.last_name}`}
-                  src={user?.relationships.profile_image?.url}
+                  alt={`richard`}
+                  src={user?.relationships?.company?.logo_image?.url}
                 />
-              </Badge>
-            </Grid>
-          )} */}
-          <Grid item xs={12} md={10}>
-            {/* <Stack direction="row" spacing={4}>
-              {!matches && (
-                <Badge overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-                  <Avatar
-                    sx={{ width: "64px", height: "64px" }}
-                    alt={`${user?.first_name} ${user?.last_name}`}
-                    src={user?.relationships.profile_image?.url}
-                  />
-                </Badge>
-              )}
-            </Stack> */}
+              </Grid>
+              <Grid item xs={12} md={9}>
+                <>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      px: { xs: "1rem", md: "3rem" },
+                      pb: "1rem",
+                      borderBottom: "1px dashed #3E4095",
+                    }}
+                  >
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="body1">
+                        Business Information
+                      </Typography>
 
-            <Box sx={{ p: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
-              {/* <>
-                <Box
-                  sx={{
-                    width: "100%",
-                    px: { xs: "1rem", md: "3rem" },
-                    pb: "1rem",
-                    borderBottom: "1px dashed #3E4095",
-                  }}
-                >
+                      <Box>
+                        {isConnection ? (
+                          <Button onClick={handleChat} variant="contained">
+                            Message
+                          </Button>
+                        ) : (
+                          <LoadingButton loading={isConnecting} onClick={sendConnectionRequest} variant="contained">
+                            Send Request
+                          </LoadingButton>
+                        )}
+                      </Box>
+                    </Stack>
+                    <Grid container spacing={2} sx={{ mt: "1.5rem" }}>
+                      <Grid item xs={12} md={6}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          Business Name
+                        </Typography>
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
+                          {user?.relationships.company?.name}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          Company Website
+                        </Typography>
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
+                          {user?.relationships.company?.website}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      px: { xs: "1rem", md: "3rem" },
+                      py: "1rem",
+                      borderBottom: "1px dashed #3E4095",
+                    }}
+                  >
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} md={8}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          Business/Office Address
+                        </Typography>
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
+                          {user?.relationships.company?.address}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          Location
+                        </Typography>
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
+                          Lagos
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      px: { xs: "1rem", md: "3rem" },
+                      py: "1rem",
+                      borderBottom: "1px dashed #3E4095",
+                    }}
+                  >
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          Company Email Address
+                        </Typography>
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
+                          {user?.relationships.company?.email}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      px: { xs: "1rem", md: "3rem" },
+                      py: "1rem",
+                      borderBottom: "1px dashed #3E4095",
+                    }}
+                  >
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          Business Sector
+                        </Typography>
+                        {/* <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
+                          {"user?.relationships?.phone_numbers[0]?.phone_number"}
+                        </Typography> */}
+                        <Stack sx={{ mt: "1rem" }} direction="row" spacing={1}>
+                          <Chip label={user?.relationships.company?.business_sector?.name} />
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      width: "100%",
+                      px: { xs: "1rem", md: "3rem" },
+                      py: "1rem",
+                      borderBottom: "1px dashed #3E4095",
+                    }}
+                  >
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          Services Provided
+                        </Typography>
+                        <Typography
+                          sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
+                          variant="h6"
+                        >
+                          {user?.relationships.company?.service_provided}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </>
+              </Grid>
+            </>
+          ) : (
+            <Grid item xs={12} md={10}>
+              <Box sx={{ p: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
+                <Stack spacing={4} direction={{ xs: "column", md: "row" }}>
+                  <Avatar
+                    sx={{ width: { xs: "64px", md: "140px" }, height: { xs: "64px", md: "140px" } }}
+                    alt={`${user?.first_name} ${user?.last_name}`}
+                    src={user?.relationships?.profile_image?.url}
+                  />
+
+                  <Stack direction={"column"} spacing={3}>
+                    <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="h6">
+                      {user?.first_name} {user?.middle_name} {user?.last_name}
+                    </Typography>
+                    <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
+                      {user?.title}
+                    </Typography>
+                    <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
+                      {user?.email}
+                    </Typography>
+
+                    <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
+                      {user?.relationships?.state?.name} {user?.relationships?.country?.name}
+                    </Typography>
+                    <Box>
+                      {isConnection ? (
+                        <Button onClick={handleChat} variant="contained">
+                          Message
+                        </Button>
+                      ) : (
+                        <LoadingButton loading={isConnecting} onClick={sendConnectionRequest} variant="contained">
+                          Send Request
+                        </LoadingButton>
+                      )}
+                    </Box>
+                  </Stack>
+                </Stack>
+              </Box>
+              <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
+                <Box sx={{ width: "100%", pb: "1rem" }}>
+                  <Grid
+                    sx={{ px: { xs: "1rem", md: "3rem" } }}
+                    container
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Grid item>
+                      <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        Occupations and Skills
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  {user?.relationships?.occupations?.map((item: any) => (
+                    <Box
+                      key={item.id}
+                      sx={{
+                        width: "100%",
+                        borderBottom: { xs: "1px dashed #3E4095", md: "none" },
+                        px: { xs: "1rem", md: "3rem" },
+                      }}
+                    >
+                      <Grid
+                        key={item}
+                        sx={{
+                          py: "1.5rem",
+
+                          position: "relative",
+                        }}
+                        container
+                        spacing={2}
+                      >
+                        <Grid item xs={12} md={4}>
+                          <Typography sx={{ color: "primary.dark", mb: 1 }} variant="body1">
+                            Occupation
+                          </Typography>
+                          <Stack alignItems="flex-end" direction="row" spacing={1}>
+                            <Chip label={item.name} />
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <Typography sx={{ color: "primary.dark", mb: 1 }} variant="body1">
+                            Skills
+                          </Typography>
+                          <Stack alignItems="flex-end" direction="row" spacing={1}>
+                            <Stack flexDirection={"row"} sx={{ flexWrap: "wrap", gap: 1 }}>
+                              {user?.relationships?.skills.map((item: any) => (
+                                <Chip key={item.id} label={item.name} />
+                              ))}
+                            </Stack>
+                          </Stack>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+              <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
+                <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" }, pb: "1rem" }}>
                   <Grid container direction="row" justifyContent="space-between" alignItems="center">
                     <Grid item>
                       <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Personal Information
+                        Educational Qualification
                       </Typography>
                     </Grid>
+                  </Grid>
+                  {user?.relationships?.qualifications?.map((item: UserQualification) => (
+                    <Grid key={item.id} sx={{ pt: "1.5rem", position: "relative" }} container spacing={2}>
+                      <Grid item xs={12}>
+                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                          {item.name}
+                        </Typography>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Stack mt={1} alignItems="center" direction="row" spacing={1}>
+                          <Typography sx={{ color: "primary.dark" }} variant="body1">
+                            {item.detail?.institution}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Stack mt={1} alignItems="center" direction="row" spacing={1}>
+                          <Typography sx={{ color: "primary.dark" }} variant="body1">
+                            {`${months[new Date(item.detail.graduation_date).getMonth()]} ${new Date(
+                              item.detail.graduation_date,
+                            ).getUTCFullYear()}`}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  ))}
+                </Box>
+              </Box>
+              <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
+                <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" }, pb: "1rem" }}>
+                  <Grid container direction="row" justifyContent="space-between" alignItems="center">
                     <Grid item>
-                      <Button
-                        onClick={() => setIsEditPersonalInfo(true)}
-                        variant="text"
-                        startIcon={<BorderColorIcon />}
-                      >
-                        Edit
-                      </Button>
-                    </Grid>
-                  </Grid>
-                  <Typography sx={{ color: "primary.dark", mt: "1.5rem" }} variant="body1">
-                    Title
-                  </Typography>
-                  <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                    {user?.title}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    width: "100%",
-                    px: { xs: "1rem", md: "3rem" },
-                    py: "1rem",
-                    borderBottom: "1px dashed #3E4095",
-                  }}
-                >
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} sm={4}>
                       <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        First Name
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.first_name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Middle Name
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.middle_name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Last Name
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.last_name}
+                        Work History
                       </Typography>
                     </Grid>
                   </Grid>
-                </Box>
-                <Box
-                  sx={{
-                    width: "100%",
-                    px: { xs: "1rem", md: "3rem" },
-                    py: "1rem",
-                    borderBottom: "1px dashed #3E4095",
-                  }}
-                >
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} sm={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Date of Birth
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.date_of_birth ? new Date(user?.date_of_birth).toDateString() : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Gender
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.gender}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Email
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.email}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
-                <Box
-                  sx={{
-                    width: "100%",
-                    px: { xs: "1rem", md: "3rem" },
-                    py: "1rem",
-                    borderBottom: "1px dashed #3E4095",
-                  }}
-                >
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} sm={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Phone Number
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.phone_number}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Other Phone
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.other_phone_number}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
-
-                <Box
-                  sx={{
-                    width: "100%",
-                    px: { xs: "1rem", md: "3rem" },
-                    py: "1rem",
-                    borderBottom: "1px dashed #3E4095",
-                  }}
-                >
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        Country
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.relationships?.country?.name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        State
-                      </Typography>
-                      <Typography sx={{ color: "primary.dark", mt: "1rem" }} variant="h6">
-                        {user?.relationships?.state?.name}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </> */}
-              <Stack spacing={4} direction={{ xs: "column", md: "row" }}>
-                <Avatar
-                  sx={{ width: { xs: "64px", md: "140px" }, height: { xs: "64px", md: "140px" } }}
-                  alt={`${user?.first_name} ${user?.last_name}`}
-                  src={user?.relationships?.profile_image?.url}
-                />
-
-                <Stack direction={"column"} spacing={3}>
-                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 16, md: 20 } }} variant="h6">
-                    {user?.first_name} {user?.middle_name} {user?.last_name}
-                  </Typography>
-                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
-                    {user?.title}
-                  </Typography>
-                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
-                    {user?.email}
-                  </Typography>
-                  {/* <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
-                    {user?.phone_number} {user?.other_phone_number}
-                  </Typography> */}
-                  <Typography sx={{ color: "primary.dark", fontSize: { xs: 14, md: 16 } }} variant="h6">
-                    {user?.relationships?.state?.name} {user?.relationships?.country?.name}
-                  </Typography>
-                  <Box>
-                    {isConnection ? (
-                      <Button onClick={handleChat} variant="contained">
-                        Message
-                      </Button>
-                    ) : (
-                      <LoadingButton loading={isConnecting} onClick={sendConnectionRequest} variant="contained">
-                        Send Request
-                      </LoadingButton>
-                    )}
-                  </Box>
-                </Stack>
-              </Stack>
-            </Box>
-            <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
-              <Box sx={{ width: "100%", pb: "1rem" }}>
-                <Grid
-                  sx={{ px: { xs: "1rem", md: "3rem" } }}
-                  container
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Occupations and Skills
-                    </Typography>
-                  </Grid>
-                </Grid>
-                {user?.relationships?.occupations?.map((item: any) => (
-                  <Box
-                    key={item.id}
-                    sx={{
-                      width: "100%",
-                      borderBottom: { xs: "1px dashed #3E4095", md: "none" },
-                      px: { xs: "1rem", md: "3rem" },
-                    }}
-                  >
-                    <Grid
-                      key={item}
-                      sx={{
-                        py: "1.5rem",
-
-                        position: "relative",
-                      }}
-                      container
-                      spacing={2}
-                    >
-                      <Grid item xs={12} md={4}>
-                        <Typography sx={{ color: "primary.dark", mb: 1 }} variant="body1">
-                          Occupation
+                  {user?.relationships?.work_histories?.map((item: UserWorkHistory) => (
+                    <Grid key={item.id} sx={{ pt: "1.5rem" }} container spacing={2}>
+                      <Grid item xs={12}>
+                        <Typography sx={{ color: "primary.dark" }} variant="body1">
+                          {item.company_name}
                         </Typography>
-                        <Stack alignItems="flex-end" direction="row" spacing={1}>
-                          <Chip label={item.name} />
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Stack mt={1} alignItems="center" direction="row" spacing={1}>
+                          <Typography sx={{ color: "primary.dark" }} variant="body1">
+                            {item.job_title}
+                          </Typography>
                         </Stack>
                       </Grid>
-                      <Grid item xs={12} md={8}>
-                        <Typography sx={{ color: "primary.dark", mb: 1 }} variant="body1">
-                          Skills
-                        </Typography>
-                        <Stack alignItems="flex-end" direction="row" spacing={1}>
-                          <Stack flexDirection={"row"} sx={{ flexWrap: "wrap", gap: 1 }}>
-                            {user?.relationships?.skills.map((item: any) => (
-                              <Chip key={item.id} label={item.name} />
-                            ))}
+                      <Grid item xs={6}>
+                        <Stack mt={1} alignItems="center" direction="row" spacing={1}>
+                          <Typography sx={{ color: "primary.dark" }} variant="body1">
+                            {`${months[new Date(item.start_date).getMonth()]} ${new Date(
+                              item.start_date,
+                            ).getUTCFullYear()}`}{" "}
+                            -{" "}
+                            {item.end_date === null
+                              ? "present"
+                              : `${months[new Date(item.end_date).getMonth()]} ${new Date(
+                                  item.end_date,
+                                ).getUTCFullYear()}`}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <Stack mt={0} alignItems="center" direction="row" spacing={1}>
+                          <Typography sx={{ color: "primary.dark" }} variant="body1">
+                            {item.summary}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  ))}
+                </Box>
+              </Box>
+              <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
+                <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" } }}>
+                  <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                    <Grid item>
+                      <Typography sx={{ color: "primary.dark" }} variant="body1">
+                        Projects
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={2}>
+                    {user?.relationships.projects?.map((item: any) => (
+                      <Grid onClick={onViewProject(item)} key={item.id} item xs={12} md={4}>
+                        <Item>
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <Box sx={{ width: "180px", height: "131px", overflow: "hidden", background: "black" }}>
+                              <img
+                                width="180px"
+                                height="131px"
+                                className="overlay-image"
+                                src={item.images[0]?.url}
+                                alt={item.images[0]?.name}
+                                loading="lazy"
+                              />
+                            </Box>
                           </Stack>
-                        </Stack>
+                          <Typography variant="body1" sx={{ mt: 1, color: "primary.main" }}>
+                            {item.title}
+                          </Typography>
+                        </Item>
                       </Grid>
-                    </Grid>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
-              <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" }, pb: "1rem" }}>
-                <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Educational Qualification
-                    </Typography>
+                    ))}
                   </Grid>
-                </Grid>
-                {user?.relationships?.qualifications?.map((item: UserQualification) => (
-                  <Grid key={item.id} sx={{ pt: "1.5rem", position: "relative" }} container spacing={2}>
-                    <Grid item xs={12}>
+                </Box>
+              </Box>
+              <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
+                <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" } }}>
+                  <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                    <Grid item>
                       <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        {item.name}
+                        Hobbies
                       </Typography>
                     </Grid>
-
-                    <Grid item xs={6}>
-                      <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
-                          {item.detail?.institution}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
-                          {`${months[new Date(item.detail.graduation_date).getMonth()]} ${new Date(
-                            item.detail.graduation_date,
-                          ).getUTCFullYear()}`}
-                        </Typography>
-                      </Stack>
-                    </Grid>
                   </Grid>
-                ))}
+                  <Stack sx={{ mt: "1rem", gap: 1, flexWrap: "wrap" }} alignItems="center" direction="row">
+                    {user?.hobbies?.map((hobby: string) => (
+                      <Chip key={hobby} label={hobby} />
+                    ))}
+                  </Stack>
+                </Box>
               </Box>
-            </Box>
-            <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
-              <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" }, pb: "1rem" }}>
-                <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Work History
-                    </Typography>
-                  </Grid>
-                </Grid>
-                {user?.relationships?.work_histories?.map((item: UserWorkHistory) => (
-                  <Grid key={item.id} sx={{ pt: "1.5rem" }} container spacing={2}>
-                    <Grid item xs={12}>
-                      <Typography sx={{ color: "primary.dark" }} variant="body1">
-                        {item.company_name}
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
-                          {item.job_title}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack mt={1} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
-                          {`${months[new Date(item.start_date).getMonth()]} ${new Date(
-                            item.start_date,
-                          ).getUTCFullYear()}`}{" "}
-                          -{" "}
-                          {item.end_date === null
-                            ? "present"
-                            : `${months[new Date(item.end_date).getMonth()]} ${new Date(
-                                item.end_date,
-                              ).getUTCFullYear()}`}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <Stack mt={0} alignItems="center" direction="row" spacing={1}>
-                        <Typography sx={{ color: "primary.dark" }} variant="body1">
-                          {item.summary}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
-              <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" } }}>
-                <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Projects
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                  {user?.relationships.projects?.map((item: any) => (
-                    <Grid onClick={onViewProject(item)} key={item.id} item xs={12} md={4}>
-                      <Item>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <Box sx={{ width: "180px", height: "131px", overflow: "hidden", background: "black" }}>
-                            <img
-                              width="180px"
-                              height="131px"
-                              className="overlay-image"
-                              src={item.images[0]?.url}
-                              alt={item.images[0]?.name}
-                              loading="lazy"
-                            />
-                          </Box>
-                        </Stack>
-                        <Typography variant="body1" sx={{ mt: 1, color: "primary.main" }}>
-                          {item.title}
-                        </Typography>
-                      </Item>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            </Box>
-            <Box sx={{ py: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
-              <Box sx={{ width: "100%", px: { xs: "1rem", md: "3rem" } }}>
-                <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                  <Grid item>
-                    <Typography sx={{ color: "primary.dark" }} variant="body1">
-                      Hobbies
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Stack sx={{ mt: "1rem", gap: 1, flexWrap: "wrap" }} alignItems="center" direction="row">
-                  {user?.hobbies?.map((hobby: string) => (
-                    <Chip key={hobby} label={hobby} />
-                  ))}
-                </Stack>
-              </Box>
-            </Box>
-          </Grid>
+            </Grid>
+          )}
         </Grid>
       </Box>
       <Dialog open={open} onClose={handleClose}>
