@@ -135,8 +135,12 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
           <Avatar
             sx={{ bgcolor: red[500] }}
             alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
-            src={item?.relationships.created_by.relationships.profile_image?.url}
-            aria-label="recipe"
+            src={
+              item.relationships?.created_by?.relationships?.company
+                ? item.relationships?.created_by?.relationships?.company?.logo_image?.url
+                : item?.relationships?.created_by?.relationships?.profile_image?.url
+            }
+            aria-label="profile image"
           />
         }
         action={
@@ -174,9 +178,17 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
             </Stack>
           )
         }
-        title={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
+        title={
+          item.relationships?.created_by?.relationships?.company
+            ? item.relationships?.created_by?.relationships?.company?.name
+            : `${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`
+        }
         // subheader={dayjs(item.created_at).fromNow()}
-        subheader={item.relationships.created_by.title}
+        subheader={
+          item.relationships?.created_by?.relationships?.company
+            ? item.relationships?.created_by?.relationships?.company?.business_sector?.name
+            : item.relationships.created_by.title
+        }
       />
       <CardContent>
         {
@@ -235,12 +247,14 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
       <Collapse in={expanded} timeout="auto">
         <CardContent>
           <Stack direction="row" spacing={2}>
-            <Avatar
-              sx={{ bgcolor: red[500] }}
-              alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
-              src={item?.relationships.created_by.relationships.profile_image?.url}
-              aria-label="recipe"
-            />
+            {appUser?.user_type === "artisan" ? (
+              <Avatar alt={`${appUser?.first_name}`} src={appUser?.relationships.profile_image?.url} />
+            ) : (
+              <Avatar
+                alt={`${appUser?.relationships.company?.name}`}
+                src={appUser?.relationships.company?.logo_image?.url}
+              />
+            )}
 
             <Stack sx={{ flexGrow: 1 }} direction="column" spacing={2}>
               <TextField

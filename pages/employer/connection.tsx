@@ -380,7 +380,7 @@ function Page() {
                         <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                           <Avatar
                             alt={item.first_name}
-                            src={item.relationships?.profile_image?.url}
+                            src={item.company ? item.company?.logo_image?.url : item.relationships?.profile_image?.url}
                             sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                           />
                           <Stack
@@ -393,12 +393,12 @@ function Page() {
                             <Stack direction="column" spacing={1}>
                               <Link href={`/profile/${item.id}`} underline="none">
                                 <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                                  {item.first_name} {item.middle_name} {item.last_name}
+                                  {item.company ? item.company.name : `${item.first_name}  ${item.last_name}`}
                                 </Typography>
                               </Link>
 
                               <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
-                                {item.title}
+                                {item.company ? item.company?.business_sector?.name : item.title}
                               </Typography>
                               {/* <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
                                 {item.hobbies?.map((skill: string) => (
@@ -470,28 +470,31 @@ function Page() {
                         <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
                           <Avatar
                             alt={item.first_name}
-                            src={item.relationships?.profile_image?.url}
+                            src={item.company ? item.company?.logo_image?.url : item.relationships?.profile_image?.url}
                             sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                           />
                           <Stack
                             sx={{ flexGrow: 1 }}
                             direction="row"
                             justifyContent="space-between"
-                            alignItems="center"
+                            alignItems={{ xs: "start" }}
                             spacing={1}
                           >
-                            <Stack sx={{ flexGrow: 1 }} direction="column" spacing={1}>
-                              <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                                {item.first_name} {item.middle_name} {item.last_name}
-                              </Typography>
+                            <Stack direction="column" spacing={1}>
+                              <Link href={`/profile/${item.id}`} underline="none">
+                                <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                                  {item.company ? item.company.name : `${item.first_name}  ${item.last_name}`}
+                                </Typography>
+                              </Link>
+
                               <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
-                                {item.title}
+                                {item.company ? item.company?.business_sector?.name : item.title}
                               </Typography>
-                              <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                              {/* <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
                                 {item.hobbies?.map((skill: string) => (
                                   <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
                                 ))}
-                              </Stack>
+                              </Stack> */}
                             </Stack>
                             <Stack
                               direction="row"
@@ -551,7 +554,7 @@ function Page() {
                       }}
                     >
                       <Stack direction="row" alignItems={{ xs: "start", md: "center" }} spacing={{ xs: 1, md: 3 }}>
-                        <Avatar
+                        {/* <Avatar
                           alt={item.first_name}
                           src={item.relationships?.profile_image?.url}
                           sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
@@ -575,6 +578,42 @@ function Page() {
                                 <Chip key={skill.id} size={matches ? "medium" : "small"} label={skill.name} />
                               ))}
                             </Stack>
+                          </Stack> */}
+                        <Avatar
+                          alt={item.first_name}
+                          src={
+                            item.relationships?.company
+                              ? item.relationships?.company?.logo_image?.url
+                              : item.relationships?.profile_image?.url
+                          }
+                          sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
+                        />
+                        <Stack
+                          sx={{ flexGrow: 1 }}
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems={{ xs: "start" }}
+                          spacing={1}
+                        >
+                          <Stack direction="column" spacing={1}>
+                            <Link href={`/profile/${item.id}`} underline="none">
+                              <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
+                                {item.relationships?.company
+                                  ? item.relationships.company.name
+                                  : `${item.first_name}  ${item.last_name}`}
+                              </Typography>
+                            </Link>
+
+                            <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                              {item.relationships?.company
+                                ? item.relationships.company?.business_sector?.name
+                                : item.title}
+                            </Typography>
+                            {/* <Stack sx={{ flexWrap: "wrap", gap: 1 }} direction="row">
+                                {item.hobbies?.map((skill: string) => (
+                                  <Chip key={skill} size={matches ? "medium" : "small"} label={skill} />
+                                ))}
+                              </Stack> */}
                           </Stack>
                           <Stack direction="column" alignItems={"flex-end"} spacing={1}>
                             {!matches ? (

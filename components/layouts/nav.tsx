@@ -893,7 +893,11 @@ export default function NavLayout(props: Props) {
                   >
                     <Avatar
                       alt={item.first_name}
-                      src={item.relationships.profile_image?.url}
+                      src={
+                        item.relationships?.company
+                          ? item.relationships?.company?.logo_image?.url
+                          : item.relationships?.profile_image?.url
+                      }
                       sx={{ width: { xs: "48px", md: "100px" }, height: { xs: "48px", md: "100px" } }}
                     />
                     <Stack
@@ -905,9 +909,15 @@ export default function NavLayout(props: Props) {
                     >
                       <Stack direction="column" spacing={1}>
                         <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                          {item.first_name} {item.middle_name} {item.last_name}
+                          {item.relationships?.company
+                            ? item.relationships?.company.name
+                            : `${item.first_name} ${item.last_name}`}
                         </Typography>
-                        <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>{item.title}</Typography>
+                        <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>
+                          {item.relationships?.company
+                            ? item.relationships?.company?.business_sector?.name
+                            : item.title}
+                        </Typography>
                         {/* <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
                           {item.relationships?.skills.map((skill: any) => (
                             <Chip key={skill.id} size={matches ? "medium" : "small"} label={skill.name} />
