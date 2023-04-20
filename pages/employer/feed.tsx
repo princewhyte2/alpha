@@ -931,8 +931,12 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                     <Avatar
                       sx={{ bgcolor: red[500] }}
                       alt={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
-                      src={item?.relationships.created_by.relationships.profile_image?.url}
-                      aria-label="recipe"
+                      src={
+                        item.relationships?.created_by?.relationships?.company
+                          ? item.relationships?.created_by?.relationships?.company?.logo_image?.url
+                          : item?.relationships?.created_by?.relationships?.profile_image?.url
+                      }
+                      aria-label="profile image"
                     />
                   }
                   action={
@@ -976,8 +980,17 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                     </Stack>
                     // )
                   }
-                  title={`${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`}
-                  subheader={item.relationships.created_by.title}
+                  title={
+                    item.relationships?.created_by?.relationships?.company
+                      ? item.relationships?.created_by?.relationships?.company?.name
+                      : `${item.relationships.created_by.first_name} ${item.relationships.created_by.last_name}`
+                  }
+                  // subheader={dayjs(item.created_at).fromNow()}
+                  subheader={
+                    item.relationships?.created_by?.relationships?.company
+                      ? item.relationships?.created_by?.relationships?.company?.business_sector?.name
+                      : item.relationships.created_by.title
+                  }
                 />
                 <CardContent>
                   <Typography sx={{ fontSize: 14, color: "#1D2939" }}>{item.body}</Typography>

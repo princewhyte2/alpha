@@ -757,6 +757,33 @@ export default function NavLayout(props: Props) {
                       </Box>
                       <Box sx={{ display: { xs: "flex", md: "none" } }}>
                         <IconButton
+                          onClick={() => router.push(`/${user.user_type}/notification`)}
+                          size="large"
+                          aria-label="new notifications"
+                          sx={{ color: "primary.main" }}
+                        >
+                          <Badge badgeContent={unreadNotification} color="error">
+                            <NotificationsIcon />
+                          </Badge>
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={goToProfile}
+                          aria-label="account of current user"
+                          aria-controls="primary-search-account-menu"
+                          aria-haspopup="true"
+                          color="inherit"
+                        >
+                          {user?.user_type === "artisan" ? (
+                            <Avatar alt={`${user?.first_name}`} src={user?.relationships.profile_image?.url} />
+                          ) : (
+                            <Avatar
+                              alt={`${user?.relationships.company?.name}`}
+                              src={user?.relationships.company?.logo_image?.url}
+                            />
+                          )}
+                        </IconButton>
+                        {/* <IconButton
                           size="large"
                           aria-label="show more"
                           aria-controls={mobileMenuId}
@@ -766,7 +793,7 @@ export default function NavLayout(props: Props) {
                         >
                           <MoreIcon />
                         </IconButton>
-                        {renderMobileMenu}
+                        {renderMobileMenu} */}
                       </Box>
                     </>
                   )}
