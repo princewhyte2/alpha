@@ -434,7 +434,9 @@ function Page() {
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href={`/posts/${item.data?.post?.id}`}>
-                                  {item.data?.name}{" "}
+                                  {item.data?.commentCreatedBy?.company
+                                    ? item.data?.commentCreatedBy?.company?.name
+                                    : `${item.data?.commentCreatedBy.first_name} ${item.data?.commentCreatedBy.last_name}`}{" "}
                                 </Link>
                                 commented on post
                               </Typography>
