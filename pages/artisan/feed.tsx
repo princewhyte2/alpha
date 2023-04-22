@@ -407,7 +407,8 @@ function Page() {
   }, [])
 
   const handleEdit = useCallback(
-    (postItem: any) => () => {
+    (postItem: any) => (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation()
       const content = JSON.parse(postItem.body)
       setIsPost(true)
       setIsEditPost(true)
@@ -421,7 +422,8 @@ function Page() {
   )
 
   const handleDelete = useCallback(
-    (postId: number) => async () => {
+    (postId: number) => async (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation()
       try {
         const response = await postService.deletePost(String(postId))
         mutate("posts")
@@ -785,22 +787,8 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
                     "aria-labelledby": "basic-button",
                   }}
                 >
-                  <MenuItem
-                    onClick={(e: any) => {
-                      e.stopPropagation()
-                      onEdit(item)
-                    }}
-                  >
-                    Edit
-                  </MenuItem>
-                  <MenuItem
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onDelete(item.id)
-                    }}
-                  >
-                    Delete
-                  </MenuItem>
+                  <MenuItem onClick={onEdit(item)}>Edit</MenuItem>
+                  <MenuItem onClick={onDelete(item.id)}>Delete</MenuItem>
                 </Menu>
               </div>
             )}

@@ -300,12 +300,18 @@ function Page() {
                             <Avatar
                               sx={{ width: 40, height: 40 }}
                               alt={item.data?.sender?.first_name}
-                              src={item.data?.sender?.profile_image?.url}
+                              src={
+                                item.data?.sender?.company
+                                  ? item.data?.sender?.company?.logo_image?.url
+                                  : item.data?.sender?.profile_image?.url
+                              }
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href={`/messaging/${item.data?.conversation_id}`}>
-                                  {item.data?.sender?.first_name} {item.data?.sender?.last_name}{" "}
+                                  {item.data?.sender?.company
+                                    ? item.data?.sender?.company?.name
+                                    : `${item.data?.sender?.first_name} ${item.data?.sender?.last_name}`}{" "}
                                 </Link>
                                 sent you a message
                               </Typography>
@@ -386,12 +392,12 @@ function Page() {
                             <Avatar
                               sx={{ width: 40, height: 40 }}
                               alt={item.data?.sender?.first_name}
-                              src={item.data?.sender?.profile_image?.url}
+                              src={item.data?.applicant?.profile_image?.url}
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href={`/jobs/${item.data?.vacancy?.id}`}>
-                                  {item.data?.name}{" "}
+                                  {item.data?.applicant?.first_name} {item.data?.applicant?.last_name}{" "}
                                 </Link>
                                 Applied to your Job
                               </Typography>
@@ -429,14 +435,18 @@ function Page() {
                             <Avatar
                               sx={{ width: 40, height: 40 }}
                               alt={item.data?.sender?.first_name}
-                              src={item.data?.sender?.profile_image?.url}
+                              src={
+                                item.data?.commentCreatedBy?.company
+                                  ? item.data?.commentCreatedBy?.company?.logo_image?.url
+                                  : item.data?.commentCreatedBy?.profile_image?.url
+                              }
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href={`/posts/${item.data?.post?.id}`}>
                                   {item.data?.commentCreatedBy?.company
                                     ? item.data?.commentCreatedBy?.company?.name
-                                    : `${item.data?.commentCreatedBy.first_name} ${item.data?.commentCreatedBy.last_name}`}{" "}
+                                    : `${item.data?.commentCreatedBy?.first_name} ${item.data?.commentCreatedBy?.last_name}`}{" "}
                                 </Link>
                                 commented on post
                               </Typography>
@@ -473,12 +483,18 @@ function Page() {
                             <Avatar
                               sx={{ width: 40, height: 40 }}
                               alt={item.data?.sender?.first_name}
-                              src={item.data?.sender?.profile_image?.url}
+                              src={
+                                item.data?.post?.created_by?.company
+                                  ? item.data?.post?.created_by?.company?.logo_image?.url
+                                  : item.data?.post?.created_by?.profile_image?.url
+                              }
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href={`/posts/${item.data?.post?.id}`}>
-                                  {item.data?.name}{" "}
+                                  {item.data?.post?.created_by?.company
+                                    ? item.data?.post?.created_by?.company.name
+                                    : `${item.data?.post?.created_by?.first_name} ${item.data?.post?.created_by?.last_name}`}{" "}
                                 </Link>
                                 created a post
                               </Typography>

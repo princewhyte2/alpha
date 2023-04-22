@@ -63,11 +63,13 @@ import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 import postService from "../../services/post"
 import profileServices from "../../services/profile"
+import { useRouter } from "next/router"
 
 dayjs.extend(relativeTime)
 function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onSharePost, isFullPage = false }: any) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [expanded, setExpanded] = useState(true)
+  const router = useRouter()
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
