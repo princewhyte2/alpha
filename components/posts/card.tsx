@@ -131,6 +131,8 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
       }}
     >
       <CardHeader
+        sx={{ cursor: "pointer" }}
+        onClick={() => router.push(`/profile/${item.relationships?.created_by?.id}`)}
         avatar={
           <Avatar
             sx={{ bgcolor: red[500] }}
