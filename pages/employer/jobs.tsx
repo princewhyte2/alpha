@@ -611,8 +611,8 @@ function Page() {
                     defaultValue={jobDetails?.duration || ""}
                     inputRef={jobDurationRef}
                   >
-                    <MenuItem value={"Temporary"}>Temporary</MenuItem>
-                    <MenuItem value={"Contract"}>Contract</MenuItem>
+                    <MenuItem value={"Temporary/Contract"}>Temporary/Contract</MenuItem>
+                    {/* <MenuItem value={"Contract"}>Contract</MenuItem> */}
                     <MenuItem value={"Permanent"}>Permanent</MenuItem>
                   </Select>
                 </FormControl>
