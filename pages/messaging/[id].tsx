@@ -220,10 +220,11 @@ const Messaging = () => {
         type: "attachment",
         message: "attachment",
         data: [
-          {
-            file_name: item.name,
-            file_url: item.url,
-          },
+          item,
+          // {
+          //   file_name: item.name,
+          //   file_url: item.url,
+          // },
         ],
       })
       mutate(`/conversations/${router.query?.id}`)
@@ -328,16 +329,15 @@ const Messaging = () => {
                     target="_blank"
                     rel="noreferrer"
                     style={{ width: "40%", cursor: "pointer", textDecoration: "none" }}
-                    href={item.attributes.data[0].file_url}
+                    href={item.attributes.data[0]?.url}
                   >
                     <Chip
                       variant="outlined"
                       icon={<FileOpenIcon />}
-                      label={item.attributes.data[0].file_name}
+                      label={item.attributes.data[0]?.name}
                       sx={{
                         height: "100%",
                         p: 1,
-                        // maxWidth: "40%",
                       }}
                     />
                   </a>

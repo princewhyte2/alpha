@@ -195,7 +195,9 @@ const JoinAs = () => {
                   </Grid>
                 </Grid>
 
-                <Typography sx={{ color: "primary.main", fontSize: 16 }}>Join as an Employer</Typography>
+                <Typography textAlign={"center"} sx={{ color: "primary.main", fontSize: 16 }}>
+                  Join as an Employer/Customer
+                </Typography>
               </Stack>
             </Paper>
           </Stack>
