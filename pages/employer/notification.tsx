@@ -530,12 +530,18 @@ function Page() {
                             <Avatar
                               sx={{ width: 40, height: 40 }}
                               alt={item.data?.name}
-                              src={item.data?.profileImage}
+                              src={
+                                item.data?.userRequestingConnection?.company
+                                  ? item.data?.userRequestingConnection?.company?.logo_image?.url
+                                  : item.data?.userRequestingConnection?.profile_image?.url
+                              }
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href={`/employer/connection`}>
-                                  {item.data?.name}{" "}
+                                  {item.data?.userRequestingConnection?.company
+                                    ? item.data?.userRequestingConnection?.company?.name
+                                    : `${item.data?.userRequestingConnection?.first_name} ${item.data?.userRequestingConnection?.last_name}`}{" "}
                                 </Link>
                                 sent you a connection request
                               </Typography>
