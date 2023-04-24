@@ -253,9 +253,10 @@ function Page() {
 
   const handleSendPost = async (e: any) => {
     e.preventDefault()
+    if (files.length < 1 && editor?.isEmpty) return
     setIsLoading(true)
     const data = {
-      body: JSON.stringify(editorContent),
+      body: JSON.stringify(editor.getJSON()),
       ...(files.length > 0 && { file_type: mediaType }),
       ...(mediaType === "image" && { images: files.map((i) => i.id) }),
       ...(mediaType === "video" && { video: files[0].id }),
@@ -265,13 +266,27 @@ function Page() {
       if (isEditPost && editId) {
         //@ts-ignore
         const response = await postService.updatePost(editId, data as CreatePostData)
+
+        const prevData = posts?.map((post: any) => {
+          return post.id !== editId ? post : response.result
+        })
+        // const options = {
+        //   optimisticData: prevData,
+        //   rollbackOnError(error: any) {
+
+        //     return error.name !== "AbortError"
+        //   },
+        // }
+        mutate("posts", prevData)
         setMessage(response?.message)
       } else {
         //@ts-ignore
+
         const response = await postService.createPost(data as CreatePostData)
+        mutate("posts")
         setMessage(response?.message)
       }
-      mutate("posts")
+
       setType("success")
       // setIsError(true)
       onCloseModal()
@@ -577,7 +592,7 @@ function Page() {
         <DialogContent>
           <Box onSubmit={handleSendPost} sx={{ width: "100%" }} component={"form"}>
             <Paper elevation={1} sx={{ p: 2, boxShadow: "0px 8px 48px #EEEEEE" }}>
-              <TiptapEditor setEditorContent={setEditorContent} setTextEditor={setEditor} initContent={initContent} />
+              <TiptapEditor setTextEditor={setEditor} initContent={initContent} />
               {files?.length < 1 && (
                 <Stack sx={{ mt: 1 }} direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
                   <Button
@@ -727,7 +742,7 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
     } catch (error) {
       return item?.body
     }
-  }, [])
+  }, [item])
 
   const isLiked = useMemo(() => {
     return Boolean(item.relationships.likes?.find((like: any) => like?.liked_by === appUser?.id))

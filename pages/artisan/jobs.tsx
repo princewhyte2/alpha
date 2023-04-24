@@ -379,7 +379,7 @@ const JobCard = ({ item, onJobApplication }: any) => {
               Location: {item.location}
             </Typography>
             <Typography sx={{ fontSize: 14 }} color="primary.main">
-              Job Duration: {item.duration}
+              Job Type: {item.duration}
             </Typography>
             <Typography sx={{ fontSize: 14 }} color="primary.main">
               Gender Required: {item.preferred_gender}

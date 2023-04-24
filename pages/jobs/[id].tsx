@@ -599,7 +599,6 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
       return item?.description
     }
   }, [item])
-  console.log("item description", item.description)
   const { data: user } = useSWR("userProfile", profileServices.profileFetcher)
   // //console.log("user", user)
   const isAppliedFor = useMemo(() => {
@@ -607,7 +606,7 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
       return false
     }
     return jobApplicantsList.some((applicant: any) => applicant.applicant_id === user.id)
-  }, [user, jobApplicantsList])
+  }, [user, jobApplicantsList, item])
 
   return (
     <Paper
@@ -670,7 +669,7 @@ function JobCard({ item, onEdit, onDelete, onJobApplication }: any) {
             Location: {item.location}
           </Typography>
           <Typography sx={{ fontSize: 13 }} color="primary.main">
-            Job Duration: {item.duration}
+            Job Type: {item.duration}
           </Typography>
           <Typography sx={{ fontSize: 13 }} color="primary.main">
             Gender Required: {item.preferred_gender}

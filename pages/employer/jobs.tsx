@@ -590,16 +590,32 @@ function Page() {
                 />
               </Grid>
               <Grid item xs={12} md={8}>
-                <TextField
+                {/* <TextField
                   fullWidth
                   id="profile-title"
                   placeholder="eg 8 months"
-                  label="Job Duration"
+                  label="Job Type"
                   variant="outlined"
                   required
                   defaultValue={jobDetails?.duration || ""}
                   inputRef={jobDurationRef}
-                />
+                /> */}
+                <FormControl fullWidth>
+                  <InputLabel id="job-type-label">Job Type</InputLabel>
+                  <Select
+                    labelId="job-type-label"
+                    id="jobType-select"
+                    placeholder="Job Type"
+                    label="Job Type"
+                    required
+                    defaultValue={jobDetails?.duration || ""}
+                    inputRef={jobDurationRef}
+                  >
+                    <MenuItem value={"Temporary"}>Temporary</MenuItem>
+                    <MenuItem value={"Contract"}>Contract</MenuItem>
+                    <MenuItem value={"Permanent"}>Permanent</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12} md={4}></Grid>
               <Grid item xs={12} md={4}>
@@ -783,7 +799,7 @@ function JobCard({ item, onEdit, onDelete }: any) {
               Location: {item.location}
             </Typography>
             <Typography sx={{ fontSize: 13 }} color="primary.main">
-              Job Duration: {item.duration}
+              Job Type: {item.duration}
             </Typography>
             <Typography sx={{ fontSize: 13 }} color="primary.main">
               Gender Required: {item.preferred_gender}

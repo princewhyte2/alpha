@@ -566,8 +566,8 @@ function Page() {
                           <Stack alignItems={"center"} direction={"row"} spacing={2}>
                             <Avatar
                               sx={{ width: 40, height: 40 }}
-                              alt={item.data?.sender?.first_name}
-                              src={item.data?.sender?.profile_image?.url}
+                              alt={item.data?.name}
+                              src={item.data?.profileImage}
                             />
                             <Stack direction={"column"} spacing={1}>
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>

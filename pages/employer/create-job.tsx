@@ -253,15 +253,31 @@ function Page() {
                     />
                   </Grid>
                   <Grid item xs={12} md={8}>
-                    <TextField
+                    {/* <TextField
                       fullWidth
                       id="profile-title"
                       placeholder="eg 8 months"
-                      label="Job Duration"
+                      label="Job Type"
                       variant="outlined"
                       required
                       inputRef={jobDurationRef}
-                    />
+                    /> */}
+                    <FormControl fullWidth>
+                      <InputLabel id="job-type-label">Job Type</InputLabel>
+                      <Select
+                        labelId="job-type-label"
+                        id="jobType-select"
+                        placeholder="Job Type"
+                        label="Job Type"
+                        required
+                        defaultValue={""}
+                        inputRef={jobDurationRef}
+                      >
+                        <MenuItem value={"Temporary"}>Temporary</MenuItem>
+                        <MenuItem value={"Contract"}>Contract</MenuItem>
+                        <MenuItem value={"Permanent"}>Permanent</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   {/* <Grid item xs={12} md={4}></Grid> */}
                   <Grid item xs={12} md={6}>
