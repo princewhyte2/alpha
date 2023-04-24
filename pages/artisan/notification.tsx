@@ -613,7 +613,7 @@ function Page() {
                       <Avatar
                         sx={{ width: 80, height: 80 }}
                         alt={user?.first_name}
-                        src={user?.relationships?.profile_image.url}
+                        src={user?.relationships?.profile_image?.url}
                       />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
                         {user?.first_name} {user?.last_name}

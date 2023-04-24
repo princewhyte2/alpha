@@ -576,7 +576,7 @@ function Page() {
                       <Avatar
                         sx={{ width: 80, height: 80 }}
                         alt={user?.relationships?.company?.name}
-                        src={user?.relationships?.company.logo_image.url}
+                        src={user?.relationships?.company.logo_image?.url}
                       />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
                         {user?.relationships?.company.name}
