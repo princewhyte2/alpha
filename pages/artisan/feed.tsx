@@ -652,7 +652,7 @@ function Page() {
 
             <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
               <LoadingButton
-                disabled={isImageLoading || (files.length < 1 && editor?.isEmpty)}
+                disabled={isImageLoading}
                 loading={isLoading}
                 type="submit"
                 fullWidth
