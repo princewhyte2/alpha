@@ -60,6 +60,8 @@ import notificationsServices from "../../services/notifications"
 import { useArtisanSearch } from "../../store"
 import useDebounce from "../../hooks/useDebounce"
 import connectionService from "../../services/connection"
+import { signOut } from "firebase/auth"
+import { auth } from "../../lib/firebaseConfig"
 
 interface Props {
   /**
@@ -244,6 +246,7 @@ const onLogout = () => {
 
   if (typeof window !== undefined) {
     window.location.href = `${window?.location?.origin}/auth/login`
+    signOut(auth)
   }
 }
 
@@ -632,6 +635,19 @@ export default function NavLayout(props: Props) {
     },
     [user],
   )
+
+  // React.useEffect(() => {
+  //   if (!user?.user_type) {
+  //     router.push("/join-as")
+  //     return
+  //   }
+
+  //   if (!user?.has_verified_phone_number) {
+  //     router.push(`/${user?.user_type}/profile/security/change-phone`)
+  //   } else if (!user?.has_verified_email) {
+  //     router.push(`/${user?.user_type}/profile/security/change-email`)
+  //   }
+  // }, [user])
 
   return (
     <Box sx={{ display: "flex" }}>

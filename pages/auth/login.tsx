@@ -113,6 +113,11 @@ const Login = () => {
         router.push("/join-as")
         return
       }
+      if (!user?.has_verified_phone_number) {
+        router.push(`/${user?.user_type}/profile/security/change-phone`)
+        return
+      }
+
       // const { redirect = "/profile/information" } = router.query
       const redirect = `/${user?.user_type}/feed`
       router.push(redirect)
@@ -167,6 +172,10 @@ const Login = () => {
         router.push("/join-as")
         return
       }
+      if (!user?.has_verified_phone_number) {
+        router.push(`/${user?.user_type}/profile/security/change-phone`)
+        return
+      }
       // const { redirect = "/profile/information" } = router.query
       const redirect = `/${user?.user_type}/feed`
       router.push(redirect)
@@ -198,6 +207,10 @@ const Login = () => {
             }
             if (!user?.user_type) {
               router.push("/join-as")
+              return
+            }
+            if (!user?.has_verified_phone_number) {
+              router.push(`/${user?.user_type}/profile/security/change-phone`)
               return
             }
             // const { redirect = "/profile/information" } = router.query
@@ -295,6 +308,10 @@ const Login = () => {
             }
             if (!user?.user_type) {
               router.push("/join-as")
+              return
+            }
+            if (!user?.has_verified_phone_number) {
+              router.push(`/${user?.user_type}/profile/security/change-phone`)
               return
             }
             // const { redirect = "/profile/information" } = router.query
