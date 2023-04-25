@@ -393,7 +393,7 @@ function Page() {
                             <Stack direction="column" spacing={1}>
                               <Link href={`/profile/${item.id}`} underline="none">
                                 <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                                  {item.company ? item.company.name : `${item.first_name}  ${item.last_name}`}
+                                  {item.company ? item.company?.name : `${item.first_name}  ${item.last_name}`}
                                 </Typography>
                               </Link>
 
@@ -483,7 +483,7 @@ function Page() {
                             <Stack direction="column" spacing={1}>
                               <Link href={`/profile/${item.id}`} underline="none">
                                 <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
-                                  {item.company ? item.company.name : `${item.first_name}  ${item.last_name}`}
+                                  {item.company ? item.company?.name : `${item.first_name}  ${item.last_name}`}
                                 </Typography>
                               </Link>
 
@@ -599,7 +599,7 @@ function Page() {
                             <Link href={`/profile/${item.id}`} underline="none">
                               <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
                                 {item.relationships?.company
-                                  ? item.relationships.company.name
+                                  ? item.relationships.company?.name
                                   : `${item.first_name}  ${item.last_name}`}
                               </Typography>
                             </Link>
@@ -652,10 +652,10 @@ function Page() {
                       <Avatar
                         sx={{ width: 80, height: 80 }}
                         alt={user?.relationships?.company?.name}
-                        src={user?.relationships?.company.logo_image?.url}
+                        src={user?.relationships?.company?.logo_image?.url}
                       />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        {user?.relationships?.company.name}
+                        {user?.relationships?.company?.name}
                       </Typography>
                       <Typography sx={{ fontSize: 16, color: "#475467" }}>
                         {user?.relationships?.company?.business_sector?.name}

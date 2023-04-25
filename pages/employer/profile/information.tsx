@@ -622,7 +622,7 @@ function Page() {
                         id="email-start-business"
                         placeholder="Email Address"
                         inputRef={businessEmailRef}
-                        defaultValue={user?.relationships.company.email || ""}
+                        defaultValue={user?.relationships?.company?.email || ""}
                         fullWidth
                         InputProps={{
                           endAdornment: (

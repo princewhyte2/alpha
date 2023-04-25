@@ -937,7 +937,7 @@ export default function NavLayout(props: Props) {
                       <Stack direction="column" spacing={1}>
                         <Typography sx={{ fontSize: { xs: 14, md: 16 } }} color="primary.main">
                           {item.relationships?.company
-                            ? item.relationships?.company.name
+                            ? item.relationships?.company?.name
                             : `${item.first_name} ${item.last_name}`}
                         </Typography>
                         <Typography sx={{ fontSize: { xs: 12, md: 14 }, color: "#667085" }}>

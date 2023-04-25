@@ -138,7 +138,7 @@ function Page() {
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       const data = {
-        company_id: user?.relationships.company.id,
+        company_id: user?.relationships.company?.id,
         user_id: user?.id,
         title: jobTitleRef.current?.value,
         description: jobDescriptionRef.current?.value,
