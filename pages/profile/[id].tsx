@@ -250,8 +250,6 @@ function Page() {
     setProjectData(undefined)
   }, [])
 
-  console.log("this is the user", user)
-
   return (
     <Box sx={{ p: 2 }}>
       <Box sx={{ flexGrow: 1 }}>
@@ -314,7 +312,7 @@ function Page() {
                           sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
                           variant="h6"
                         >
-                          {user?.relationships.company?.name}
+                          {user?.relationships?.company?.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} md={6}>
@@ -325,7 +323,7 @@ function Page() {
                           sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
                           variant="h6"
                         >
-                          {user?.relationships.company?.website}
+                          {user?.relationships?.company?.website}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -347,7 +345,7 @@ function Page() {
                           sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
                           variant="h6"
                         >
-                          {user?.relationships.company?.address}
+                          {user?.relationships?.company?.address}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} md={4}>
@@ -380,7 +378,7 @@ function Page() {
                           sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
                           variant="h6"
                         >
-                          {user?.relationships.company?.email}
+                          {user?.relationships?.company?.email}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -402,7 +400,7 @@ function Page() {
                           {"user?.relationships?.phone_numbers[0]?.phone_number"}
                         </Typography> */}
                         <Stack sx={{ mt: "1rem" }} direction="row" spacing={1}>
-                          <Chip label={user?.relationships.company?.business_sector?.name} />
+                          <Chip label={user?.relationships?.company?.business_sector?.name} />
                         </Stack>
                       </Grid>
                     </Grid>
@@ -425,7 +423,7 @@ function Page() {
                           sx={{ color: "primary.dark", mt: "1rem", fontSize: { xs: 16, md: 20 } }}
                           variant="h6"
                         >
-                          {user?.relationships.company?.service_provided}
+                          {user?.relationships?.company?.service_provided}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -558,8 +556,8 @@ function Page() {
                       <Grid item xs={6}>
                         <Stack mt={1} alignItems="center" direction="row" spacing={1}>
                           <Typography sx={{ color: "primary.dark" }} variant="body1">
-                            {`${months[new Date(item.detail.graduation_date).getMonth()]} ${new Date(
-                              item.detail.graduation_date,
+                            {`${months[new Date(item.detail?.graduation_date).getMonth()]} ${new Date(
+                              item.detail?.graduation_date,
                             ).getUTCFullYear()}`}
                           </Typography>
                         </Stack>
@@ -629,7 +627,7 @@ function Page() {
                     </Grid>
                   </Grid>
                   <Grid container spacing={2}>
-                    {user?.relationships.projects?.map((item: any) => (
+                    {user?.relationships?.projects?.map((item: any) => (
                       <Grid onClick={onViewProject(item)} key={item.id} item xs={12} md={4}>
                         <Item>
                           <Stack direction="row" alignItems="center" spacing={1}>

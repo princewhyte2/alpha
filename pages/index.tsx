@@ -1,4 +1,4 @@
-import { ReactElement, useState, useCallback } from "react"
+import { ReactElement, useState, useCallback, useRef } from "react"
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
 import Link from "@mui/material/Link"
@@ -20,6 +20,7 @@ import CardContent from "@mui/material/CardContent"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
+import LoadingButton from "@mui/lab/LoadingButton"
 import IconButton, { IconButtonProps } from "@mui/material/IconButton"
 import LinearProgress, { LinearProgressProps } from "@mui/material/LinearProgress"
 import Tabs from "@mui/material/Tabs"
@@ -48,6 +49,9 @@ import FacebookIcon from "../components/icons/Facebook"
 import GoogleIcon from "../components/icons/Google"
 import { useRouter } from "next/router"
 import { useArtisanSearch } from "../store"
+import utilsService from "../services/utils"
+import { ErrorComponent } from "../components/alert"
+import { AlertColor } from "@mui/material"
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
 
@@ -87,7 +91,13 @@ function Page() {
   const router = useRouter()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [activeStep, setActiveStep] = useState(0)
+  const [isContactUsLoading, setIsContactusLoading] = useState(false)
   const maxSteps = images.length
+
+  //error handler
+  const [message, setMessage] = useState("An error occured")
+  const [isError, setIsError] = useState(false)
+  const [type, setType] = useState<AlertColor>("error")
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
@@ -102,6 +112,44 @@ function Page() {
   }
 
   const setSearchTerm = useArtisanSearch((state: any) => state.setSearchTerm)
+
+  const contactNameRef = useRef<any>()
+  const contactEmailRef = useRef<any>()
+  const contactPhoneRef = useRef<any>()
+  const contactDescriptionRef = useRef<any>()
+
+  const handleContactUs = async (e: any) => {
+    e.preventDefault()
+    setIsContactusLoading(true)
+    const data = {
+      name: contactNameRef?.current?.value,
+      email: contactEmailRef?.current?.value,
+      phone_number: contactPhoneRef?.current?.value,
+      description: contactDescriptionRef?.current?.value,
+    }
+    try {
+      const response = await utilsService.contactUs(data)
+      contactNameRef.current.value = ""
+      contactEmailRef.current.value = ""
+      contactPhoneRef.current.value = ""
+      contactDescriptionRef.current.value = ""
+      setMessage(response?.message)
+      setType("success")
+      setIsError(true)
+    } catch (error: any) {
+      setType("error")
+      if (error.response) {
+        setMessage(error.response.data.message)
+      } else if (error.request) {
+        //console.log(error.request)
+      } else {
+        //console.log("Error", error.message)
+      }
+      setIsError(true)
+    } finally {
+      setIsContactusLoading(false)
+    }
+  }
 
   return (
     <Box sx={{ flexGrow: 1, background: "#FFFFFF" }}>
@@ -310,7 +358,7 @@ function Page() {
       </Container>
       <Container sx={{ background: "#E2E3F3", mt: 6 }} disableGutters maxWidth="xl">
         <Container maxWidth="md">
-          <Stack sx={{ py: { xs: 3, md: 5 } }} direction={{ xs: "column", md: "row" }} spacing={3}>
+          {/* <Stack sx={{ py: { xs: 3, md: 5 } }} direction={{ xs: "column", md: "row" }} spacing={3}>
             <Typography sx={{ fontSize: { xs: 16, md: 40 }, fontWeight: 500, color: "#071E11", lineHeight: "140%" }}>
               Subscribe for
               <br />
@@ -330,7 +378,7 @@ function Page() {
                 </Button>
               </Box>
             </Stack>
-          </Stack>
+          </Stack> */}
         </Container>
       </Container>
       <Container sx={{ background: "#FFFFFF" }} maxWidth="xl">
@@ -347,62 +395,84 @@ function Page() {
             </Stack>
           </Grid>
           <Grid item xs={12} md={7}>
-            <Stack alignItems="center" direction={"column"} spacing={3}>
-              <Stack direction={{ xs: "column", md: "row" }} sx={{ pt: 2 }} spacing={3}>
-                <Box>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <TextField
-                        placeholder="Enter your name"
-                        fullWidth
-                        id="contact-name"
-                        label="Name"
-                        variant="outlined"
-                      />
+            <Box
+              component="form"
+              // sx={{
+              //   display: "flex",
+              //   flexDirection: "column",
+              //   alignItems: "center",
+              //   maxWidth: "29.68rem",
+              //   width: "100%",
+              // }}
+              onSubmit={handleContactUs}
+            >
+              <Stack alignItems="center" direction={"column"} spacing={3}>
+                <Stack direction={{ xs: "column", md: "row" }} sx={{ pt: 2 }} spacing={3}>
+                  <Box>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <TextField
+                          placeholder="Enter your name"
+                          fullWidth
+                          id="contact-name"
+                          label="Name"
+                          variant="outlined"
+                          inputRef={contactNameRef}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          placeholder="Enter your phone number"
+                          fullWidth
+                          id="contact-phone"
+                          label="Phone Number "
+                          variant="outlined"
+                          inputRef={contactPhoneRef}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        placeholder="Enter your phone number"
-                        fullWidth
-                        id="contact-phone"
-                        label="Phone Number "
-                        variant="outlined"
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
+                  </Box>
 
-                <Box>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <TextField
-                        placeholder="Enter your email address"
-                        fullWidth
-                        id="contact-email-address"
-                        label="Email Address"
-                        variant="outlined"
-                      />
+                  <Box>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <TextField
+                          placeholder="Enter your email address"
+                          fullWidth
+                          id="contact-email-address"
+                          label="Email Address"
+                          variant="outlined"
+                          inputRef={contactEmailRef}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          placeholder="Tell us what we can do for you"
+                          fullWidth
+                          id="contact-description"
+                          label="How can we help you"
+                          variant="outlined"
+                          multiline
+                          rows={4}
+                          inputRef={contactDescriptionRef}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        placeholder="Tell us what we can do for you"
-                        fullWidth
-                        id="contact-phone"
-                        label="How can we help you"
-                        variant="outlined"
-                        multiline
-                        rows={4}
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
+                  </Box>
+                </Stack>
+                <Container maxWidth="xs">
+                  <LoadingButton
+                    loading={isContactUsLoading}
+                    type="submit"
+                    fullWidth
+                    sx={{ background: "#3E4095" }}
+                    variant="contained"
+                  >
+                    Get in touch{" "}
+                  </LoadingButton>
+                </Container>
               </Stack>
-              <Container maxWidth="xs">
-                <Button fullWidth sx={{ background: "#3E4095" }} variant="contained">
-                  Get in touch{" "}
-                </Button>
-              </Container>
-            </Stack>
+            </Box>
           </Grid>
         </Grid>
       </Container>
@@ -456,6 +526,7 @@ function Page() {
           </Stack>
         </Stack>
       </Container>
+      <ErrorComponent type={type} open={isError} message={message} handleClose={() => setIsError(false)} />
     </Box>
   )
 }

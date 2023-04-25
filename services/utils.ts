@@ -25,8 +25,18 @@ const searchUsers = async (url: string) => {
     return response.data.result.data
 }
 
+const contactUs = async (postData:{
+    "name":string,
+    "email": string,
+    "phone_number" : string,
+    "description": string
+}) => {
+    const response = await axiosInstance.post('/contact-us',postData)
+    return response.data
+}
+
 const utilsService = {
-getBusinessSectors,getOccupations,getOccupationsSkill,searchUsers,getAllSkills
+getBusinessSectors,getOccupations,getOccupationsSkill,searchUsers,getAllSkills,contactUs
 }
 
 export default utilsService

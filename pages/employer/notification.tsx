@@ -148,21 +148,7 @@ function Page() {
     setValue(newValue)
   }
 
-  //   //console.log("user", user)
-
-  //   const { data: unApprovedConnectionList } = useSWR(
-  //     "unApprovedConnections",
-  //     connectionService.getUnApprovedUserConnections,
-  //   )
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
-
-  //   const { data: usersList } = useSWR(
-  //     searchTerm ? `/search/artisans/employers?searchTerm=${searchTerm}` : null,
-  //     utilsService.searchUsers,
-  //     {
-  //       keepPreviousData: true,
-  //     },
-  //   )
 
   const sendConnectionRequest = useCallback(
     (userId: string) => () => {
@@ -170,12 +156,6 @@ function Page() {
     },
     [],
   )
-
-  //   useEffect(() => {
-  //     if (!searchTerm) {
-  //       setValue(0)
-  //     }
-  //   }, [searchTerm])
 
   const acceptConnectionRequest = useCallback(
     (userId: string) => async () => {
@@ -227,13 +207,6 @@ function Page() {
 
   const handleSendMessage = async (userId: string) => {
     router.push(`/profile/${userId}`)
-    // const defaultMessage = "we are starting ur converstation"
-    // try {
-    //   const chat = await messagingService.sendMessage("", { receiver_id: userId, message: defaultMessage })
-    //   //console.log("chat", chat)
-    // } catch (error) {
-    //   //console.log("error", error)
-    // }
   }
   const handleReadNotification = (notififcationId: string) => {
     const notifyItem = notifications.find((item: any) => item.id === notififcationId)
@@ -244,8 +217,6 @@ function Page() {
       .then(() => mutate("notifications"))
       .catch(() => {})
   }
-
-  console.log("user notification", notifications)
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -493,7 +464,7 @@ function Page() {
                               <Typography sx={{ fontSize: { xs: 14, md: 16, color: "#1D2939" } }}>
                                 <Link underline="none" href={`/posts/${item.data?.post?.id}`}>
                                   {item.data?.post?.created_by?.company
-                                    ? item.data?.post?.created_by?.company.name
+                                    ? item.data?.post?.created_by?.company?.name
                                     : `${item.data?.post?.created_by?.first_name} ${item.data?.post?.created_by?.last_name}`}{" "}
                                 </Link>
                                 created a post
@@ -576,10 +547,10 @@ function Page() {
                       <Avatar
                         sx={{ width: 80, height: 80 }}
                         alt={user?.relationships?.company?.name}
-                        src={user?.relationships?.company.logo_image?.url}
+                        src={user?.relationships?.company?.logo_image?.url}
                       />
                       <Typography sx={{ fontSize: 16 }} color="primary.main">
-                        {user?.relationships?.company.name}
+                        {user?.relationships?.company?.name}
                       </Typography>
                       <Typography sx={{ fontSize: 16, color: "#475467" }}>
                         {user?.relationships?.company?.business_sector?.name}
