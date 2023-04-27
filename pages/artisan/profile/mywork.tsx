@@ -16,6 +16,7 @@ import DialogContent from "@mui/material/DialogContent"
 import TextField from "@mui/material/TextField"
 import Paper from "@mui/material/Paper"
 import useSWR, { useSWRConfig } from "swr"
+import CircularProgress from "@mui/material/CircularProgress"
 import { styled } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import IconButton from "@mui/material/IconButton"
@@ -77,6 +78,7 @@ function Page() {
   const { data: userProjects } = useSWR<ProjectResponseData[]>("userProjects", projectService.projectFetcher)
   const matches = useMediaQuery(theme.breakpoints.up("md"))
   const [projectImages, setProjectImages] = useState<ImageResponse[]>([])
+  const [isFileLoading, setisFileLoading] = useState(false)
   const [isNeProjectAdded, setIsNewProjectAdded] = useState(false)
   const [projectData, setProjectData] = useState<ProjectResponseData>()
   const [isViewProjectInfo, setIsViewProjectInfo] = useState(false)
@@ -94,33 +96,38 @@ function Page() {
 
   const [isAddNewProject, setIsAddNewProject] = useState(false)
 
-  const handleFileChange = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return
+  const handleFileChange = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      if (!event.target.files) return
+      setisFileLoading(true)
+      try {
+        const file = event.target.files[0]
 
-    try {
-      const file = event.target.files[0]
+        const formData = new FormData()
+        formData.append("file", file)
+        const res = await uploadService.uploadFile(formData)
+        setMessage(res?.message)
+        setType("success")
+        setIsError(true)
 
-      const formData = new FormData()
-      formData.append("file", file)
-      const res = await uploadService.uploadFile(formData)
-      setMessage(res?.message)
-      setType("success")
-      setIsError(true)
-
-      const item = res.result.file
-      setProjectImages((prevFiles) => [...prevFiles, item])
-    } catch (error: any) {
-      setType("error")
-      if (error.response) {
-        setMessage(error.response.data.message)
-      } else if (error.request) {
-        //console.log(error.request)
-      } else {
-        //console.log("Error", error.message)
+        const item = res.result.file
+        setProjectImages((prevFiles) => [...prevFiles, item])
+      } catch (error: any) {
+        setType("error")
+        if (error.response) {
+          setMessage(error.response.data.message)
+        } else if (error.request) {
+          //console.log(error.request)
+        } else {
+          //console.log("Error", error.message)
+        }
+        setIsError(true)
+      } finally {
+        setisFileLoading(false)
       }
-      setIsError(true)
-    }
-  }, [])
+    },
+    [isFileLoading],
+  )
 
   const handlePostProject = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
@@ -382,6 +389,11 @@ function Page() {
                       </Item>
                     </Grid>
                   ))}
+                  {isFileLoading && (
+                    <Grid item xs={12} md={4}>
+                      <CircularProgress />
+                    </Grid>
+                  )}
                 </Grid>
                 <Stack sx={{ mt: "1rem" }} direction="row" justifyContent="flex-end" alignItems="center">
                   <LoadingButton loading={isLoading} type="submit" fullWidth sx={{ px: 6 }} variant="contained">

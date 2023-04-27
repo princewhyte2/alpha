@@ -250,6 +250,25 @@ function Page() {
     setProjectData(undefined)
   }, [])
 
+  const handleViewImage = useCallback(
+    (imageUrl: string) => () => {
+      if (!imageUrl) return
+      window?.open(
+        imageUrl,
+        "targetWindow",
+        `toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=400,
+                                    height=400`,
+      )
+    },
+    [],
+  )
+
   return (
     <Box sx={{ p: 2 }}>
       <Box sx={{ flexGrow: 1 }}>
@@ -271,6 +290,7 @@ function Page() {
             <>
               <Grid item md={3}>
                 <Avatar
+                  onClick={handleViewImage(user?.relationships?.company?.logo_image?.url)}
                   sx={{ width: "140px", height: "140px" }}
                   alt={`richard`}
                   src={user?.relationships?.company?.logo_image?.url}
@@ -436,6 +456,7 @@ function Page() {
               <Box sx={{ p: "1.5rem", bgcolor: "#F8F9FC", mt: "1.5rem", borderRadius: "0.5rem" }}>
                 <Stack spacing={4} direction={{ xs: "column", md: "row" }}>
                   <Avatar
+                    onClick={handleViewImage(user?.relationships?.profile_image?.url)}
                     sx={{ width: { xs: "64px", md: "140px" }, height: { xs: "64px", md: "140px" } }}
                     alt={`${user?.first_name} ${user?.last_name}`}
                     src={user?.relationships?.profile_image?.url}

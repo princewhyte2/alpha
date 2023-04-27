@@ -315,8 +315,6 @@ function Page() {
         summary: workSummaryRef.current?.value,
       }
 
-      // //console.log("post", data)
-
       setIsWorkLoading(true)
       try {
         if (workId) {
@@ -558,6 +556,25 @@ function Page() {
     [],
   )
 
+  const handleViewImage = useCallback(
+    (imageUrl: string) => () => {
+      if (!imageUrl) return
+      window?.open(
+        imageUrl,
+        "targetWindow",
+        `toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=400,
+                                    height=400`,
+      )
+    },
+    [],
+  )
+
   return (
     <Box sx={{ p: 2 }}>
       <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
@@ -599,6 +616,7 @@ function Page() {
                   sx={{ width: "140px", height: "140px" }}
                   alt={`${user?.first_name} ${user?.last_name}`}
                   src={user?.relationships.profile_image?.url}
+                  onClick={handleViewImage(user?.relationships.profile_image?.url)}
                 />
               </Badge>
             </Grid>
@@ -629,6 +647,7 @@ function Page() {
                     sx={{ width: "64px", height: "64px" }}
                     alt={`${user?.first_name} ${user?.last_name}`}
                     src={user?.relationships.profile_image?.url}
+                    onClick={handleViewImage(user?.relationships.profile_image?.url)}
                   />
                 </Badge>
               )}
@@ -1140,16 +1159,21 @@ function Page() {
                         <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           {item.detail?.institution}
                         </Typography>
-                      </Stack>
-                    </Grid>
-
-                    <Grid item xs={12} md={6}>
-                      <Stack mt={1} alignItems="center" direction={{ xs: "column", md: "row" }} spacing={1}>
                         <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
                           {`${months[new Date(item.detail.graduation_date).getMonth()]} ${new Date(
                             item.detail.graduation_date,
                           ).getUTCFullYear()}`}
                         </Typography>
+                      </Stack>
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                      <Stack mt={1} alignItems="center" direction={{ xs: "column", md: "row" }} spacing={1}>
+                        {/* <Typography sx={{ color: "primary.dark", fontSize: { xs: 13, md: 16 } }} variant="body1">
+                          {`${months[new Date(item.detail.graduation_date).getMonth()]} ${new Date(
+                            item.detail.graduation_date,
+                          ).getUTCFullYear()}`}
+                        </Typography> */}
 
                         <Stack
                           direction="row"

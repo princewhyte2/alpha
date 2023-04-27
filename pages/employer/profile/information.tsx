@@ -289,6 +289,25 @@ function Page() {
     [user, logo],
   )
 
+  const handleViewImage = useCallback(
+    (imageUrl: string) => () => {
+      if (!imageUrl) return
+      window?.open(
+        imageUrl,
+        "targetWindow",
+        `toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=400,
+                                    height=400`,
+      )
+    },
+    [],
+  )
+
   return (
     <Box sx={{ p: 2 }}>
       <Stack direction="row" alignItems={"center"} justifyContent={"space-between"}>
@@ -331,7 +350,12 @@ function Page() {
                   )
                 }
               >
-                <Avatar sx={{ width: "140px", height: "140px" }} alt={`richard`} src={logo?.url} />
+                <Avatar
+                  onClick={handleViewImage(logo?.url)}
+                  sx={{ width: "140px", height: "140px" }}
+                  alt={`richard`}
+                  src={logo?.url}
+                />
               </Badge>
             </Grid>
           )}
@@ -359,6 +383,7 @@ function Page() {
                   }
                 >
                   <Avatar
+                    onClick={handleViewImage(logo?.url)}
                     sx={{ width: "64px", height: "64px" }}
                     alt={user?.relationships.company?.name}
                     src={logo?.url}
