@@ -49,6 +49,8 @@ import FacebookIcon from "../components/icons/Facebook"
 import GoogleIcon from "../components/icons/Google"
 import { useRouter } from "next/router"
 import { useArtisanSearch } from "../store"
+import TwitterIcon from "@mui/icons-material/Twitter"
+import InstagramIcon from "@mui/icons-material/Instagram"
 import utilsService from "../services/utils"
 import { ErrorComponent } from "../components/alert"
 import { AlertColor } from "@mui/material"
@@ -519,8 +521,15 @@ function Page() {
                 Follow Us
               </Typography>
               <Stack alignItems={"center"} spacing={2} direction={"row"}>
-                <FacebookIcon />
-                <GoogleIcon />
+                <a rel="noreferrer" href="https://www.facebook.com/profile.php?id=100087400347808" target="_blank">
+                  <FacebookIcon />
+                </a>
+                <a rel="noreferrer" href="https://twitter.com/workfynder?t=ijVbBVwz2jUIASjrh770QA&s=08" target="_blank">
+                  <TwitterIcon />
+                </a>
+                <a rel="noreferrer" href="https://instagram.com/workfynder?igshid=ZDdkNTZiNTM=" target="_blank">
+                  <InstagramIcon />
+                </a>
               </Stack>
             </Stack>
           </Stack>

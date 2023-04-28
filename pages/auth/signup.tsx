@@ -130,7 +130,7 @@ const SignUp = () => {
       setIsError(true)
       // localStorage.setItem("access_token", res.result.token)
       Cookies.set("access_token", res.result.token, {
-        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 5 * 600 * 600 * 10000),
       })
       router.push("/auth/verification")
     } catch (error: any) {
@@ -164,7 +164,7 @@ const SignUp = () => {
       setUser(user)
       // localStorage.setItem("access_token", res.result.token)
       Cookies.set("access_token", res.result.token, {
-        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 5 * 600 * 600 * 10000),
       })
       setMessage("login successful")
       setType("success")
@@ -201,7 +201,7 @@ const SignUp = () => {
             setUser(user)
             // localStorage.setItem("access_token", res.result.token)
             Cookies.set("access_token", res.result.token, {
-              expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+              expires: new Date(Date.now() + 5 * 600 * 600 * 10000),
             })
             setMessage("login successful")
             setType("success")

@@ -34,6 +34,8 @@ function Page() {
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.up("md"))
 
+  const { data: appUser } = useSWR("userProfile", profileServices.profileFetcher)
+
   //error handler
   const [message, setMessage] = useState("An error occured")
   const [isError, setIsError] = useState(false)
@@ -103,7 +105,7 @@ function Page() {
         Change Phone Number
       </Button>
       <Typography variant="body2" sx={{ my: 1, color: "primary.dark" }}>
-        To change your phone number, a token will be sent to your registered phone number
+        To change/verify your phone number, a token will be sent to your registered phone number
       </Typography>
       {userSecurityQuestion?.question ? (
         <Box
@@ -132,6 +134,7 @@ function Page() {
                 </InputAdornment>
               ),
             }}
+            defaultValue={appUser?.phone_number || ""}
             label="Phone Number"
             variant="outlined"
             inputRef={phoneNumberRef}

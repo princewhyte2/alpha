@@ -730,7 +730,24 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
     event.stopPropagation()
     setAnchorEl(null)
   }
-
+  const handleViewImage = useCallback(
+    (imageUrl: string) => () => {
+      if (!imageUrl) return
+      window?.open(
+        imageUrl,
+        "targetWindow",
+        `toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=500,
+                                    height=500`,
+      )
+    },
+    [],
+  )
   return (
     <Card
       key={item.id}
@@ -820,16 +837,19 @@ function PostCard({ item, onLike, onComment, onUnLike, onEdit, onDelete, onShare
           (item.relationships.medias[0].type === "video" ? (
             <CardMedia
               component={"video"}
-              height="100%"
+              height="300"
               src={item.relationships.medias[0].url}
               title={item.relationships.medias[0].name}
+              sx={{ objectFit: "cover" }}
               controls
             />
           ) : (
             <CardMedia
+              onClick={handleViewImage(item.relationships.medias[0].url)}
+              sx={{ cursor: "pointer" }}
               loading="lazy"
               component="img"
-              height="100%"
+              height="300"
               image={item.relationships.medias[0].url}
               title={item.relationships.medias[0].name}
             />
