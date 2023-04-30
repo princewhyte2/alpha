@@ -343,6 +343,12 @@ const SignUp = () => {
     }
   }
 
+  React.useEffect(() => {
+    if (Cookies.get("access_token")) {
+      Cookies.remove("access_token")
+    }
+  }, [])
+
   return (
     <Box
       sx={{

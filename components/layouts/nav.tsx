@@ -160,6 +160,10 @@ const employerProfileNav = [
     name: "Password & Security",
     route: "/employer/profile/security",
   },
+  {
+    name: "Referral",
+    route: "/employer/profile/referral",
+  },
 ]
 
 const employerMainNav = [
@@ -493,7 +497,7 @@ export default function NavLayout(props: Props) {
     [user, logo],
   )
 
-  const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications, {
+  const { data: notifications } = useSWR(user ? "notifications" : null, notificationsServices.getALlNotifications, {
     // revalidateIfStale: false,
     // revalidateOnFocus: false,
     // revalidateOnReconnect: false,
@@ -590,7 +594,10 @@ export default function NavLayout(props: Props) {
     [],
   )
 
-  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+  const { data: approvedConnectionList } = useSWR(
+    user ? "approvedConnections" : null,
+    connectionService.getApprovedUserConnections,
+  )
   //TODO : scale this algorightm later
 
   const isConnection = React.useCallback(
@@ -879,6 +886,7 @@ export default function NavLayout(props: Props) {
           PaperProps={{ style: { margin: 8 } }}
           open={Boolean(debouncedSearch)}
           fullWidth
+          fullScreen
           aria-labelledby="workhistory-modal-title"
           aria-describedby="workhistory-modal-description"
         >
@@ -888,27 +896,31 @@ export default function NavLayout(props: Props) {
               setSearchTerm("")
             }}
           >
-            <TextField
-              fullWidth
-              required
-              id="search-show"
-              value={searchTerm}
-              placeholder="Search occupation,artisan ..."
-              label="Search occupation,artisan ..."
-              variant="outlined"
-              onChange={(e) => {
-                setSearchTerm(e.target.value)
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconButton aria-label="Search for artisans.." edge="start">
-                      <SearchIcon sx={{ color: "primary.dark" }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <Grid container spacing={2}>
+              <Grid item xs={10} md={10}>
+                <TextField
+                  fullWidth
+                  required
+                  id="search-show"
+                  value={searchTerm}
+                  placeholder="Search occupation,artisan ..."
+                  label="Search occupation,artisan ..."
+                  variant="outlined"
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value)
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <IconButton aria-label="Search for artisans.." edge="start">
+                          <SearchIcon sx={{ color: "primary.dark" }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
           </BootstrapDialogTitle>
           <DialogContent>
             <Typography sx={{ fontSize: { xs: 14, md: 16 }, color: "#1F204A", mb: 2 }}>
