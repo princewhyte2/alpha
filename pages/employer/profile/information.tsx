@@ -317,7 +317,7 @@ function Page() {
 
         <IconButton
           aria-label="close"
-          onClick={() => router.back()}
+          onClick={() => router.push("/employer/feed")}
           sx={{
             color: (theme) => theme.palette.primary.main,
             display: { xs: "inline-block", md: "none" },

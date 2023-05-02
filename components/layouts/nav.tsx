@@ -36,6 +36,7 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"
 import InputBase from "@mui/material/InputBase"
 import Cookies from "js-cookie"
 import NotificationsIcon from "@mui/icons-material/Notifications"
+import Autocomplete from "@mui/material/Autocomplete"
 import Avatar from "@mui/material/Avatar"
 import MenuLine from "../icons/MenuLine"
 import { useRouter } from "next/router"
@@ -308,7 +309,8 @@ export default function NavLayout(props: Props) {
   const websiteRef = React.useRef<HTMLInputElement>()
   const businessEmailRef = React.useRef<HTMLInputElement>()
   const businessAddressRef = React.useRef<HTMLInputElement>()
-  const industryRef = React.useRef<HTMLInputElement>()
+  // const industryRef = React.useRef<HTMLInputElement>()
+  const [industryId, setIndustryId] = React.useState<{ id: number; name: string } | null | undefined>()
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "left", color: "primary.dark" }}>
@@ -473,8 +475,10 @@ export default function NavLayout(props: Props) {
           email: businessEmailRef.current?.value,
           // logo_image_id: logo?.id,
           ...(Boolean(logo) && { logo_image_id: logo?.id }),
-          industry_id: industryRef.current?.value,
+          // industry_id: industryRef.current?.value,
+          industry_id: industryId?.id,
         }
+
         const response = await profileServices.createCompany(data)
         mutate("userProfile")
         setType("success")
@@ -494,7 +498,7 @@ export default function NavLayout(props: Props) {
         setLoading(false)
       }
     },
-    [user, logo],
+    [user, logo, industryId],
   )
 
   const { data: notifications } = useSWR(user ? "notifications" : null, notificationsServices.getALlNotifications, {
@@ -655,6 +659,11 @@ export default function NavLayout(props: Props) {
   //     router.push(`/${user?.user_type}/profile/security/change-email`)
   //   }
   // }, [user])
+
+  const defaultProps = {
+    options: businessSectors,
+    getOptionLabel: (option: { id: number; name: string }) => option.name,
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -1015,6 +1024,7 @@ export default function NavLayout(props: Props) {
         </BootstrapDialog>
         <BootstrapDialog
           PaperProps={{ style: { margin: 8 } }}
+          // open={true}
           open={Boolean(user && user?.user_type === "employer" && !user?.has_created_company)}
           fullWidth
           aria-labelledby="workhistory-modal-title"
@@ -1135,7 +1145,7 @@ export default function NavLayout(props: Props) {
                   />
                 </Grid>
                 <Grid item xs={12} md={12}>
-                  <FormControl fullWidth>
+                  {/* <FormControl fullWidth>
                     <InputLabel id="industries-select-label">Business Sector</InputLabel>
                     <Select
                       labelId="industries-select-label"
@@ -1150,9 +1160,15 @@ export default function NavLayout(props: Props) {
                           {item.name}
                         </MenuItem>
                       ))}
-                      {/* <MenuItem value={"female"}>Female</MenuItem> */}
+                     
                     </Select>
-                  </FormControl>
+                  </FormControl> */}
+                  <Autocomplete
+                    fullWidth
+                    {...defaultProps}
+                    onChange={(_ev, val) => setIndustryId(val)}
+                    renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Business Sector" />}
+                  />
                 </Grid>
 
                 {/* <Grid item xs={12} md={12}>
