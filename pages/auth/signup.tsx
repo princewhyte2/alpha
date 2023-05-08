@@ -551,7 +551,7 @@ const SignUp = () => {
             control={<Checkbox required />}
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
-                I agree to Workfinder <Link href="#">Terms & Conditions</Link>
+                I agree to Workfinder <Link href="/terms">Terms & Conditions</Link>
               </Typography>
             }
           />
@@ -562,7 +562,7 @@ const SignUp = () => {
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
                 I understand that Workfinder will process my information in accordance with their{" "}
-                <Link href="#">Privacy Policy</Link>.
+                <Link href="/privacy-policy">Privacy Policy</Link>.
               </Typography>
             }
           />

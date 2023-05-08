@@ -510,12 +510,16 @@ function Page() {
             direction={"column"}
             spacing={2}
           >
+            <Link href="/terms">
             <Typography sx={{ fontSize: { xs: 13, md: 16 }, fontWeight: 450, color: "#3E4095", lineHeight: "140%" }}>
               Terms of Service
             </Typography>
+            </Link>
+            <Link href="/privacy-policy">
             <Typography sx={{ fontSize: { xs: 13, md: 16 }, fontWeight: 450, color: "#3E4095", lineHeight: "140%" }}>
               Privacy Policy
             </Typography>
+              </Link>
             <Stack alignItems={"center"} spacing={3} direction={"row"}>
               <Typography sx={{ fontSize: { xs: 13, md: 16 }, fontWeight: 450, color: "#3E4095", lineHeight: "140%" }}>
                 Follow Us
