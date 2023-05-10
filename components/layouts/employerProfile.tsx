@@ -40,6 +40,10 @@ const navItems = [
     name: "Password & Security",
     route: "/employer/profile/security",
   },
+  {
+    name: "Referral",
+    route: "/employer/profile/referral",
+  },
 ]
 
 export default function EmployerProfileLayout(props: Props) {

@@ -584,7 +584,7 @@ function Page() {
         {!matches && (
           <IconButton
             aria-label="close"
-            onClick={() => router.back()}
+            onClick={() => router.push("/artisan/feed")}
             sx={{
               color: (theme) => theme.palette.primary.main,
             }}

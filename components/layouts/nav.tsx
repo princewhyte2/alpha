@@ -36,6 +36,7 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"
 import InputBase from "@mui/material/InputBase"
 import Cookies from "js-cookie"
 import NotificationsIcon from "@mui/icons-material/Notifications"
+import Autocomplete from "@mui/material/Autocomplete"
 import Avatar from "@mui/material/Avatar"
 import MenuLine from "../icons/MenuLine"
 import { useRouter } from "next/router"
@@ -159,6 +160,10 @@ const employerProfileNav = [
   {
     name: "Password & Security",
     route: "/employer/profile/security",
+  },
+  {
+    name: "Referral",
+    route: "/employer/profile/referral",
   },
 ]
 
@@ -304,7 +309,8 @@ export default function NavLayout(props: Props) {
   const websiteRef = React.useRef<HTMLInputElement>()
   const businessEmailRef = React.useRef<HTMLInputElement>()
   const businessAddressRef = React.useRef<HTMLInputElement>()
-  const industryRef = React.useRef<HTMLInputElement>()
+  // const industryRef = React.useRef<HTMLInputElement>()
+  const [industryId, setIndustryId] = React.useState<{ id: number; name: string } | null | undefined>()
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "left", color: "primary.dark" }}>
@@ -469,8 +475,10 @@ export default function NavLayout(props: Props) {
           email: businessEmailRef.current?.value,
           // logo_image_id: logo?.id,
           ...(Boolean(logo) && { logo_image_id: logo?.id }),
-          industry_id: industryRef.current?.value,
+          // industry_id: industryRef.current?.value,
+          industry_id: industryId?.id,
         }
+
         const response = await profileServices.createCompany(data)
         mutate("userProfile")
         setType("success")
@@ -490,10 +498,10 @@ export default function NavLayout(props: Props) {
         setLoading(false)
       }
     },
-    [user, logo],
+    [user, logo, industryId],
   )
 
-  const { data: notifications } = useSWR("notifications", notificationsServices.getALlNotifications, {
+  const { data: notifications } = useSWR(user ? "notifications" : null, notificationsServices.getALlNotifications, {
     // revalidateIfStale: false,
     // revalidateOnFocus: false,
     // revalidateOnReconnect: false,
@@ -590,7 +598,10 @@ export default function NavLayout(props: Props) {
     [],
   )
 
-  const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
+  const { data: approvedConnectionList } = useSWR(
+    user ? "approvedConnections" : null,
+    connectionService.getApprovedUserConnections,
+  )
   //TODO : scale this algorightm later
 
   const isConnection = React.useCallback(
@@ -648,6 +659,11 @@ export default function NavLayout(props: Props) {
   //     router.push(`/${user?.user_type}/profile/security/change-email`)
   //   }
   // }, [user])
+
+  const defaultProps = {
+    options: businessSectors,
+    getOptionLabel: (option: { id: number; name: string }) => option.name,
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -879,6 +895,7 @@ export default function NavLayout(props: Props) {
           PaperProps={{ style: { margin: 8 } }}
           open={Boolean(debouncedSearch)}
           fullWidth
+          fullScreen
           aria-labelledby="workhistory-modal-title"
           aria-describedby="workhistory-modal-description"
         >
@@ -888,27 +905,31 @@ export default function NavLayout(props: Props) {
               setSearchTerm("")
             }}
           >
-            <TextField
-              fullWidth
-              required
-              id="search-show"
-              value={searchTerm}
-              placeholder="Search occupation,artisan ..."
-              label="Search occupation,artisan ..."
-              variant="outlined"
-              onChange={(e) => {
-                setSearchTerm(e.target.value)
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <IconButton aria-label="Search for artisans.." edge="start">
-                      <SearchIcon sx={{ color: "primary.dark" }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <Grid container spacing={2}>
+              <Grid item xs={10} md={10}>
+                <TextField
+                  fullWidth
+                  required
+                  id="search-show"
+                  value={searchTerm}
+                  placeholder="Search occupation,artisan ..."
+                  label="Search occupation,artisan ..."
+                  variant="outlined"
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value)
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <IconButton aria-label="Search for artisans.." edge="start">
+                          <SearchIcon sx={{ color: "primary.dark" }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+            </Grid>
           </BootstrapDialogTitle>
           <DialogContent>
             <Typography sx={{ fontSize: { xs: 14, md: 16 }, color: "#1F204A", mb: 2 }}>
@@ -1003,6 +1024,7 @@ export default function NavLayout(props: Props) {
         </BootstrapDialog>
         <BootstrapDialog
           PaperProps={{ style: { margin: 8 } }}
+          // open={true}
           open={Boolean(user && user?.user_type === "employer" && !user?.has_created_company)}
           fullWidth
           aria-labelledby="workhistory-modal-title"
@@ -1123,7 +1145,7 @@ export default function NavLayout(props: Props) {
                   />
                 </Grid>
                 <Grid item xs={12} md={12}>
-                  <FormControl fullWidth>
+                  {/* <FormControl fullWidth>
                     <InputLabel id="industries-select-label">Business Sector</InputLabel>
                     <Select
                       labelId="industries-select-label"
@@ -1138,9 +1160,15 @@ export default function NavLayout(props: Props) {
                           {item.name}
                         </MenuItem>
                       ))}
-                      {/* <MenuItem value={"female"}>Female</MenuItem> */}
+                     
                     </Select>
-                  </FormControl>
+                  </FormControl> */}
+                  <Autocomplete
+                    fullWidth
+                    {...defaultProps}
+                    onChange={(_ev, val) => setIndustryId(val)}
+                    renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Business Sector" />}
+                  />
                 </Grid>
 
                 {/* <Grid item xs={12} md={12}>

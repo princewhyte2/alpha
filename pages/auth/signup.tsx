@@ -130,7 +130,7 @@ const SignUp = () => {
       setIsError(true)
       // localStorage.setItem("access_token", res.result.token)
       Cookies.set("access_token", res.result.token, {
-        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 5 * 600 * 600 * 10000),
       })
       router.push("/auth/verification")
     } catch (error: any) {
@@ -164,7 +164,7 @@ const SignUp = () => {
       setUser(user)
       // localStorage.setItem("access_token", res.result.token)
       Cookies.set("access_token", res.result.token, {
-        expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 5 * 600 * 600 * 10000),
       })
       setMessage("login successful")
       setType("success")
@@ -201,7 +201,7 @@ const SignUp = () => {
             setUser(user)
             // localStorage.setItem("access_token", res.result.token)
             Cookies.set("access_token", res.result.token, {
-              expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+              expires: new Date(Date.now() + 5 * 600 * 600 * 10000),
             })
             setMessage("login successful")
             setType("success")
@@ -342,6 +342,12 @@ const SignUp = () => {
       setIsError(true)
     }
   }
+
+  React.useEffect(() => {
+    if (Cookies.get("access_token")) {
+      Cookies.remove("access_token")
+    }
+  }, [])
 
   return (
     <Box
@@ -545,7 +551,7 @@ const SignUp = () => {
             control={<Checkbox required />}
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
-                I agree to Workfinder <Link href="#">Terms & Conditions</Link>
+                I agree to Workfinder <Link href="/terms">Terms & Conditions</Link>
               </Typography>
             }
           />
@@ -556,7 +562,7 @@ const SignUp = () => {
             label={
               <Typography sx={{ color: "primary.dark", fontSize: { xs: "0.815rem" } }}>
                 I understand that Workfinder will process my information in accordance with their{" "}
-                <Link href="#">Privacy Policy</Link>.
+                <Link href="/privacy-policy">Privacy Policy</Link>.
               </Typography>
             }
           />

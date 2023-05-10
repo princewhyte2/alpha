@@ -6,7 +6,7 @@ import { usePWAInstall } from "react-use-pwa-install"
 import Button from "@mui/material/Button"
 import { useLayoutEffect, useEffect, useState } from "react"
 import { useAuth } from "../store"
-import { ConfirmProvider } from "material-ui-confirm";
+import { ConfirmProvider } from "material-ui-confirm"
 import profileServices from "../services/profile"
 
 export function AuthGuard({ children }: { children: JSX.Element }) {
@@ -52,21 +52,21 @@ export function AuthGuard({ children }: { children: JSX.Element }) {
   if (!initializing && user) {
     return (
       <>
-      <ConfirmProvider>
-        {children}
-        {install && (
-          <Snackbar
-            open={isShow}
-            onClose={() => setIsShow(false)}
-            message="Install Workfynder for easy access"
-            action={
-              <Button onClick={install} color="inherit" size="small">
-                install
-              </Button>
-            }
-            sx={{ bottom: { xs: 90, sm: 0 } }}
-          />
-        )}
+        <ConfirmProvider>
+          {children}
+          {install && (
+            <Snackbar
+              open={isShow}
+              onClose={() => setIsShow(false)}
+              message="Install Workfynder for easy access"
+              action={
+                <Button onClick={install} color="inherit" size="small">
+                  install
+                </Button>
+              }
+              sx={{ bottom: { xs: 90, sm: 0 } }}
+            />
+          )}
         </ConfirmProvider>
       </>
     )
