@@ -1,20 +1,23 @@
-import axios from 'axios';
-import Cookies from 'js-cookie'
+import axios from "axios";
+import Cookies from "js-cookie";
 
-
-
-const axiosInstance = axios.create({baseURL: 'https://backend-staging.workfynder.com/api',withCredentials: true,
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
 });
 
-axiosInstance.interceptors.request.use( function(config:any) {
-    const token = Cookies.get("access_token"); 
+axiosInstance.interceptors.request.use(
+  function (config: any) {
+    const token = Cookies.get("access_token");
     if (token) {
-      config.headers["Authorization"] = 'Bearer ' + token;
+      config.headers["Authorization"] = "Bearer " + token;
     }
     return config;
   },
-  function(error) {
+  function (error) {
     return Promise.reject(error);
-  })
+  }
+);
 
-export default axiosInstance
+export default axiosInstance;
