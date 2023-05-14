@@ -101,7 +101,11 @@ function Page() {
       <Typography variant="h6" sx={{ my: 1, color: "primary.dark" }}>
         Password & Security
       </Typography>
-      <Button onClick={() => router.back()} variant="text" startIcon={<KeyboardBackspaceIcon />}>
+      <Button
+        onClick={() => router.push(`/employer/profile/information`)}
+        variant="text"
+        startIcon={<KeyboardBackspaceIcon />}
+      >
         Change Phone Number
       </Button>
       <Typography variant="body2" sx={{ my: 1, color: "primary.dark" }}>
