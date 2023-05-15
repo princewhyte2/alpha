@@ -222,11 +222,6 @@ function Page() {
     | any
   >({ id: 0, name: "", active: 0, industry_id: 0 })
 
-  const defaultProps = {
-    options: occupations,
-    getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
-  }
-
   const { data: skillsList, error: skillsError } = useSWR(
     userOccupation?.id ? `/occupations/${userOccupation?.id}/skills` : null,
     utilsService.getOccupationsSkill,
@@ -237,7 +232,28 @@ function Page() {
     },
   )
 
-  // console.log("skill list", skillsList)
+  const occupationList = useMemo(() => {
+    if (!occupations) return []
+    const tempObj: any = {}
+
+    // Filter the array and remove duplicates
+    const filteredArray = occupations.filter(
+      (item: { id: number; name: string; active: number; industry_id: number }) => {
+        if (!tempObj[item.name]) {
+          tempObj[item.name] = true
+          return true
+        }
+        return false
+      },
+    )
+
+    return filteredArray
+  }, [occupations])
+
+  const defaultProps = {
+    options: occupationList,
+    getOptionLabel: (option: { id: number; name: string; active: number; industry_id: number }) => option.name,
+  }
 
   const { data: approvedConnectionList } = useSWR("approvedConnections", connectionService.getApprovedUserConnections)
 
