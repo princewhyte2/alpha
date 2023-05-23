@@ -674,7 +674,7 @@ function Page() {
                   fullWidth
                   variant="contained"
                 >
-                  Save
+                  Post
                 </LoadingButton>
               </Grid>
             </Grid>
