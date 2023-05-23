@@ -33,6 +33,8 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 import Paper from "@mui/material/Paper"
 import Chip from "@mui/material/Chip"
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1"
+import { useMount, useSetState } from "react-use"
+
 import InputBase from "@mui/material/InputBase"
 import Cookies from "js-cookie"
 import NotificationsIcon from "@mui/icons-material/Notifications"
@@ -63,6 +65,7 @@ import useDebounce from "../../hooks/useDebounce"
 import connectionService from "../../services/connection"
 import { signOut } from "firebase/auth"
 import { auth } from "../../lib/firebaseConfig"
+import Joyride, { CallBackProps, STATUS, Step } from "react-joyride"
 
 interface Props {
   /**
@@ -171,22 +174,27 @@ const employerMainNav = [
   {
     name: "Your Feed",
     route: "/employer/feed",
+    className: "feeds-section",
   },
   {
     name: "Connection",
     route: "/employer/connection",
+    className: "connection-section",
   },
   {
     name: "My Jobs",
     route: "/employer/jobs",
+    className: "my-jobs-section",
   },
   {
     name: "Messaging",
     route: "/messaging",
+    className: "messaging-section",
   },
   {
     name: "Profile",
     route: "/employer/profile/information",
+    className: "profile-section",
   },
 ]
 
@@ -194,22 +202,27 @@ const mainNav = [
   {
     name: "Your Feed",
     route: "/artisan/feed",
+    className: "feeds-section",
   },
   {
     name: "Connection",
     route: "/artisan/connection",
+    className: "connection-section",
   },
   {
     name: "Jobs",
     route: "/artisan/jobs",
+    className: "my-jobs-section",
   },
   {
     name: "Messaging",
     route: "/messaging",
+    className: "messaging-section",
   },
   {
     name: "Profile",
     route: "/artisan/profile/information",
+    className: "profile-section",
   },
 ]
 
@@ -341,6 +354,7 @@ export default function NavLayout(props: Props) {
           {mainNav.map((item) => (
             <ListItem key={item.name} disablePadding>
               <ListItemButton
+                className={item.className}
                 onClick={(e) => {
                   if (item.name === "Profile") {
                     e.stopPropagation()
@@ -385,6 +399,7 @@ export default function NavLayout(props: Props) {
                     router.push(item.route)
                   }
                 }}
+                className={item.className}
                 sx={{ textAlign: "left", color: "primary.dark" }}
               >
                 <ListItemText
@@ -647,6 +662,86 @@ export default function NavLayout(props: Props) {
     [user],
   )
 
+  const [{ run, steps }, setState] = useSetState<any>({
+    run: false,
+    steps: [
+      {
+        content: <h2>Let's begin our journey!</h2>,
+        locale: { skip: <strong aria-label="skip">S-K-I-P</strong> },
+        placement: "center",
+        target: "body",
+      },
+      {
+        content: <h2>Search Here</h2>,
+        floaterProps: {
+          disableAnimation: true,
+        },
+        spotlightPadding: 20,
+        target: ".search-intro",
+      },
+      {
+        content: "section for feeds",
+        placement: "bottom",
+        styles: {
+          options: {
+            width: 300,
+          },
+        },
+        target: ".feeds-section",
+        title: "Feeds",
+      },
+      {
+        content: <h2>Section for Connections</h2>,
+        floaterProps: {
+          disableAnimation: true,
+        },
+        spotlightPadding: 20,
+        target: ".connection-section",
+      },
+      {
+        content: <h2>Section for Jobs</h2>,
+        floaterProps: {
+          disableAnimation: true,
+        },
+        spotlightPadding: 20,
+        target: ".my-jobs-section",
+      },
+      {
+        content: <h2>Section for Messaging</h2>,
+        floaterProps: {
+          disableAnimation: true,
+        },
+        spotlightPadding: 20,
+        target: ".messaging-section",
+      },
+      {
+        content: <h2>Edit your profile</h2>,
+        floaterProps: {
+          disableAnimation: true,
+        },
+        spotlightPadding: 20,
+        target: ".profile-section",
+      },
+    ],
+  })
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status, type } = data
+    const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED]
+
+    if (finishedStatuses.includes(status)) {
+      setState({ run: false })
+    }
+
+    // logGroup(type, data)
+  }
+
+  React.useEffect(() => {
+    if (user) {
+      setState({ run: true })
+    }
+  }, [user])
+
   // React.useEffect(() => {
   //   if (!user?.user_type) {
   //     router.push("/join-as")
@@ -671,6 +766,21 @@ export default function NavLayout(props: Props) {
         <ElevationScroll {...props}>
           <AppBar sx={{ bgcolor: "white" }} color="transparent" component="nav">
             <Container disableGutters maxWidth="xl">
+              <Joyride
+                callback={handleJoyrideCallback}
+                continuous
+                hideCloseButton
+                run={run}
+                scrollToFirstStep
+                showProgress
+                showSkipButton
+                steps={steps}
+                styles={{
+                  options: {
+                    zIndex: 10000,
+                  },
+                }}
+              />
               <Toolbar sx={{ display: { xs: "flex" }, justifyContent: "space-between" }}>
                 <IconButton
                   color="inherit"
@@ -687,7 +797,7 @@ export default function NavLayout(props: Props) {
                     <img src="/fynder_logo.png" alt="finder" height={"100%"} width={"auto"} />
                   </Box>
                 </Link>
-                <Search>
+                <Search className="search-intro">
                   <SearchIconWrapper>
                     <SearchIcon />
                   </SearchIconWrapper>
@@ -707,6 +817,7 @@ export default function NavLayout(props: Props) {
                       {mainNav.map((item) => (
                         <Button
                           key={item.name}
+                          className={item.className}
                           onClick={() => router.push(item.route)}
                           variant={router.pathname !== item.route ? "text" : "outlined"}
                         >
@@ -719,6 +830,7 @@ export default function NavLayout(props: Props) {
                       {employerMainNav.map((item) => (
                         <Button
                           key={item.name}
+                          className={item.className}
                           onClick={() => router.push(item.route)}
                           variant={router.pathname !== item.route ? "text" : "outlined"}
                         >
